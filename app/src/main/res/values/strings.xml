@@ -1,0 +1,7 @@
+<resources>
+    <string name="app_name">SplitMoney</string>
+    <string name="title_activity_home">HomeActivity</string>
+    <string name="Friends">Friends</string>
+    <string name="Groups">Groups</string>
+    <string name="Activity">Activity</string>
+</resources>
