@@ -23,7 +23,7 @@ class MessageActivity : AppCompatActivity() {
     lateinit var send: Button
     lateinit var personalPreference: SharedPreferences
     lateinit var name: String
-    lateinit var phone:String
+    lateinit var phone: String
     lateinit var contact: ContactModel
 
     lateinit var mAuth: FirebaseAuth
@@ -37,7 +37,7 @@ class MessageActivity : AppCompatActivity() {
         contact = intent.getSerializableExtra("contact") as ContactModel
         personalPreference = getSharedPreferences(Konstants.PERSONAL, Context.MODE_PRIVATE)
         name = personalPreference.getString(Konstants.NAME, "Fena").toString()
-        phone=personalPreference.getString(Konstants.PHONE,"9537830943").toString()
+        phone = personalPreference.getString(Konstants.PHONE, "9537830943").toString()
         send = findViewById(R.id.send)
         send.setOnClickListener {
             val message =
@@ -70,7 +70,7 @@ class MessageActivity : AppCompatActivity() {
 
             })
 
-        val friend=Friend(contact.name,null,"0")
+        val friend = Friend(contact.name, null)
         userReference.child(phone).child(Konstants.FRIENDS).child(contact.phone).setValue(friend)
     }
 

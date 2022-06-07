@@ -176,6 +176,23 @@ class SignInActivity : AppCompatActivity() {
                         )
                             .show()
                     } else {
+                        var user:User
+                        accountReference.child(phoneEt.text.toString()).addListenerForSingleValueEvent(object :ValueEventListener{
+                            override fun onDataChange(snapshot: DataSnapshot) {
+                                user= snapshot.getValue(User::class.java)!!
+                                Log.v(TAG,"here user "+user.name+", "+user.phoneNumber)
+                                editor.putString(Konstants.PHONE,user.phoneNumber)
+                                editor.putString(Konstants.NAME,user.name)
+                                editor.putString(Konstants.PROMO,user.promocode)
+                                editor.apply()
+                            }
+
+                            override fun onCancelled(error: DatabaseError) {
+                                Log.v(TAG,"database here "+error.message)
+                            }
+
+                        })
+
                         Toast.makeText(baseContext, "welcome back", Toast.LENGTH_SHORT).show()
                     }
                 }
