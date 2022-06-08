@@ -184,6 +184,7 @@ class SignInActivity : AppCompatActivity() {
                                 editor.putString(Konstants.PHONE,user.phoneNumber)
                                 editor.putString(Konstants.NAME,user.name)
                                 editor.putString(Konstants.PROMO,user.promocode)
+                                user.isFemale?.let { editor.putBoolean(Konstants.PROMO, it) }
                                 editor.apply()
                             }
 
@@ -233,6 +234,7 @@ class SignInActivity : AppCompatActivity() {
                     editor.putString(Konstants.NAME, user.name)
                     editor.putString(Konstants.PHONE, user.phoneNumber)
                     editor.putString(Konstants.PROMO, user.promocode)
+                    user.isFemale?.let { editor.putBoolean(Konstants.FEMALE, it) }
                     editor.apply()
                     accountReference.child(phoneEt.text.toString()).child(Konstants.DATA)
                         .setValue(user)

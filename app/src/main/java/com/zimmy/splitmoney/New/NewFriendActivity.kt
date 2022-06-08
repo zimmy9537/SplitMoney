@@ -65,6 +65,7 @@ class NewFriendActivity : AppCompatActivity() {
     }
 
     private fun requestPermissions() {
+        //TODO WORK AGAIN ON THIS PERMISSION PART AS IT'S NOT WORKING
         CoroutineScope(Dispatchers.IO).launch {
             if (ContextCompat.checkSelfPermission(
                     baseContext,

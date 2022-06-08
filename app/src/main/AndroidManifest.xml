@@ -13,6 +13,12 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SplitMoney">
         <activity
+            android:name=".groups.GroupActivity"
+            android:exported="false" />
+        <activity
+            android:name=".New.NewGroupActivity"
+            android:exported="false" />
+        <activity
             android:name=".New.MessageActivity"
             android:exported="false" />
         <activity

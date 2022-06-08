@@ -30,6 +30,7 @@ class GroupFragment : Fragment() {
     companion object{
         fun addNewGroup(context: Context){
             Toast.makeText(context,"Group added",Toast.LENGTH_SHORT).show()
+
         }
     }
 }
