@@ -163,11 +163,15 @@ class SignInActivity : AppCompatActivity() {
         accountReference = firebaseDatabase.reference.child(Konstants.USERS)
         var firstTime: Boolean
 
-        accountReference.child(phoneEt.text.toString())
+        firebaseDatabase.reference.child(Konstants.UIDS).child(mAuth.uid.toString())
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     firstTime = !snapshot.exists()
                     if (firstTime) {
+
+                        firebaseDatabase.reference.child(Konstants.UIDS)
+                            .child(mAuth.uid.toString()).setValue(phoneEt.text.toString())
+
                         databaseInsertOperation(account)
                         Toast.makeText(
                             baseContext,
@@ -176,30 +180,40 @@ class SignInActivity : AppCompatActivity() {
                         )
                             .show()
                     } else {
-                        var user:User
-                        accountReference.child(phoneEt.text.toString()).addListenerForSingleValueEvent(object :ValueEventListener{
-                            override fun onDataChange(snapshot: DataSnapshot) {
-                                user= snapshot.getValue(User::class.java)!!
-                                Log.v(TAG,"here user "+user.name+", "+user.phoneNumber)
-                                editor.putString(Konstants.PHONE,user.phoneNumber)
-                                editor.putString(Konstants.NAME,user.name)
-                                editor.putString(Konstants.PROMO,user.promocode)
-                                user.isFemale?.let { editor.putBoolean(Konstants.PROMO, it) }
-                                editor.apply()
-                            }
+                        var user: User
+                        val phone: String = snapshot.getValue(String::class.java)!!
 
-                            override fun onCancelled(error: DatabaseError) {
-                                Log.v(TAG,"database here "+error.message)
-                            }
+                        accountReference.child(phone).child(Konstants.DATA)
+                            .addListenerForSingleValueEvent(object :
+                                ValueEventListener {
+                                override fun onDataChange(snapshot: DataSnapshot) {
+                                    user = snapshot.getValue(User::class.java)!!
+                                    Log.v(
+                                        TAG,
+                                        "here user " + user.name + ", " + user.phoneNumber
+                                    )
+                                    editor.putString(Konstants.PHONE, user.phoneNumber)
+                                    editor.putString(Konstants.NAME, user.name)
+                                    editor.putString(Konstants.PROMO, user.promocode)
+                                    user.isFemale?.let { editor.putBoolean(Konstants.FEMALE, it) }
+                                    editor.apply()
+                                    Toast.makeText(
+                                        baseContext,
+                                        "welcome back ${user.name}",
+                                        Toast.LENGTH_SHORT
+                                    ).show()
+                                }
 
-                        })
+                                override fun onCancelled(error: DatabaseError) {
+                                    Log.v(TAG, "database here " + error.message)
+                                }
 
-                        Toast.makeText(baseContext, "welcome back", Toast.LENGTH_SHORT).show()
+                            })
                     }
                 }
 
                 override fun onCancelled(error: DatabaseError) {
-
+                    Log.v(TAG, "database error ${error.message}")
                 }
 
             })

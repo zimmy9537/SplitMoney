@@ -8,16 +8,19 @@
         <entry key="app/src/main/res/layout/activity_group.xml" value="0.2197840372721354" />
         <entry key="app/src/main/res/layout/activity_home.xml" value="0.2158599853515625" />
         <entry key="app/src/main/res/layout/activity_item.xml" value="0.296875" />
+        <entry key="app/src/main/res/layout/activity_join_group.xml" value="0.20479532877604165" />
         <entry key="app/src/main/res/layout/activity_main.xml" value="0.2838541666666667" />
         <entry key="app/src/main/res/layout/activity_message.xml" value="0.24916534423828127" />
         <entry key="app/src/main/res/layout/activity_new_friend.xml" value="0.25" />
-        <entry key="app/src/main/res/layout/activity_new_group.xml" value="0.2210932413736979" />
+        <entry key="app/src/main/res/layout/activity_new_group.xml" value="0.27853851318359374" />
+        <entry key="app/src/main/res/layout/activity_qr.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/activity_scanner.xml" value="0.29791666666666666" />
         <entry key="app/src/main/res/layout/activity_sign_in.xml" value="0.2509057971014493" />
         <entry key="app/src/main/res/layout/activity_splash.xml" value="0.182518115942029" />
         <entry key="app/src/main/res/layout/contact_item.xml" value="0.1" />
         <entry key="app/src/main/res/layout/fragment_activity.xml" value="0.29791666666666666" />
         <entry key="app/src/main/res/layout/fragment_friend.xml" value="0.29791666666666666" />
-        <entry key="app/src/main/res/layout/fragment_group.xml" value="0.29791666666666666" />
+        <entry key="app/src/main/res/layout/fragment_group.xml" value="0.13647308349609377" />
         <entry key="app/src/main/res/layout/fragment_home.xml" value="0.2838541666666667" />
         <entry key="app/src/main/res/layout/friends_item.xml" value="0.296875" />
         <entry key="app/src/main/res/layout/new_friend_item.xml" value="0.29791666666666666" />

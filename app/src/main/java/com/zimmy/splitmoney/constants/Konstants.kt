@@ -16,6 +16,7 @@ class Konstants {
         val GROUPNAME = "groupName"
         val GROUPLEADER = "groupLeader"
         val TOTALMEMBERS = "totalMembers"
+        val UIDS="Uids"
 
         //sharedPreference
         val PERSONAL = "personal"

@@ -15,7 +15,10 @@ import com.google.firebase.database.*
 import com.zimmy.splitmoney.R
 import com.zimmy.splitmoney.constants.Konstants
 import com.zimmy.splitmoney.groups.GroupActivity
+import com.zimmy.splitmoney.groups.JoinGroupActivity
+import com.zimmy.splitmoney.groups.QrActivity
 import com.zimmy.splitmoney.models.Friend
+import com.zimmy.splitmoney.models.Group
 import com.zimmy.splitmoney.utills.GroupUtils
 
 class NewGroupActivity : AppCompatActivity() {
@@ -24,11 +27,13 @@ class NewGroupActivity : AppCompatActivity() {
     lateinit var cancel: Button
     lateinit var nameEt: EditText
     lateinit var simplifyDebts: CheckBox
+    lateinit var joinGroup: Button
 
     lateinit var mAuth: FirebaseAuth
     lateinit var firebaseDatabase: FirebaseDatabase
     lateinit var groupReference: DatabaseReference
     lateinit var generalReference: DatabaseReference
+    lateinit var userReference: DatabaseReference
 
     private var groupCount: Int = 0
     lateinit var groupCode: String
@@ -37,6 +42,7 @@ class NewGroupActivity : AppCompatActivity() {
     lateinit var name: String
     var isFemale: Boolean = true
     lateinit var phone: String
+    lateinit var groupName: String
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -48,6 +54,7 @@ class NewGroupActivity : AppCompatActivity() {
         firebaseDatabase = FirebaseDatabase.getInstance()
         groupReference = firebaseDatabase.reference.child(Konstants.GROUPS)
         generalReference = firebaseDatabase.reference.child(Konstants.GENERAL)
+        userReference = firebaseDatabase.reference.child(Konstants.USERS)
 
         personalPreference = getSharedPreferences(Konstants.PERSONAL, Context.MODE_PRIVATE)
         name = personalPreference.getString(Konstants.NAME, "Zimmy").toString()
@@ -75,6 +82,7 @@ class NewGroupActivity : AppCompatActivity() {
         cancel = findViewById(R.id.cancelGroup)
         nameEt = findViewById(R.id.nameEt)
         simplifyDebts = findViewById(R.id.simplifyCheck)
+        joinGroup=findViewById(R.id.joinGroup)
 
         create.setOnClickListener {
             if (nameEt.text.isEmpty()) {
@@ -85,16 +93,28 @@ class NewGroupActivity : AppCompatActivity() {
             groupCount++
             generalReference.child(Konstants.GROUPCOUNT).setValue(groupCount)
 
+            groupName = nameEt.text.toString().trim()
+
             val friend = Friend(name, isFemale)
             groupReference.child(groupCode).child(Konstants.MEMBERS).child(phone).setValue(friend)
             groupReference.child(groupCode).child(Konstants.GROUPINFO).child(Konstants.GROUPNAME)
-                .setValue(nameEt.text.toString())
+                .setValue(groupName)
             groupReference.child(groupCode).child(Konstants.GROUPINFO).child(Konstants.TOTALMEMBERS)
                 .setValue(1)
             groupReference.child(groupCode).child(Konstants.GROUPINFO).child(Konstants.GROUPLEADER)
                 .setValue(phone)
+
+            val group = Group(groupName, groupCode)
+            userReference.child(phone).child(Konstants.GROUPS).child(groupCode).setValue(group)
+
             val intent = Intent(this@NewGroupActivity, GroupActivity::class.java)
             intent.putExtra("gcode", groupCode)
+            startActivity(intent)
+            finish()
+        }
+
+        joinGroup.setOnClickListener{
+            val intent=Intent(this@NewGroupActivity,JoinGroupActivity::class.java)
             startActivity(intent)
             finish()
         }

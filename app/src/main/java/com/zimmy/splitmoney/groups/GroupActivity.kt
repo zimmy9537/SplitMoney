@@ -1,5 +1,6 @@
 package com.zimmy.splitmoney.groups
 
+import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -24,6 +25,7 @@ class GroupActivity : AppCompatActivity() {
     lateinit var addExpense: FloatingActionButton
     lateinit var expenseRecyclerView: RecyclerView
     lateinit var aloneTv: TextView
+    lateinit var groupQrTv: TextView
 
     lateinit var mAuth: FirebaseAuth
     lateinit var firebaseDatabase: FirebaseDatabase
@@ -46,8 +48,16 @@ class GroupActivity : AppCompatActivity() {
         addExpense = findViewById(R.id.addExpense)
         expenseRecyclerView = findViewById(R.id.groupExpenseRv)
         aloneTv = findViewById(R.id.aloneTv)
+        groupQrTv = findViewById(R.id.groupQrTv)
 
+        //complete dependency is on this gcode so intent it properly
         groupCode = intent.getStringExtra("gcode").toString()
+
+        groupQrTv.setOnClickListener {
+            val intent = Intent(this@GroupActivity, QrActivity::class.java)
+            intent.putExtra("gcode",groupCode)
+            startActivity(intent)
+        }
 
         mAuth = FirebaseAuth.getInstance()
         firebaseDatabase = FirebaseDatabase.getInstance()
@@ -69,6 +79,14 @@ class GroupActivity : AppCompatActivity() {
                 }
 
             })
+
+        addGroupMember.setOnClickListener {
+
+        }
+
+        shareGroupLink.setOnClickListener {
+
+        }
 
         addExpense.setOnClickListener {
             Toast.makeText(this@GroupActivity, "coming soon", Toast.LENGTH_SHORT).show()
