@@ -1,70 +1,42 @@
 {
   "project_info": {
-    "project_number": "135664325139",
-    "project_id": "sample-bc554",
-    "storage_bucket": "sample-bc554.appspot.com"
+    "project_number": "44259169007",
+    "firebase_url": "https://splitmoney-7a477-default-rtdb.asia-southeast1.firebasedatabase.app",
+    "project_id": "splitmoney-7a477",
+    "storage_bucket": "splitmoney-7a477.appspot.com"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:135664325139:android:101019dfd663b2ca0d65e6",
-        "android_client_info": {
-          "package_name": "com.zimmy.mugs.sample"
-        }
-      },
-      "oauth_client": [
-        {
-          "client_id": "135664325139-89rv5u0s0db9ec8p990irnfemiem9g80.apps.googleusercontent.com",
-          "client_type": 1,
-          "android_info": {
-            "package_name": "com.zimmy.mugs.sample",
-            "certificate_hash": "2d3f5a688c6832a6a21354af25a3c622b485aa45"
-          }
-        },
-        {
-          "client_id": "135664325139-18jfh92pbujoauojlcrd695nfdpnl4h6.apps.googleusercontent.com",
-          "client_type": 3
-        }
-      ],
-      "api_key": [
-        {
-          "current_key": "AIzaSyDuz11TQWKfE2K68W_aFTFibuq0jb6kzOU"
-        }
-      ],
-      "services": {
-        "appinvite_service": {
-          "other_platform_oauth_client": [
-            {
-              "client_id": "135664325139-18jfh92pbujoauojlcrd695nfdpnl4h6.apps.googleusercontent.com",
-              "client_type": 3
-            }
-          ]
-        }
-      }
-    },
-    {
-      "client_info": {
-        "mobilesdk_app_id": "1:135664325139:android:6c143bb804eaaecf0d65e6",
+        "mobilesdk_app_id": "1:44259169007:android:a271cb39d904325209011a",
         "android_client_info": {
           "package_name": "com.zimmy.splitmoney"
         }
       },
       "oauth_client": [
         {
-          "client_id": "135664325139-18jfh92pbujoauojlcrd695nfdpnl4h6.apps.googleusercontent.com",
+          "client_id": "44259169007-licr32jo2octp5l54aa917ofk8kmdjth.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.zimmy.splitmoney",
+            "certificate_hash": "2d3f5a688c6832a6a21354af25a3c622b485aa45"
+          }
+        },
+        {
+          "client_id": "44259169007-rqadlqgrc4u4mbrtabd9b6gd4r3b56ql.apps.googleusercontent.com",
           "client_type": 3
         }
       ],
       "api_key": [
         {
-          "current_key": "AIzaSyDuz11TQWKfE2K68W_aFTFibuq0jb6kzOU"
+          "current_key": "AIzaSyD5EtHy40O65XWYtpC3m4KD6iVm2jAvZCA"
         }
       ],
       "services": {
         "appinvite_service": {
           "other_platform_oauth_client": [
             {
-              "client_id": "135664325139-18jfh92pbujoauojlcrd695nfdpnl4h6.apps.googleusercontent.com",
+              "client_id": "44259169007-rqadlqgrc4u4mbrtabd9b6gd4r3b56ql.apps.googleusercontent.com",
               "client_type": 3
             }
           ]

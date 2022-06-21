@@ -16,7 +16,10 @@ class Konstants {
         val GROUPNAME = "groupName"
         val GROUPLEADER = "groupLeader"
         val TOTALMEMBERS = "totalMembers"
-        val UIDS="Uids"
+        val UIDS = "Uids"
+        val EXPENSEOUT = "expenseOut"
+        val EXPENSEIN = "expenseIn"
+        val RESULT = "RESULT"
 
         //sharedPreference
         val PERSONAL = "personal"
@@ -25,5 +28,9 @@ class Konstants {
         val PROMO = "promo"
         val FEMALE = "female"
 
+        //others
+        val EXPENSE = "expense"
+        val INDIVIDUALEXPENSE = 1
+        val GROUPEXPENSE = 2
     }
 }

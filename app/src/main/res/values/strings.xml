@@ -4,4 +4,7 @@
     <string name="Friends">Friends</string>
     <string name="Groups">Groups</string>
     <string name="Activity">Activity</string>
+    <string name="title_activity_split">SplitActivity</string>
+    <string name="Equally">Equally</string>
+    <string name="Percentage">Percentage</string>
 </resources>

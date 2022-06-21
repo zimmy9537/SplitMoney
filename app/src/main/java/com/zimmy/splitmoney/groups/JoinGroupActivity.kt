@@ -121,7 +121,7 @@ class JoinGroupActivity : AppCompatActivity() {
     }
 
     private fun joinGroup(gcode: String) {
-        val friend = Friend(name, isFemale)
+        val friend = Friend(name, isFemale,null,null)
 
 
 

@@ -27,9 +27,12 @@ import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.database.*
 import com.zimmy.splitmoney.constants.Konstants
 import com.zimmy.splitmoney.models.User
+import java.lang.Error
 
 
 class SignInActivity : AppCompatActivity() {
+
+    //TODO apply a check for unique phone number before the registration
 
     val GOOGLE_SIGN_IN = 64
     val TAG = SignInActivity::class.simpleName
@@ -47,9 +50,7 @@ class SignInActivity : AppCompatActivity() {
     lateinit var editor: SharedPreferences.Editor
     var isFemale: Boolean = true
 
-    val WEB_CLIENT_ID =
-        "787696245563-4s9lsmhv9292p4h6divbprhjffkecfjj.apps.googleusercontent.com"
-
+    private var WEB_CLIENT_ID="44259169007-rqadlqgrc4u4mbrtabd9b6gd4r3b56ql.apps.googleusercontent.com"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -62,7 +63,7 @@ class SignInActivity : AppCompatActivity() {
         gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(WEB_CLIENT_ID)
             .requestEmail().build()
-        gsc = GoogleSignIn.getClient(this, gso)
+        gsc = GoogleSignIn.getClient(this@SignInActivity, gso)
 
         signInButton = findViewById(R.id.signInBt)
         phoneEt = findViewById(R.id.phNumEt)
@@ -107,13 +108,13 @@ class SignInActivity : AppCompatActivity() {
     fun hideKeyboard(activity: Activity) {
         val imm = activity.getSystemService(Activity.INPUT_METHOD_SERVICE) as InputMethodManager
         //Find the currently focused view, so we can grab the correct window token from it.
-        var view: View? = activity.getCurrentFocus()
+        var view: View? = activity.currentFocus
         //If no view currently has focus, create a new one, just so we can grab a window token from it
         if (view == null) {
             95
             view = View(activity)
         }
-        imm.hideSoftInputFromWindow(view.getWindowToken(), 0)
+        imm.hideSoftInputFromWindow(view.windowToken, 0)
     }
 
     private fun signIn() {
@@ -133,7 +134,12 @@ class SignInActivity : AppCompatActivity() {
                 firebaseAuthWithGoogle(account.idToken)
             } catch (e: ApiException) {
                 // Google Sign In failed, update UI appropriately
-                Toast.makeText(baseContext, e.message, Toast.LENGTH_LONG).show()
+                Toast.makeText(
+                    this@SignInActivity,
+                    "some fucking error, ${e.message}",
+                    Toast.LENGTH_LONG
+                ).show()
+                Log.v(TAG, "error stack ${e.stackTrace}")
             }
         }
     }

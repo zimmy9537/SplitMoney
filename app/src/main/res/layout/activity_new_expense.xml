@@ -1,0 +1,157 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".New.NewExpenseActivity">
+
+    <Button
+        android:id="@+id/cancel"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="10dp"
+        android:text="Cancel"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+    <TextView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:text="Add Expense"
+        android:textSize="22sp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <Button
+        android:id="@+id/save"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dp"
+        android:layout_marginEnd="10dp"
+        android:text="Save"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
+
+
+    <TextView
+        android:id="@+id/withTextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="30dp"
+        android:text="With You and ...."
+        android:textSize="20sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/cancel" />
+
+    <ImageView
+        android:id="@+id/expenseImage"
+        android:layout_width="75dp"
+        android:layout_height="75dp"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="10dp"
+        android:src="@drawable/ic_launcher_background"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/withTextView" />
+
+    <EditText
+        android:id="@+id/expenseName"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:background="@drawable/edit_back1"
+        android:padding="5dp"
+        android:text="Name of the Expense"
+        android:textColor="@color/edit"
+        app:layout_constraintStart_toEndOf="@id/expenseImage"
+        app:layout_constraintTop_toTopOf="@id/expenseImage" />
+
+    <TextView
+        android:id="@+id/dateTv"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="10dp"
+        android:background="@drawable/edit_back1"
+        android:gravity="center"
+        android:padding="5dp"
+        android:text="Today"
+        android:textColor="@color/edit"
+        app:layout_constraintStart_toEndOf="@id/expenseImage"
+        app:layout_constraintTop_toBottomOf="@id/expenseName" />
+
+    <TextView
+        android:id="@+id/currency"
+        android:layout_width="25dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="30dp"
+        android:layout_marginTop="20dp"
+        android:background="@drawable/edit_back1"
+        android:gravity="center_horizontal"
+        android:padding="5dp"
+        android:text="$"
+        android:textSize="18sp"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/expenseImage" />
+
+    <EditText
+        android:id="@+id/expenseAmount"
+        android:layout_width="100dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="10dp"
+        android:layout_marginTop="18dp"
+        android:hint="0.00"
+        android:inputType="numberDecimal"
+        android:paddingStart="10dp"
+        android:textColorHint="@color/black"
+        app:layout_constraintStart_toEndOf="@id/currency"
+        app:layout_constraintTop_toBottomOf="@id/expenseImage" />
+
+
+    <LinearLayout
+        app:layout_constraintTop_toBottomOf="@id/currency"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:orientation="horizontal"
+        android:layout_marginTop="40dp"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent">
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="Paid by "
+            android:textSize="16sp"/>
+
+        <TextView
+            android:id="@+id/paidBy"
+            android:layout_width="40dp"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:background="@drawable/edit_back1"
+            android:text="You"
+            android:padding="5dp"/>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:text="and split"/>
+
+        <TextView
+            android:id="@+id/splitTechnique"
+            android:layout_width="65dp"
+            android:layout_height="wrap_content"
+            android:textSize="16sp"
+            android:background="@drawable/edit_back1"
+            android:text="Equally"
+            android:padding="5dp"/>
+
+    </LinearLayout>
+
+</androidx.constraintlayout.widget.ConstraintLayout>

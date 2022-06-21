@@ -16,10 +16,9 @@ import com.zimmy.splitmoney.R
 import com.zimmy.splitmoney.constants.Konstants
 import com.zimmy.splitmoney.groups.GroupActivity
 import com.zimmy.splitmoney.groups.JoinGroupActivity
-import com.zimmy.splitmoney.groups.QrActivity
 import com.zimmy.splitmoney.models.Friend
 import com.zimmy.splitmoney.models.Group
-import com.zimmy.splitmoney.utills.GroupUtils
+import com.zimmy.splitmoney.utils.GroupUtills
 
 class NewGroupActivity : AppCompatActivity() {
 
@@ -74,7 +73,7 @@ class NewGroupActivity : AppCompatActivity() {
             })
 
 
-        groupCode = GroupUtils.createGroupCode(mAuth.uid.toString(), groupCount + 1)
+        groupCode = GroupUtills.createGroupCode(mAuth.uid.toString(), groupCount + 1)
 
 
 
@@ -95,7 +94,7 @@ class NewGroupActivity : AppCompatActivity() {
 
             groupName = nameEt.text.toString().trim()
 
-            val friend = Friend(name, isFemale)
+            val friend = Friend(name, isFemale,null,null)
             groupReference.child(groupCode).child(Konstants.MEMBERS).child(phone).setValue(friend)
             groupReference.child(groupCode).child(Konstants.GROUPINFO).child(Konstants.GROUPNAME)
                 .setValue(groupName)

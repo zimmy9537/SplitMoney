@@ -70,8 +70,9 @@ class MessageActivity : AppCompatActivity() {
 
             })
 
-        val friend = Friend(contact.name, null)
-        userReference.child(phone).child(Konstants.FRIENDS).child(contact.phone).setValue(friend)
+        val friend = Friend(contact.name, null,contact.phone,0.0)
+        userReference.child(phone).child(Konstants.FRIENDS).child(contact.phone).child(Konstants.DATA).setValue(friend)
+        userReference.child(phone).child(Konstants.FRIENDS).child(contact.phone).child(Konstants.RESULT).setValue(0.00)
     }
 
     private fun sendSMS(message: String) {
