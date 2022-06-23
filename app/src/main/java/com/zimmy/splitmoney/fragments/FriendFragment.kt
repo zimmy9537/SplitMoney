@@ -19,14 +19,14 @@ import com.zimmy.splitmoney.constants.Konstants
 import com.zimmy.splitmoney.databinding.FragmentFriendBinding
 import com.zimmy.splitmoney.models.Expense
 import com.zimmy.splitmoney.models.Friend
-import com.zimmy.splitmoney.models.FriendOrTrip
+import com.zimmy.splitmoney.models.FriendItem
 
 class FriendFragment : Fragment() {
 
     private var _friendBinding: FragmentFriendBinding? = null;
     private val friendBinding get() = _friendBinding!!
 
-    private lateinit var friendItemArray: ArrayList<FriendOrTrip>
+    private lateinit var friendItemArray: ArrayList<FriendItem>
     private lateinit var friendArray: ArrayList<Friend>
     private lateinit var expenseArrayList: ArrayList<Expense>
     private val TAG = FriendFragment::class.java.simpleName
@@ -82,7 +82,7 @@ class FriendFragment : Fragment() {
                                     }
                                     Toast.makeText(context,"friend "+friend.name,Toast.LENGTH_SHORT).show()
                                     friendItemArray.add(
-                                        FriendOrTrip(
+                                        FriendItem(
                                             "noImage",
                                             friend.name,
                                             oweString,
@@ -113,7 +113,7 @@ class FriendFragment : Fragment() {
     ): View? {
         _friendBinding = FragmentFriendBinding.inflate(inflater, container, false)
         friendBinding.friendsRv.adapter =
-            context?.let { FriendOrTripAdapter(friendItemArray, it,true)}
+            context?.let { FriendOrTripAdapter(friendItemArray, it)}
         friendBinding.friendsRv.layoutManager = LinearLayoutManager(context)
         val root = friendBinding.root
 

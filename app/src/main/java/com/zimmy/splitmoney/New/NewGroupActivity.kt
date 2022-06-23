@@ -103,7 +103,7 @@ class NewGroupActivity : AppCompatActivity() {
             groupReference.child(groupCode).child(Konstants.GROUPINFO).child(Konstants.GROUPLEADER)
                 .setValue(phone)
 
-            val group = Group(groupName, groupCode)
+            val group = Group("null",groupCode,groupName,"you owe no one",0.00)
             userReference.child(phone).child(Konstants.GROUPS).child(groupCode).setValue(group)
 
             val intent = Intent(this@NewGroupActivity, GroupActivity::class.java)

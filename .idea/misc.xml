@@ -30,11 +30,12 @@
         <entry key="app/src/main/res/layout/fragment_activity.xml" value="0.29791666666666666" />
         <entry key="app/src/main/res/layout/fragment_equally.xml" value="0.25269775390625" />
         <entry key="app/src/main/res/layout/fragment_friend.xml" value="0.29791666666666666" />
-        <entry key="app/src/main/res/layout/fragment_group.xml" value="0.13647308349609377" />
+        <entry key="app/src/main/res/layout/fragment_group.xml" value="0.21408538818359374" />
         <entry key="app/src/main/res/layout/fragment_home.xml" value="0.2838541666666667" />
         <entry key="app/src/main/res/layout/fragment_percentage.xml" value="0.296875" />
         <entry key="app/src/main/res/layout/fragment_split.xml" value="0.2451990763346354" />
         <entry key="app/src/main/res/layout/friends_item.xml" value="0.25" />
+        <entry key="app/src/main/res/layout/friends_trip_item.xml" value="0.29791666666666666" />
         <entry key="app/src/main/res/layout/new_friend_item.xml" value="0.29791666666666666" />
       </map>
     </option>

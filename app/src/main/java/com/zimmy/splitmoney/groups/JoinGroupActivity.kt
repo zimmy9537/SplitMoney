@@ -165,7 +165,7 @@ class JoinGroupActivity : AppCompatActivity() {
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val groupName: String? = snapshot.getValue(String::class.java)
-                    val group = groupName?.let { Group(it, gcode) }
+                    val group= groupName?.let { Group("null",gcode, it,"you owe no one",0.00) }
                     userReference.child(phone).child(Konstants.GROUPS).child(gcode).setValue(group)
                     finish()
                 }

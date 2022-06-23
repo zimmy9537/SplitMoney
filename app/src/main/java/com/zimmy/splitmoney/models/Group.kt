@@ -1,6 +1,6 @@
 package com.zimmy.splitmoney.models
 
-data class Group(var name: String, var code: String) {
+data class Group(var imageUri: String, var groupCode:String, var groupTitle: String, var owe: String, var amount: Double) {
 
-    constructor() : this("", "")
+    constructor() : this("", "","","",0.00)
 }

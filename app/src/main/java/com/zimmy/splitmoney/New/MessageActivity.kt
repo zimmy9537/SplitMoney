@@ -5,6 +5,7 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Build
 import android.os.Bundle
+import android.os.Message
 import android.provider.Telephony
 import android.util.Log
 import android.widget.Button
@@ -25,25 +26,62 @@ class MessageActivity : AppCompatActivity() {
     lateinit var name: String
     lateinit var phone: String
     lateinit var contact: ContactModel
+    var group: Boolean = false
+    var groupName: String = "TestGroup"
+    var groupCode: String = "ABCD"
+
+    var TAG = MessageActivity::class.java.simpleName
 
     lateinit var mAuth: FirebaseAuth
     lateinit var userDatabase: FirebaseDatabase
     lateinit var userReference: DatabaseReference
+    lateinit var groupReference: DatabaseReference
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_message)
 
+        group = intent.getBooleanExtra("group", false)
+        if (group) {
+            groupName = intent.getStringExtra("name").toString()
+            groupCode = intent.getStringExtra("code").toString()
+        }
+
         contact = intent.getSerializableExtra("contact") as ContactModel
+        //todo make changes in the phone number by trimming the space between the digits
         personalPreference = getSharedPreferences(Konstants.PERSONAL, Context.MODE_PRIVATE)
         name = personalPreference.getString(Konstants.NAME, "Fena").toString()
         phone = personalPreference.getString(Konstants.PHONE, "9537830943").toString()
         send = findViewById(R.id.send)
         send.setOnClickListener {
-            val message =
+            val message: String = if (!group) {
                 "Hi! ${contact.name} please add me as a friend on SplitMoney app!!\nYour Friend, $name"
+            } else {
+                "Hi ${contact.name} you are added to a new group $groupName. Happy expensing"
+            }
             sendSMS(message)
-            addFriend()
+            if (group) {
+                groupReference = FirebaseDatabase.getInstance().reference.child(Konstants.GROUPS)
+                groupReference.child(groupCode).child(Konstants.GROUPINFO)
+                    .child(Konstants.TOTALMEMBERS)
+                    .addListenerForSingleValueEvent(object : ValueEventListener {
+                        override fun onDataChange(snapshot: DataSnapshot) {
+                            var members = snapshot.getValue(Int::class.java)!!
+                            members++
+                            groupReference.child(groupCode).child(Konstants.GROUPINFO)
+                                .child(Konstants.TOTALMEMBERS).setValue(members)
+                        }
+
+                        override fun onCancelled(error: DatabaseError) {
+                            Log.v(TAG, "database error ${error.message}")
+                        }
+                    })
+                val friend = Friend(contact.name, null, null, null)
+                groupReference.child(groupCode).child(Konstants.MEMBERS).child(contact.phone)
+                    .setValue(friend)
+            } else {
+                addFriend()
+            }
         }
 
         mAuth = FirebaseAuth.getInstance()
@@ -67,12 +105,13 @@ class MessageActivity : AppCompatActivity() {
                         "some error here, " + error.message
                     )
                 }
-
             })
 
-        val friend = Friend(contact.name, null,contact.phone,0.0)
-        userReference.child(phone).child(Konstants.FRIENDS).child(contact.phone).child(Konstants.DATA).setValue(friend)
-        userReference.child(phone).child(Konstants.FRIENDS).child(contact.phone).child(Konstants.RESULT).setValue(0.00)
+        val friend = Friend(contact.name, null, contact.phone, 0.0)
+        userReference.child(phone).child(Konstants.FRIENDS).child(contact.phone)
+            .child(Konstants.DATA).setValue(friend)
+        userReference.child(phone).child(Konstants.FRIENDS).child(contact.phone)
+            .child(Konstants.RESULT).setValue(0.00)
     }
 
     private fun sendSMS(message: String) {

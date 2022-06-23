@@ -70,6 +70,8 @@ class SignInActivity : AppCompatActivity() {
         maleRadio = findViewById(R.id.male)
         femaleRadio = findViewById(R.id.female)
 
+        //todo cheching for the existent number creates trouble in re sign in
+        //particular code hence commented
         signInButton.setOnClickListener {
             if (!checkPhoneNumber()) {
                 return@setOnClickListener
@@ -102,7 +104,25 @@ class SignInActivity : AppCompatActivity() {
             Toast.makeText(baseContext, "Enter a valid phoneNumber", Toast.LENGTH_SHORT).show()
             return false
         }
-        return true
+        var check:Boolean=true
+        accountReference = firebaseDatabase.reference.child(Konstants.USERS)
+//        accountReference.child(phoneEt.text.toString()).addListenerForSingleValueEvent(object :ValueEventListener{
+//            override fun onDataChange(snapshot: DataSnapshot) {
+//                if(snapshot.exists()){
+//                    check=true
+//                    return
+//                }
+//                check=false
+//            }
+//
+//            override fun onCancelled(error: DatabaseError) {
+//                Log.v(TAG,"database error ${error.message}");
+//            }
+//        })
+        if(!check){
+            Toast.makeText(this,"Number already exists",Toast.LENGTH_SHORT).show()
+        }
+        return check
     }
 
     fun hideKeyboard(activity: Activity) {

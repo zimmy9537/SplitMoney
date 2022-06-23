@@ -1,13 +1,17 @@
 package com.zimmy.splitmoney.utils
 
+import java.util.*
+import kotlin.streams.asSequence
+
 class GroupUtills {
     companion object {
         fun createGroupCode(uid: String, groupCount: Int): String {
-            //TODO SERIOUS BULL SHIT HAPPENNING HERE
+            //TODO SERIOUS BULL SHIT HAPPENING HERE
             //change the method of generation of the group code
-            var groupCode = uid.substring(0, 5)
-            groupCode += groupCount.toString()
-            return groupCode
+            val source = "ABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890"
+            return Random().ints(5, 0, source.length).asSequence()
+                .map(source::get)
+                .joinToString("")
         }
     }
 }

@@ -13,6 +13,7 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import com.zimmy.splitmoney.New.NewFriendActivity
 import com.zimmy.splitmoney.R
 import com.zimmy.splitmoney.constants.Konstants
 
@@ -21,11 +22,13 @@ class GroupActivity : AppCompatActivity() {
     lateinit var settleUp: Button
     lateinit var balances: Button
     lateinit var addGroupMember: LinearLayout
-    lateinit var shareGroupLink: LinearLayout
+    lateinit var shareGroupQr: LinearLayout
     lateinit var addExpense: FloatingActionButton
     lateinit var expenseRecyclerView: RecyclerView
     lateinit var aloneTv: TextView
     lateinit var groupQrTv: TextView
+    lateinit var groupName: TextView
+    lateinit var groupNameString:String
 
     lateinit var mAuth: FirebaseAuth
     lateinit var firebaseDatabase: FirebaseDatabase
@@ -44,24 +47,38 @@ class GroupActivity : AppCompatActivity() {
         settleUp = findViewById(R.id.settleUp)
         balances = findViewById(R.id.balances)
         addGroupMember = findViewById(R.id.addMemberLl)
-        shareGroupLink = findViewById(R.id.groupInviteLl)
+        shareGroupQr = findViewById(R.id.groupInviteLl)
         addExpense = findViewById(R.id.addExpense)
         expenseRecyclerView = findViewById(R.id.groupExpenseRv)
         aloneTv = findViewById(R.id.aloneTv)
         groupQrTv = findViewById(R.id.groupQrTv)
+        groupName = findViewById(R.id.groupName)
 
         //complete dependency is on this gcode so intent it properly
         groupCode = intent.getStringExtra("gcode").toString()
 
         groupQrTv.setOnClickListener {
             val intent = Intent(this@GroupActivity, QrActivity::class.java)
-            intent.putExtra("gcode",groupCode)
+            intent.putExtra("gcode", groupCode)
             startActivity(intent)
         }
 
         mAuth = FirebaseAuth.getInstance()
         firebaseDatabase = FirebaseDatabase.getInstance()
         groupReference = firebaseDatabase.reference.child(Konstants.GROUPS)
+
+        groupReference.child(groupCode).child(Konstants.GROUPINFO).child(Konstants.GROUPNAME)
+            .addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    groupName.text = snapshot.getValue(String::class.java)
+                    groupNameString=snapshot.getValue(String::class.java)!!
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    Log.v(TAG, "database error ${error.message}")
+                }
+
+            })
 
         groupReference.child(groupCode).child(Konstants.GROUPINFO).child(Konstants.TOTALMEMBERS)
             .addListenerForSingleValueEvent(object : ValueEventListener {
@@ -81,11 +98,15 @@ class GroupActivity : AppCompatActivity() {
             })
 
         addGroupMember.setOnClickListener {
-
+            val intent=Intent(this,NewFriendActivity::class.java)
+            intent.putExtra("group",true)
+            intent.putExtra("name",groupNameString)
+            intent.putExtra("code",groupCode)
+            startActivity(intent)
         }
 
-        shareGroupLink.setOnClickListener {
-
+        shareGroupQr.setOnClickListener {
+            //todo work remaining here
         }
 
         addExpense.setOnClickListener {
@@ -97,13 +118,13 @@ class GroupActivity : AppCompatActivity() {
     fun showEmptyGroup() {
         expenseRecyclerView.visibility = View.GONE
         addGroupMember.visibility = View.VISIBLE
-        shareGroupLink.visibility = View.VISIBLE
+        shareGroupQr.visibility = View.VISIBLE
         aloneTv.visibility = View.VISIBLE
     }
 
     fun showFilledGroup() {
         addGroupMember.visibility = View.GONE
-        shareGroupLink.visibility = View.GONE
+        shareGroupQr.visibility = View.GONE
         aloneTv.visibility = View.GONE
         expenseRecyclerView.visibility = View.VISIBLE
     }

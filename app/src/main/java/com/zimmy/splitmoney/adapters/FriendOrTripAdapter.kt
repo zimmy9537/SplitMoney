@@ -14,54 +14,46 @@ import com.zimmy.splitmoney.IndividualExpenseActivity
 import com.zimmy.splitmoney.R
 import com.zimmy.splitmoney.constants.Konstants
 import com.zimmy.splitmoney.groups.GroupActivity
-import com.zimmy.splitmoney.models.FriendOrTrip
+import com.zimmy.splitmoney.models.FriendItem
 
 class FriendOrTripAdapter(
-    friendOrTripList: ArrayList<FriendOrTrip>,
+    friendItemList: ArrayList<FriendItem>,
     context: Context,
-    isFriend: Boolean//todo take care of this while in group
 ) :
     RecyclerView.Adapter<FriendOrTripAdapter.FriendViewHolder>() {
 
-    var friendOrTripList: ArrayList<FriendOrTrip>
+    var friendItemList: ArrayList<FriendItem>
     var context: Context
-    var isFriend: Boolean = true
 
     init {
-        this.friendOrTripList = friendOrTripList
+        this.friendItemList = friendItemList
         this.context = context
-        this.isFriend = isFriend
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FriendViewHolder {
-        val view = LayoutInflater.from(context).inflate(R.layout.friends_item, parent, false)
+        val view = LayoutInflater.from(context).inflate(R.layout.friends_trip_item, parent, false)
         return FriendViewHolder(view)
     }
 
     override fun onBindViewHolder(holder: FriendViewHolder, position: Int) {
         holder.friendImage.setImageResource(R.drawable.ic_launcher_background)
         //todo change this with actual image later
-        holder.friendName.setText(friendOrTripList[position].title)
-        holder.friendAmount.setText(friendOrTripList[position].amount.toString())
-        Picasso.get().load(friendOrTripList[position].imageUri).into(holder.friendImage)
-        holder.whoOwe.setText(friendOrTripList[position].owe)
+        holder.friendName.setText(friendItemList[position].title)
+        holder.friendAmount.setText(friendItemList[position].amount.toString())
+        Picasso.get().load(friendItemList[position].imageUri).into(holder.friendImage)
+        holder.whoOwe.setText(friendItemList[position].owe)
 
         holder.friendItemLl.setOnClickListener {
-            if (isFriend) {
                 val intent = Intent(context, IndividualExpenseActivity::class.java)
-                intent.putExtra(Konstants.PHONE, friendOrTripList[position].phone)
-                intent.putExtra(Konstants.NAME,friendOrTripList[position].title)
+                intent.putExtra(Konstants.PHONE, friendItemList[position].phone)
+                intent.putExtra(Konstants.NAME,friendItemList[position].title)
                 context.startActivity(intent)
-            } else {
-                val intent = Intent(context, GroupActivity::class.java)
-                context.startActivity(intent)
-            }
         }
 
     }
 
     override fun getItemCount(): Int {
-        return friendOrTripList.size
+        return friendItemList.size
     }
 
 

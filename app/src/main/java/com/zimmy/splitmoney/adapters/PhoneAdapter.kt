@@ -14,17 +14,23 @@ import com.zimmy.splitmoney.models.ContactModel
 import java.util.*
 import kotlin.collections.ArrayList
 
-class PhoneAdapter(phoneList: ArrayList<ContactModel>, context: Context) :
+class PhoneAdapter(phoneList: ArrayList<ContactModel>, context: Context,group:Boolean,groupName:String,groupCode:String) :
     RecyclerView.Adapter<PhoneAdapter.PhoneViewHolder>(), Filterable {
 
     private var phoneList: ArrayList<ContactModel>
     var context: Context
     private var phoneListAll: ArrayList<ContactModel>
+    var group:Boolean=false
+    var groupName:String
+    var groupCode:String
 
     init {
         this.phoneList = phoneList
         this.context = context
         phoneListAll = ArrayList(phoneList)
+        this.group=group
+        this.groupName=groupName
+        this.groupCode=groupCode
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): PhoneViewHolder {
@@ -43,6 +49,11 @@ class PhoneAdapter(phoneList: ArrayList<ContactModel>, context: Context) :
         holder.phoneLl.setOnClickListener{
             val intent=Intent(context,MessageActivity::class.java)
             intent.putExtra("contact",phoneList[position])
+            intent.putExtra("group",group)
+            if(group){
+                intent.putExtra("name",groupName)
+                intent.putExtra("code",groupCode)
+            }
             context.startActivity(intent)
         }
     }

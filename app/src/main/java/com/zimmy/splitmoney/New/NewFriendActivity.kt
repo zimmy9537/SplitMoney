@@ -5,6 +5,7 @@ import android.app.Activity
 import android.content.pm.PackageManager
 import android.database.Cursor
 import android.os.Bundle
+import android.os.Looper
 import android.provider.ContactsContract
 import android.util.Log
 import android.view.View
@@ -36,6 +37,9 @@ class NewFriendActivity : AppCompatActivity() {
     lateinit var progress: ProgressBar
     lateinit var adapter: PhoneAdapter
     lateinit var back: Button
+    var group:Boolean=false
+    var groupName="TestGroup"
+    var groupCode="ABCD"
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,6 +53,12 @@ class NewFriendActivity : AppCompatActivity() {
         back = findViewById(R.id.back)
         back.setOnClickListener {
             finish()
+        }
+
+        group=intent.getBooleanExtra("group",false)
+        if(group){
+            groupName=intent.getStringExtra("name").toString()
+            groupCode=intent.getStringExtra("code").toString()
         }
 
         phoneSView.setOnQueryTextListener(object : SearchView.OnQueryTextListener {
@@ -65,15 +75,14 @@ class NewFriendActivity : AppCompatActivity() {
     }
 
     private fun requestPermissions() {
-        //TODO WORK AGAIN ON THIS PERMISSION PART AS IT'S NOT WORKING
         CoroutineScope(Dispatchers.IO).launch {
             if (ContextCompat.checkSelfPermission(
-                    baseContext,
+                    this@NewFriendActivity,
                     Manifest.permission.READ_CONTACTS
                 ) != PackageManager.PERMISSION_GRANTED
             ) {
                 ActivityCompat.requestPermissions(
-                    baseContext as Activity,
+                    this@NewFriendActivity,
                     arrayOf(Manifest.permission.READ_CONTACTS),
                     PERMISSION_REQUEST_CODE
                 )
@@ -85,58 +94,10 @@ class NewFriendActivity : AppCompatActivity() {
                 getContactListPro()
             }
             if (!PERMITTED) {
-                Toast.makeText(baseContext, "Please Grant permission", Toast.LENGTH_SHORT).show()
+                Looper.prepare()
+                Toast.makeText(this@NewFriendActivity, "Please Grant permission", Toast.LENGTH_SHORT).show()
                 finish()
-            }
-        }
-    }
-
-    private fun getContactList() {
-        val uri = ContactsContract.Contacts.CONTENT_URI
-
-        val sort = ContactsContract.CommonDataKinds.Phone.DISPLAY_NAME + "ASC"
-        val cursor = contentResolver.query(uri, null, null, null, sort)
-        if (cursor != null) {
-            if (cursor.count > 0) {
-                while (cursor.moveToNext()) {
-                    val index = cursor.getColumnIndex(ContactsContract.Contacts._ID)
-                    if (index >= 0) {
-                        val id = cursor.getString(index)
-                        val indexDisplayName =
-                            cursor.getColumnIndex(ContactsContract.Contacts.DISPLAY_NAME)
-
-                        val indexImage = cursor.getColumnIndex(ContactsContract.Contacts.PHOTO_URI)
-                        var imageUri: String? = null
-                        if (indexImage >= 0) {
-                            imageUri = cursor.getString(indexImage)
-                        }
-
-                        if (indexDisplayName >= 0) {
-                            val name = cursor.getString(indexDisplayName)
-
-                            val uriPhone = ContactsContract.CommonDataKinds.Phone.CONTENT_URI
-                            val selection = ContactsContract.CommonDataKinds.Phone.CONTACT_ID + "=?"
-                            val phoneCursor = contentResolver.query(
-                                uriPhone, null, selection,
-                                arrayOf(String(), (id)), null
-                            )
-                            if (phoneCursor != null) {
-                                if (phoneCursor.moveToNext()) {
-                                    val phoneIndex =
-                                        phoneCursor.getColumnIndex(ContactsContract.CommonDataKinds.Phone.NUMBER)
-                                    if (phoneIndex >= 0) {
-                                        val number = phoneCursor.getString(phoneIndex)
-                                        val user = ContactModel(imageUri, name, number)
-                                        phoneList.add(user)
-                                        Log.v(TAG, "image $imageUri\n name $name, phone$number")
-                                    }
-                                }
-                                phoneCursor.close()
-                            }
-                        }
-                    }
-                }
-                cursor.close()
+                Looper.loop()
             }
         }
     }
@@ -199,7 +160,7 @@ class NewFriendActivity : AppCompatActivity() {
             progress.visibility = View.GONE
             if (!phoneList.isEmpty()) {
                 val linearLayoutManager = LinearLayoutManager(this@NewFriendActivity)
-                adapter = PhoneAdapter(phoneList, this@NewFriendActivity)
+                adapter = PhoneAdapter(phoneList, this@NewFriendActivity,group,groupName,groupCode)
                 phoneRecyclerView.adapter = adapter
                 phoneRecyclerView.layoutManager = linearLayoutManager
             }
