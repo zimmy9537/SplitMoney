@@ -1,17 +1,13 @@
 package com.zimmy.splitmoney.fragments
 
 import android.content.Context
-import android.content.SharedPreferences
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
-import android.widget.TextView
 import android.widget.Toast
 import androidx.fragment.app.Fragment
-import com.zimmy.splitmoney.constants.Konstants
 import com.zimmy.splitmoney.databinding.FragmentActivityBinding
-import com.zimmy.splitmoney.databinding.FragmentHomeBinding
 
 class ActivityFragment : Fragment() {
 

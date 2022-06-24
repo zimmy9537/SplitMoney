@@ -32,5 +32,7 @@ class Konstants {
         val EXPENSE = "expense"
         val INDIVIDUALEXPENSE = 1
         val GROUPEXPENSE = 2
+        val AMOUNT="amount"
+        val EQUAL_PERCENT_MAP="equal_percent_map"
     }
 }

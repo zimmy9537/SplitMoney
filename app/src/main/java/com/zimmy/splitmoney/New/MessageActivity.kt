@@ -37,6 +37,8 @@ class MessageActivity : AppCompatActivity() {
     lateinit var userReference: DatabaseReference
     lateinit var groupReference: DatabaseReference
 
+    //todo sending message is creating duplicate users
+
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_message)
