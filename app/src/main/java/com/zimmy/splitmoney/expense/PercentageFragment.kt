@@ -70,6 +70,15 @@ class PercentageFragment : Fragment() {
                 requireActivity().intent.getSerializableExtra(Konstants.DATA) as ArrayList<Friend>
 
             for (ele in friendDetailList) {
+                if (ele.phone == context?.getSharedPreferences(
+                        Konstants.PHONE,
+                        Context.MODE_PRIVATE
+                    )
+                        ?.getString(Konstants.PHONE, "9537830943")
+                        .toString()
+                ) {
+                    ele.name = "You"
+                }
                 phoneMap[ele.name] = ele.phone!!
             }
 
@@ -96,7 +105,7 @@ class PercentageFragment : Fragment() {
 
                 override fun onTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {
                     if (percentEt.text.isEmpty()) {
-                        friendAmount.text="0.0"
+                        friendAmount.text = "0.0"
                         return
                     }
 
@@ -131,7 +140,7 @@ class PercentageFragment : Fragment() {
                 override fun afterTextChanged(p0: Editable?) {
                 }
             })
-            percentageBinding.linearPercent.addView(view)
+            percentageBinding.linear.addView(view)
         }
     }
 
@@ -143,7 +152,7 @@ class PercentageFragment : Fragment() {
         _percentageBinding = FragmentPercentageBinding.inflate(inflater, container, false)
         val root = percentageBinding.root
 
-        addFriends(percentageBinding.linearPercent, friendList)
+        addFriends(percentageBinding.linear, friendList)
         percentageBinding.save.setOnClickListener {
             var percent = 0.00
             for (ele in expensePercent) {

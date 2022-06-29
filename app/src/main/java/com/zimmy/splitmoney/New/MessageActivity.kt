@@ -5,7 +5,6 @@ import android.content.Intent
 import android.content.SharedPreferences
 import android.os.Build
 import android.os.Bundle
-import android.os.Message
 import android.provider.Telephony
 import android.util.Log
 import android.widget.Button
@@ -50,6 +49,7 @@ class MessageActivity : AppCompatActivity() {
         }
 
         contact = intent.getSerializableExtra("contact") as ContactModel
+        contact.phone = contact.phone.replace("\\s".toRegex(), "")
         //todo make changes in the phone number by trimming the space between the digits
         personalPreference = getSharedPreferences(Konstants.PERSONAL, Context.MODE_PRIVATE)
         name = personalPreference.getString(Konstants.NAME, "Fena").toString()
@@ -110,9 +110,15 @@ class MessageActivity : AppCompatActivity() {
             })
 
         val friend = Friend(contact.name, null, contact.phone, 0.0)
+        //this one is for me
         userReference.child(phone).child(Konstants.FRIENDS).child(contact.phone)
             .child(Konstants.DATA).setValue(friend)
         userReference.child(phone).child(Konstants.FRIENDS).child(contact.phone)
+            .child(Konstants.RESULT).setValue(0.00)
+        //this one is my friend
+        userReference.child(contact.phone).child(Konstants.FRIENDS).child(phone)
+            .child(Konstants.DATA).setValue(Friend(name, null, phone, 0.0))
+        userReference.child(contact.phone).child(Konstants.FRIENDS).child(phone)
             .child(Konstants.RESULT).setValue(0.00)
     }
 

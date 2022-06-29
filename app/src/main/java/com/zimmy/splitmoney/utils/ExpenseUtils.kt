@@ -8,9 +8,20 @@ import com.google.firebase.database.ValueEventListener
 import com.zimmy.splitmoney.fragments.FriendFragment
 import com.zimmy.splitmoney.models.Expense
 import com.zimmy.splitmoney.models.Friend
+import java.text.SimpleDateFormat
+import java.util.*
+import kotlin.Comparator
+import kotlin.collections.ArrayList
 
 class ExpenseUtils {
     companion object {
+
+        //function to return time string as June 26, 2022
+        fun getDateString(date: Date):String {
+            val fmt = SimpleDateFormat("MMMM d, yyyy")
+            return fmt.format(date)
+        }
+
 
         val TAG: String = FriendFragment::class.java.simpleName
 

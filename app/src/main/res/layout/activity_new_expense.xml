@@ -4,8 +4,8 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
-    tools:context=".New.NewExpenseActivity"
-    android:background="@color/white">
+    android:background="@color/white"
+    tools:context=".New.NewExpenseActivity">
 
     <Button
         android:id="@+id/cancel"
@@ -46,8 +46,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="30dp"
         android:layout_marginTop="30dp"
-        android:textColor="@color/black"
         android:text="With You and ...."
+        android:textColor="@color/black"
         android:textSize="20sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/cancel" />
@@ -68,8 +68,8 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:background="@drawable/edit_back1"
-        android:padding="5dp"
         android:hint="Name of the Expense"
+        android:padding="5dp"
         android:textColor="@color/edit"
         app:layout_constraintStart_toEndOf="@id/expenseImage"
         app:layout_constraintTop_toTopOf="@id/expenseImage" />
@@ -97,8 +97,8 @@
         android:background="@drawable/edit_back1"
         android:gravity="center_horizontal"
         android:padding="5dp"
-        android:textColor="@color/black"
         android:text="$"
+        android:textColor="@color/black"
         android:textSize="18sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/expenseImage" />
@@ -110,57 +110,57 @@
         android:layout_marginStart="10dp"
         android:layout_marginTop="18dp"
         android:hint="0.00"
-        android:textColor="@color/black"
         android:inputType="numberDecimal"
         android:paddingStart="10dp"
+        android:textColor="@color/black"
         android:textColorHint="@color/black"
         app:layout_constraintStart_toEndOf="@id/currency"
         app:layout_constraintTop_toBottomOf="@id/expenseImage" />
 
 
     <LinearLayout
-        app:layout_constraintTop_toBottomOf="@id/currency"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:orientation="horizontal"
         android:layout_marginTop="40dp"
+        android:orientation="horizontal"
         app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintStart_toStartOf="parent">
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toBottomOf="@id/currency">
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textColor="@color/black"
             android:text="Paid by "
-            android:textSize="16sp"/>
+            android:textColor="@color/black"
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/paidBy"
             android:layout_width="wrap_content"
-            android:maxWidth="60dp"
             android:layout_height="wrap_content"
-            android:textSize="16sp"
-            android:textColor="@color/black"
             android:background="@drawable/edit_back1"
+            android:maxLines="1"
+            android:padding="5dp"
             android:text="You"
-            android:padding="5dp"/>
+            android:textColor="@color/black"
+            android:textSize="16sp" />
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="16sp"
+            android:text="and split"
             android:textColor="@color/black"
-            android:text="and split"/>
+            android:textSize="16sp" />
 
         <TextView
             android:id="@+id/splitTechnique"
             android:layout_width="65dp"
             android:layout_height="wrap_content"
-            android:textSize="16sp"
-            android:textColor="@color/black"
             android:background="@drawable/edit_back1"
+            android:padding="5dp"
             android:text="Equally"
-            android:padding="5dp"/>
+            android:textColor="@color/black"
+            android:textSize="16sp" />
 
     </LinearLayout>
 

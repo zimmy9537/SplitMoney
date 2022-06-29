@@ -36,14 +36,15 @@ class ExpenseAdapter(expenseList: ArrayList<Expense>, context: Context) :
     }
 
     override fun onBindViewHolder(holder: ExpenseViewHolder, position: Int) {
+        //todo needs to change here according to the changes in the Expense class
         holder.expenseName.text = expenseList[position].expenseName
-        if (expenseList[position].personPhone == myPhone) {
-            holder.expenseAdded.text = "Added by You"
-            holder.expenseResult.text = "Owes You"
-        } else {
-            holder.expenseAdded.text = "Added by ${expenseList[position].personName}"
-            holder.expenseResult.text = "You Owe"
-        }
+//        if (expenseList[position].personPhone == myPhone) {
+//            holder.expenseAdded.text = "Added by You"
+//            holder.expenseResult.text = "Owes You"
+//        } else {
+//            holder.expenseAdded.text = "Added by ${expenseList[position].personName}"
+//            holder.expenseResult.text = "You Owe"
+//        }
         //"EEE, MMM d, ''yy"
         val fDate: String = SimpleDateFormat("EEE, MMM d, ''yy").format(Date())
         holder.expenseDate.text = fDate

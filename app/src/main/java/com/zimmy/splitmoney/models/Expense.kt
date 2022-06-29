@@ -3,11 +3,20 @@ package com.zimmy.splitmoney.models
 data class Expense(
     var expenseIn: Boolean,
     var expenseCode: String,
-    var personPhone: String,
+    var expenseMap: HashMap<String, Double>?,
     var expenseName: String,
-    var personName: String,
+    var paidByMap: HashMap<String, Boolean>?,
     var amount: Double,
-    var timestamp: Long
+    var timestamp: String
 ) {
-    constructor() : this(true, "", "", "", "", 0.0, 0)
+    constructor() : this(true, "", null, "", null, 0.0, "")
+
+    constructor(
+        expenseCode: String,
+        expenseMap: HashMap<String, Double>?,
+        expenseName: String,
+        paidByMap: HashMap<String, Boolean>?,
+        amount: Double,
+        timestamp: String
+    ) : this(true, "", null, "", null, 0.0, "")
 }

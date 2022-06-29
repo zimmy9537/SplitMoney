@@ -70,6 +70,12 @@ class EqualFragment : Fragment() {
 //            }
 
             for (ele in friendDetailList) {
+                if(ele.phone== context?.getSharedPreferences(Konstants.PHONE,Context.MODE_PRIVATE)
+                        ?.getString(Konstants.PHONE,"9537830943")
+                        .toString())
+                {
+                    ele.name="You"
+                }
                 expenseEqual[phoneMap[ele.name]!!] = true
                 friendList.add(ele.name)
             }

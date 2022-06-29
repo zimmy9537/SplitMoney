@@ -105,6 +105,7 @@ class SignInActivity : AppCompatActivity() {
             return false
         }
         var check:Boolean=true
+        firebaseDatabase=FirebaseDatabase.getInstance()
         accountReference = firebaseDatabase.reference.child(Konstants.USERS)
 //        accountReference.child(phoneEt.text.toString()).addListenerForSingleValueEvent(object :ValueEventListener{
 //            override fun onDataChange(snapshot: DataSnapshot) {
