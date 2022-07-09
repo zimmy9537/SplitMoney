@@ -11,7 +11,7 @@ import com.zimmy.splitmoney.databinding.FragmentActivityBinding
 
 class ActivityFragment : Fragment() {
 
-    private var _activityBinding: FragmentActivityBinding? = null;
+    private var _activityBinding: FragmentActivityBinding? = null
     private val activityBinding get() = _activityBinding!!
     private var container:ViewGroup? = null
 

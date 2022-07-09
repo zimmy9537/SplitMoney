@@ -4,6 +4,7 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -20,17 +21,17 @@ import com.zimmy.splitmoney.models.Friend
 class EqualFragment : Fragment() {
     private var _equalBinding: FragmentEqualBinding? = null
     private val equalBinding get() = _equalBinding!!
-
+    private lateinit var myName: String
     private var isFriend: Int = 0
     private lateinit var friendName: String
     private lateinit var friendPhone: String
     private var amount: Double = 0.00
     private lateinit var expenseEqual: HashMap<String, Boolean>
-    private lateinit var phoneMap: HashMap<String, String>
-    private lateinit var friendList: ArrayList<String>
+    private lateinit var checkMap: HashMap<CheckBox, String>
     private var totalCheck: Int = 0
     private var totalMembers = 0
     private lateinit var friendDetailList: ArrayList<Friend>
+    private lateinit var myPhone: String
 
     //todo mapping is done on the basis of names, hence update the mapping using the phone number
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -40,92 +41,60 @@ class EqualFragment : Fragment() {
             requireActivity().intent.getIntExtra(Konstants.EXPENSE, Konstants.INDIVIDUALEXPENSE)
 
         expenseEqual = HashMap()
-        phoneMap = HashMap()
-        friendList = ArrayList()
+        checkMap = HashMap()
+
+        myPhone = context?.getSharedPreferences(Konstants.PERSONAL, Context.MODE_PRIVATE)
+            ?.getString(Konstants.PHONE, "9537830943")
+            .toString()
+        Log.v("MY PHONE NUMBER IS ", " it  is ${myPhone}")
 
         amount = requireActivity().intent.getDoubleExtra(Konstants.AMOUNT, 0.00)
 
         if (isFriend == Konstants.INDIVIDUALEXPENSE) {
-            val personalPreference =
-                context?.getSharedPreferences(Konstants.PERSONAL, Context.MODE_PRIVATE)
             friendName = requireActivity().intent.getStringExtra(Konstants.NAME).toString()
             friendPhone = requireActivity().intent.getStringExtra(Konstants.PHONE).toString()
             Toast.makeText(context, "name $friendName", Toast.LENGTH_SHORT).show()
-            phoneMap[friendName] = friendPhone
-            phoneMap["Me"] = personalPreference?.getString(Konstants.PHONE, "9537830943").toString()
 
-            expenseEqual[phoneMap["Me"]!!] = true
-            expenseEqual[phoneMap[friendName]!!] = true
+            expenseEqual[myPhone] = true
+            expenseEqual[friendPhone] = true
             totalCheck = 2
             totalMembers = 2
-            friendList.add("Me")
-            friendList.add(friendName);
+
+
         } else {//group
             friendDetailList =
                 requireActivity().intent.getSerializableExtra(Konstants.DATA) as ArrayList<Friend>
-
-//            for (ele in friendDetailList) {
-//                phoneMap[ele.name] = ele.phone!!
-//                Toast.makeText(context, "name ${ele.name}", Toast.LENGTH_SHORT).show()
-//            }
-
-            for (ele in friendDetailList) {
-                if(ele.phone== context?.getSharedPreferences(Konstants.PHONE,Context.MODE_PRIVATE)
-                        ?.getString(Konstants.PHONE,"9537830943")
-                        .toString())
-                {
-                    ele.name="You"
-                }
-                expenseEqual[phoneMap[ele.name]!!] = true
-                friendList.add(ele.name)
-            }
             totalCheck = friendDetailList.size
             totalMembers = friendDetailList.size
         }
     }
 
-    private fun addFriends(linearLayout: LinearLayout, friendList: ArrayList<String>) {
-        if (phoneMap == null) {
-            Toast.makeText(context, "EXPENSE MAP IS NULL", Toast.LENGTH_SHORT).show()
-        }
-        for (friend in friendList) {
+    private fun addFriends(linearLayout: LinearLayout, friendDetailList: ArrayList<Friend>) {
+
+        checkMap = HashMap()
+        for (friend in friendDetailList) {
             val view = layoutInflater.inflate(R.layout.equal_expense_item, null, false)
             val check = view.findViewById<CheckBox>(R.id.checkbox)
             linearLayout.addView(view)
-            check.text = friend
+            expenseEqual[friend.phone!!] = true
+            if (friend.phone == myPhone) {
+                check.text = "Me"
+            } else {
+                check.text = friend.name
+            }
+            checkMap[check] = friend.phone!!
             check.setOnCheckedChangeListener { _, isChecked ->
                 if (isChecked) {
                     totalCheck++
-                    expenseEqual[phoneMap[friend]!!] = true
+                    expenseEqual[checkMap[check]!!] = true
                 } else {
                     totalCheck--
-                    expenseEqual[phoneMap[friend]!!] = false
+                    expenseEqual[checkMap[check]!!] = false
                 }
-                if (totalCheck > 0) {
-//                    val contribution = amount / totalCheck
-////                    Toast.makeText(context, "contribution each $contribution", Toast.LENGTH_SHORT)
-////                        .show()
-//                    for (ele in expenseMap) {
-//                        if (expenseEqual[ele.key] == true) {
-//                            expenseMap[ele.key] = contribution
-//                        } else {
-//                            expenseMap[ele.key] = 0.00
-//                        }
-//                    }
-                } else {
+                if (totalCheck <= 0) {
                     check.isChecked = true
                     totalCheck++
-                    expenseEqual[phoneMap[friend]!!] = true
-//                    val contribution = amount / totalCheck
-//                    Toast.makeText(context, "contribution each $contribution", Toast.LENGTH_SHORT)
-//                        .show()
-//                    for (ele in expenseMap) {
-//                        if (expenseEqual[ele.key] == true) {
-//                            expenseMap[ele.key] = contribution
-//                        } else {
-//                            expenseMap[ele.key] = 0.00
-//                        }
-//                    }
+                    expenseEqual[checkMap[check]!!] = true
                     Toast.makeText(context, "atleast someone has to contribute", Toast.LENGTH_SHORT)
                         .show()
                 }
@@ -141,7 +110,54 @@ class EqualFragment : Fragment() {
         _equalBinding = FragmentEqualBinding.inflate(inflater, container, false)
         val root = equalBinding.root
 
-        addFriends(equalBinding.linearCheck, friendList)
+        if (isFriend == Konstants.INDIVIDUALEXPENSE) {
+            val view = layoutInflater.inflate(R.layout.equal_expense_item, null, false)
+            val checkMe = view.findViewById<CheckBox>(R.id.checkbox)
+            checkMe.text = "Me"
+            checkMap[checkMe] = myPhone
+            equalBinding.linearCheck.addView(view)
+            val view2 = layoutInflater.inflate(R.layout.equal_expense_item, null, false)
+            val checkFriend = view.findViewById<CheckBox>(R.id.checkbox)
+            checkFriend.text = friendName
+            checkMap[checkFriend] = friendPhone
+            equalBinding.linearCheck.addView(view2)
+
+            checkMe.setOnCheckedChangeListener { _, isChecked ->
+                if (isChecked) {
+                    totalCheck++
+                    expenseEqual[checkMap[checkMe!!]!!] = true
+                } else {
+                    totalCheck--
+                    expenseEqual[checkMap[checkMe]!!] = false
+                }
+                if (totalCheck <= 0) {
+                    checkMe.isChecked = true
+                    totalCheck++
+                    expenseEqual[checkMap[checkMe]!!] = true
+                    Toast.makeText(context, "atleast someone has to contribute", Toast.LENGTH_SHORT)
+                        .show()
+                }
+            }
+
+            checkFriend.setOnCheckedChangeListener { _, isChecked ->
+                if (isChecked) {
+                    totalCheck++
+                    expenseEqual[checkMap[checkFriend]!!] = true
+                } else {
+                    totalCheck--
+                    expenseEqual[checkMap[checkFriend]!!] = false
+                }
+                if (totalCheck <= 0) {
+                    checkFriend.isChecked = true
+                    totalCheck++
+                    expenseEqual[checkMap[checkFriend]!!] = true
+                    Toast.makeText(context, "atleast someone has to contribute", Toast.LENGTH_SHORT)
+                        .show()
+                }
+            }
+        } else {
+            addFriends(equalBinding.linearCheck, friendDetailList)
+        }
         equalBinding.save.setOnClickListener {
             val intent = Intent()
             val expensePercent = HashMap<String, Double>()

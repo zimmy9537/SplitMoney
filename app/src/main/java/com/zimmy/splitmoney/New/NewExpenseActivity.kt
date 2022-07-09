@@ -15,9 +15,14 @@ import com.zimmy.splitmoney.constants.Konstants
 import com.zimmy.splitmoney.expense.PaidByActivity
 import com.zimmy.splitmoney.expense.SplitActivity
 import com.zimmy.splitmoney.models.Expense
+import com.zimmy.splitmoney.models.Expense_Group
 import com.zimmy.splitmoney.models.Friend
+import com.zimmy.splitmoney.models.Group
+import java.math.RoundingMode
+import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.HashMap
 import kotlin.streams.asSequence
 
 class NewExpenseActivity : AppCompatActivity() {
@@ -29,8 +34,9 @@ class NewExpenseActivity : AppCompatActivity() {
 
     //todo test the code and repeat for the percentage method
     //todo later work on the save button on click
-
     //todo this day is creating a fuck out of me
+    //todo the equal fragments and percentage fragment names are not okay
+
     lateinit var withTv: TextView
     lateinit var expenseImageView: ImageView
     lateinit var expenseAmount: EditText
@@ -48,40 +54,45 @@ class NewExpenseActivity : AppCompatActivity() {
     //ifFriend
     lateinit var friendName: String
     lateinit var friendPhone: String
-    var TAG = NewExpenseActivity::class.java.simpleName
+    var TAG: String = NewExpenseActivity::class.java.simpleName
     lateinit var expenseMap: HashMap<String, Double>
     lateinit var friendDetailList: ArrayList<Friend>
     private lateinit var expensePercent: HashMap<String, Double>
     private lateinit var resultMap: HashMap<String, Boolean>
     private lateinit var groupCode: String
+    private lateinit var myPhone: String
 
-    var splitActivityResultLauncher: ActivityResultLauncher<Intent> = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult(),
-        ActivityResultCallback { result ->
-            if (result.resultCode == RESULT_OK) {
-                Toast.makeText(this@NewExpenseActivity, "result is ok", Toast.LENGTH_SHORT)
-                    .show()
-                val intent = result.data
-                expensePercent = HashMap()
-                if (intent != null) {
-                    expensePercent =
-                        intent.getSerializableExtra(Konstants.EQUAL_PERCENT_MAP) as HashMap<String, Double>
 
-                    for (ele in expensePercent) {
-                        Log.v(TAG, "${ele.key} pays ${ele.value}%")
+    //todo change the text in the split between text string according to the result of te result launcher
+    private var splitActivityResultLauncher: ActivityResultLauncher<Intent> =
+        registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult(),
+            ActivityResultCallback { result ->
+                if (result.resultCode == RESULT_OK) {
+                    Toast.makeText(this@NewExpenseActivity, "result is ok", Toast.LENGTH_SHORT)
+                        .show()
+                    val intent = result.data
+                    expensePercent = HashMap()
+                    if (intent != null) {
+                        expensePercent =
+                            intent.getSerializableExtra(Konstants.EQUAL_PERCENT_MAP) as HashMap<String, Double>
+
+                        for (ele in expensePercent) {
+                            Log.v(TAG, "${ele.key} pays ${ele.value}%")
+                        }
+                    } else {
+                        Toast.makeText(this@NewExpenseActivity, "data null ", Toast.LENGTH_SHORT)
+                            .show()
                     }
                 } else {
-                    Toast.makeText(this@NewExpenseActivity, "data null ", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this@NewExpenseActivity,
+                        "result is not ok",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
-            } else {
-                Toast.makeText(
-                    this@NewExpenseActivity,
-                    "result is not ok",
-                    Toast.LENGTH_SHORT
-                ).show()
             }
-        }
-    )
+        )
 
     var paidActivityResultLauncher: ActivityResultLauncher<Intent> = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult(),
@@ -92,7 +103,7 @@ class NewExpenseActivity : AppCompatActivity() {
                 if (intent != null) {
                     resultMap = HashMap()
                     resultMap =
-                        intent.getSerializableExtra(Konstants.DATA) as HashMap<String, Boolean>
+                        intent.getSerializableExtra(Konstants.RESULT) as HashMap<String, Boolean>
                 }
             } else {
                 Toast.makeText(this, "result not ok", Toast.LENGTH_SHORT).show()
@@ -105,17 +116,22 @@ class NewExpenseActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_new_expense)
         resultMap = HashMap()
+        myPhone = getSharedPreferences(Konstants.PERSONAL, Context.MODE_PRIVATE).getString(
+            Konstants.PHONE,
+            "9537830943"
+        ).toString()
 
         //todo write code for group expense here
         isFriend = intent.getIntExtra(Konstants.EXPENSE, Konstants.INDIVIDUALEXPENSE)
 
+        expensePercent = HashMap()
+        resultMap = HashMap()
         if (isFriend == Konstants.INDIVIDUALEXPENSE) {
             friendName = intent.getStringExtra(Konstants.NAME).toString()
             friendPhone = intent.getStringExtra(Konstants.PHONE).toString()
-            resultMap[getSharedPreferences(Konstants.PERSONAL, Context.MODE_PRIVATE).getString(
-                Konstants.PHONE,
-                "9537830943"
-            ).toString()] = true
+            expensePercent[myPhone] = 50.0
+            expensePercent[friendPhone] = 50.0
+            resultMap[myPhone] = true
             resultMap[friendPhone] = false
         } else {
             //case of group here
@@ -123,6 +139,11 @@ class NewExpenseActivity : AppCompatActivity() {
             //ALSO send the group code
             friendDetailList = intent.getSerializableExtra(Konstants.DATA) as ArrayList<Friend>
             groupCode = intent.getStringExtra(Konstants.GROUPS).toString()
+            val totalMembers = friendDetailList.size
+            for (friend in friendDetailList) {
+                expensePercent[friend.phone!!] = 100.00 / totalMembers
+                resultMap[friend.phone!!] = friend.phone == myPhone
+            }
         }
 
         cancel = findViewById(R.id.cancel)
@@ -241,6 +262,20 @@ class NewExpenseActivity : AppCompatActivity() {
         //todo input this time according to the calender view
         //todo somehow try to get time as Date object for that particular day later use the function in expense Utils class
         //currently it is saving string of current day with desired format
+
+        //todo here is the solution for the minute part left of the expense
+        var remainder: Double
+        val df = DecimalFormat("#.##")
+        df.roundingMode = RoundingMode.DOWN
+        var expenseTotal = 0.00
+        for (ele in expensePercent) {
+            val roundOff = df.format(amount * ele.value / 100)
+            Log.v(TAG, "Individual pay $roundOff")
+            expenseTotal += roundOff.toDouble()
+        }
+        remainder = amount - expenseTotal
+
+
         val newExpenseCode = expenseCodeGenerator()
         val date = Date()
         val fmt = SimpleDateFormat("MMMM d, yyyy")
@@ -251,8 +286,10 @@ class NewExpenseActivity : AppCompatActivity() {
                 thosePaid++
             }
         }
+        val ifPaid = amount / thosePaid
 
         //expenseMap and paidByMap if ok
+        //todo some problem with the individual expense solution
         if (isFriend == Konstants.INDIVIDUALEXPENSE) {
             amount /= 2
             val myPhone = getSharedPreferences(
@@ -269,7 +306,6 @@ class NewExpenseActivity : AppCompatActivity() {
                 expenseAmount.text.toString().toDouble(),
                 desiredDateString
             )
-            val ifPaid = amount / thosePaid
 
             //mine
             var myResult = 0.00
@@ -277,12 +313,16 @@ class NewExpenseActivity : AppCompatActivity() {
                 myResult = ifPaid
             }
             myResult -= expenseMap[myPhone]!!
+            //this is that minute reminder
+            myResult -= remainder
+            Log.v(TAG, "reminder is ${remainder}")
+            expenseMap[myPhone!!] = expenseMap[myPhone]?.plus(remainder)!!
             myReference =
                 FirebaseDatabase.getInstance().reference.child(Konstants.USERS).child(myPhone!!)
                     .child(Konstants.FRIENDS)
             myReference.child(friendPhone).child(Konstants.EXPENSE).child(newExpenseCode)
                 .setValue(expense)
-            var result: Double
+            var result: Double = 0.00
             myReference.child(friendPhone).child(Konstants.RESULT)
                 .addListenerForSingleValueEvent(object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
@@ -325,7 +365,7 @@ class NewExpenseActivity : AppCompatActivity() {
 
                 })
         } else { //group
-            var expense = Expense(
+            val expense = Expense_Group(
                 newExpenseCode,
                 expenseMap,
                 expenseName.text.toString(),
@@ -333,34 +373,94 @@ class NewExpenseActivity : AppCompatActivity() {
                 amount,
                 desiredDateString
             )
+
+            for (ele in expenseMap) {
+                Log.v(TAG, "expense map ${ele.key} pays $${ele.value}")
+            }
+            Log.v(TAG, "here ${newExpenseCode}, ${amount}, $desiredDateString")
+
             groupReference =
                 FirebaseDatabase.getInstance().reference.child(Konstants.GROUPS).child(groupCode)
             groupReference.child(Konstants.EXPENSE).child(newExpenseCode).setValue(expense)
 
             //individual person
+
+            var netExpense: HashMap<String, Double>
+            netExpense = HashMap()
+            for (ele in paidByMap) {
+                if (ele.value) {
+                    netExpense[ele.key] = ifPaid - expenseMap[ele.key]!!
+                } else {
+                    netExpense[ele.key] = -expenseMap[ele.key]!!
+                }
+            }
+            Log.v(TAG, "reminder is ${remainder}")
+            netExpense[myPhone] = netExpense[myPhone]?.minus(remainder)!!
+            for (ele in netExpense) {
+                groupReference.child(Konstants.EXPENSE_GLOBAL).child(ele.key)
+                    .addListenerForSingleValueEvent(object : ValueEventListener {
+                        override fun onDataChange(snapshot: DataSnapshot) {
+                            if (snapshot.exists()) {
+                                var result = snapshot.getValue(Double::class.java)!!
+                                result += netExpense[ele.key]!!
+                                groupReference.child(Konstants.EXPENSE_GLOBAL).child(ele.key)
+                                    .setValue(result)
+                            }
+                        }
+
+                        override fun onCancelled(error: DatabaseError) {
+                            Log.v(TAG, "database error ${error.message}")
+                        }
+
+                    })
+            }
+
             for (ele in paidByMap) {
                 val memberPhone = ele.key
                 val isIn = paidByMap[memberPhone]
-                val expense = Expense(
-                    isIn!!,
-                    newExpenseCode,
-                    expenseMap,
-                    expenseName.text.toString(),
-                    paidByMap,
-                    expenseAmount.text.toString().toDouble(),
-                    desiredDateString
-                )
                 var result: Double
-                result = if (isIn) {
-                    amount / thosePaid - expenseMap[memberPhone]!!
+                var owe = "i owe no one"
+                //todo handle thw event of a neutral expense where net result is zero, rest data is getting updated
+                if (isIn!!) {
+                    result = amount / thosePaid - expenseMap[memberPhone]!!
+                    for (friend in friendDetailList) {
+                        if (!paidByMap[friend.phone]!!) {
+                            owe = "${friend.name} owes you"
+                            break
+                        }
+                    }
                 } else {
-                    -expenseMap[memberPhone]!!
+                    result = -expenseMap[memberPhone]!!
+                    for (friend in friendDetailList) {
+                        if (paidByMap[friend.phone]!!) {
+                            owe = "you owe ${friend.name}"
+                            break
+                        }
+                    }
                 }
-                friendReference = FirebaseDatabase.getInstance().reference.child(Konstants.USERS)
-                    .child(memberPhone).child(Konstants.GROUPS)
-                friendReference.child(groupCode).child(Konstants.EXPENSE).child(newExpenseCode)
-                    .setValue(expense)
-                friendReference.child(groupCode).child(Konstants.RESULT).setValue(result)
+
+
+                //new here
+                friendReference =
+                    FirebaseDatabase.getInstance().reference.child(Konstants.USERS).child(ele.key)
+                friendReference.child(groupCode)
+                    .addListenerForSingleValueEvent(object : ValueEventListener {
+                        override fun onDataChange(snapshot: DataSnapshot) {
+                            if (snapshot.exists()) {
+                                val group = snapshot.getValue(Group::class.java)
+                                if (group != null) {
+                                    var amount = group.amount
+                                    amount += result
+                                    group.amount = amount
+                                    group.owe = owe
+                                }
+                            }
+                        }
+
+                        override fun onCancelled(error: DatabaseError) {
+                            Log.v(TAG, "database error ${error.message}")
+                        }
+                    })
             }
         }
     }

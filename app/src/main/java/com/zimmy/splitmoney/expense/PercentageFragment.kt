@@ -28,12 +28,12 @@ class PercentageFragment : Fragment() {
     private var isFriend: Int = 0
     private lateinit var friendName: String
     private lateinit var friendPhone: String
+    private lateinit var myName: String
+    private lateinit var myPhone: String
     private var amount: Double = 0.00
 
-    //i think equal map needed only in the case of group expense
     private lateinit var expensePercent: HashMap<String, Double>
-    private lateinit var phoneMap: HashMap<String, String>
-    private lateinit var friendList: ArrayList<String>
+    private lateinit var editMap: HashMap<EditText, String>
     private var totalMembers = 0
     private lateinit var friendDetailList: ArrayList<Friend>
     private var remainPercent = 100.00
@@ -46,59 +46,52 @@ class PercentageFragment : Fragment() {
             requireActivity().intent.getIntExtra(Konstants.EXPENSE, Konstants.INDIVIDUALEXPENSE)
 
         expensePercent = HashMap()
-        phoneMap = HashMap()
-        friendList = ArrayList()
+
+        myName = context?.getSharedPreferences(Konstants.PERSONAL, Context.MODE_PRIVATE)
+            ?.getString(Konstants.NAME, "Zimmy").toString()
+        myPhone = context?.getSharedPreferences(Konstants.PERSONAL, Context.MODE_PRIVATE)
+            ?.getString(Konstants.PHONE, "9537830943").toString()
 
         amount = requireActivity().intent.getDoubleExtra(Konstants.AMOUNT, 0.00)
 
         if (isFriend == Konstants.INDIVIDUALEXPENSE) {
-            val personalPreference =
-                context?.getSharedPreferences(Konstants.PERSONAL, Context.MODE_PRIVATE)
             friendName = requireActivity().intent.getStringExtra(Konstants.NAME).toString()
             friendPhone = requireActivity().intent.getStringExtra(Konstants.PHONE).toString()
 
-            phoneMap[friendName] = friendPhone
-            phoneMap["Me"] = personalPreference?.getString(Konstants.PHONE, "9537830943").toString()
+            friendDetailList = ArrayList()
+            friendDetailList.add(Friend(friendName, friendPhone))
+            friendDetailList.add(Friend(myName, myPhone))
 
-            expensePercent[phoneMap["Me"]!!] = 0.00
-            expensePercent[phoneMap[friendName]!!] = 0.00
+            expensePercent[myPhone] = 0.00
+            expensePercent[friendPhone] = 0.00
             totalMembers = 2
-            friendList.add("Me")
-            friendList.add(friendName);
+
         } else {//group
             friendDetailList =
                 requireActivity().intent.getSerializableExtra(Konstants.DATA) as ArrayList<Friend>
 
             for (ele in friendDetailList) {
-                if (ele.phone == context?.getSharedPreferences(
-                        Konstants.PHONE,
-                        Context.MODE_PRIVATE
-                    )
-                        ?.getString(Konstants.PHONE, "9537830943")
-                        .toString()
-                ) {
-                    ele.name = "You"
-                }
-                phoneMap[ele.name] = ele.phone!!
-            }
-
-            for (ele in friendDetailList) {
-                expensePercent[phoneMap[ele.name]!!] = 0.00
-                friendList.add(ele.name)
+                expensePercent[ele.phone!!] = 0.00
             }
             totalMembers = friendDetailList.size
         }
     }
 
-    private fun addFriends(linearLayout: LinearLayout, friendList: ArrayList<String>) {
-        for (friend in friendList) {
+    private fun addFriends(friendDetailList: ArrayList<Friend>) {
+        editMap = HashMap()
+        for (friend in friendDetailList) {
             val view = layoutInflater.inflate(R.layout.percent_expense_item, null, false)
             val friendName = view.findViewById<TextView>(R.id.friendName)
             val friendAmount = view.findViewById<TextView>(R.id.friendAmount)
             val percentEt = view.findViewById<EditText>(R.id.friendPercent)
 
             friendAmount.text = "0.00"
-            friendName.text = friend
+            if (friend.phone == myPhone) {
+                friendName.text = "Me"
+            } else {
+                friendName.text = friend.name
+            }
+            editMap[percentEt] = friend.phone!!
 
             percentEt.addTextChangedListener(object : TextWatcher {
                 override fun beforeTextChanged(p0: CharSequence?, p1: Int, p2: Int, p3: Int) {}
@@ -116,11 +109,11 @@ class PercentageFragment : Fragment() {
                         Log.v("crossed", "percent $percent , remain $remainPercent");
                         Toast.makeText(context, "Limits crossed", Toast.LENGTH_SHORT).show()
                         percentEt.setText("")
-                        expensePercent[phoneMap[friend]!!] = 0.00
+                        expensePercent[editMap[percentEt]!!] = 0.00
                         friendAmount.text = "0.0"
                         percentEt.hint = "0.00"
                     } else {
-                        expensePercent[phoneMap[friend]!!] = percent
+                        expensePercent[editMap[percentEt]!!] = percent
                         remainPercent -= percent
                         percent = amount * percent / 100
                         friendAmount.text = percent.toString()
@@ -152,7 +145,7 @@ class PercentageFragment : Fragment() {
         _percentageBinding = FragmentPercentageBinding.inflate(inflater, container, false)
         val root = percentageBinding.root
 
-        addFriends(percentageBinding.linear, friendList)
+        addFriends(friendDetailList)
         percentageBinding.save.setOnClickListener {
             var percent = 0.00
             for (ele in expensePercent) {

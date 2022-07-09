@@ -8,6 +8,7 @@
         <entry key="app/src/main/res/drawable/friend.xml" value="0.137" />
         <entry key="app/src/main/res/drawable/plus.xml" value="0.137" />
         <entry key="app/src/main/res/layout/activites_item.xml" value="0.29791666666666666" />
+        <entry key="app/src/main/res/layout/activity_balance_acitvity.xml" value="0.21729125976562497" />
         <entry key="app/src/main/res/layout/activity_detail_expense.xml" value="0.21795450846354164" />
         <entry key="app/src/main/res/layout/activity_group.xml" value="0.2197840372721354" />
         <entry key="app/src/main/res/layout/activity_home.xml" value="0.2158599853515625" />
@@ -41,6 +42,7 @@
         <entry key="app/src/main/res/layout/friends_trip_item.xml" value="0.29791666666666666" />
         <entry key="app/src/main/res/layout/new_friend_item.xml" value="0.29791666666666666" />
         <entry key="app/src/main/res/layout/percent_expense_item.xml" value="0.2713815088955412" />
+        <entry key="app/src/main/res/layout/transaction_result_item.xml" value="0.296875" />
       </map>
     </option>
   </component>

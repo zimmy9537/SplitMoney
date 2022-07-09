@@ -21,7 +21,7 @@ import com.zimmy.splitmoney.models.Friend
 import com.zimmy.splitmoney.models.Group
 
 
-class JoinGroupActivity : AppCompatActivity() {
+class   JoinGroupActivity : AppCompatActivity() {
 
     lateinit var gCodeEt: EditText
     lateinit var joinButton: Button
@@ -160,6 +160,9 @@ class JoinGroupActivity : AppCompatActivity() {
                     Log.v(TAG, "database error " + error.message)
                 }
             })
+
+        groupReference.child(gcode).child(Konstants.EXPENSE_GLOBAL).child(phone)
+            .setValue(0.00)
 
         groupReference.child(gcode).child(Konstants.GROUPINFO).child(Konstants.GROUPNAME)
             .addListenerForSingleValueEvent(object : ValueEventListener {

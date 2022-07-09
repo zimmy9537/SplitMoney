@@ -20,6 +20,9 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SplitMoney">
         <activity
+            android:name=".BalanceAcitvity"
+            android:exported="false" />
+        <activity
             android:name=".expense.SplitActivity"
             android:exported="false"
             android:label="@string/title_activity_split"
