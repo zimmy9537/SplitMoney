@@ -19,6 +19,7 @@ import com.zimmy.splitmoney.R
 import com.zimmy.splitmoney.constants.Konstants
 import com.zimmy.splitmoney.databinding.FragmentPercentageBinding
 import com.zimmy.splitmoney.models.Friend
+import kotlin.math.log
 
 class PercentageFragment : Fragment() {
 
@@ -37,7 +38,6 @@ class PercentageFragment : Fragment() {
     private var totalMembers = 0
     private lateinit var friendDetailList: ArrayList<Friend>
     private var remainPercent = 100.00
-    private var groupTotal = 0.00
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,28 +53,6 @@ class PercentageFragment : Fragment() {
             ?.getString(Konstants.PHONE, "9537830943").toString()
 
         amount = requireActivity().intent.getDoubleExtra(Konstants.AMOUNT, 0.00)
-
-        if (isFriend == Konstants.INDIVIDUALEXPENSE) {
-            friendName = requireActivity().intent.getStringExtra(Konstants.NAME).toString()
-            friendPhone = requireActivity().intent.getStringExtra(Konstants.PHONE).toString()
-
-            friendDetailList = ArrayList()
-            friendDetailList.add(Friend(friendName, friendPhone))
-            friendDetailList.add(Friend(myName, myPhone))
-
-            expensePercent[myPhone] = 0.00
-            expensePercent[friendPhone] = 0.00
-            totalMembers = 2
-
-        } else {//group
-            friendDetailList =
-                requireActivity().intent.getSerializableExtra(Konstants.DATA) as ArrayList<Friend>
-
-            for (ele in friendDetailList) {
-                expensePercent[ele.phone!!] = 0.00
-            }
-            totalMembers = friendDetailList.size
-        }
     }
 
     private fun addFriends(friendDetailList: ArrayList<Friend>) {
@@ -85,11 +63,16 @@ class PercentageFragment : Fragment() {
             val friendAmount = view.findViewById<TextView>(R.id.friendAmount)
             val percentEt = view.findViewById<EditText>(R.id.friendPercent)
 
+            Log.v("PERCENT ", "friendList size ${friendDetailList.size}")
+
             friendAmount.text = "0.00"
             if (friend.phone == myPhone) {
                 friendName.text = "Me"
             } else {
                 friendName.text = friend.name
+            }
+            if (friend.phone == null) {
+                Log.v("Friend phone", "friend phone is null")
             }
             editMap[percentEt] = friend.phone!!
 
@@ -133,6 +116,9 @@ class PercentageFragment : Fragment() {
                 override fun afterTextChanged(p0: Editable?) {
                 }
             })
+            if (view == null) {
+                Log.v("Fucked up here", "null view")
+            }
             percentageBinding.linear.addView(view)
         }
     }
@@ -145,7 +131,38 @@ class PercentageFragment : Fragment() {
         _percentageBinding = FragmentPercentageBinding.inflate(inflater, container, false)
         val root = percentageBinding.root
 
+        if (isFriend == Konstants.INDIVIDUALEXPENSE) {
+            friendName = requireActivity().intent.getStringExtra(Konstants.NAME).toString()
+            friendPhone = requireActivity().intent.getStringExtra(Konstants.PHONE).toString()
+
+            friendDetailList = ArrayList()
+            friendDetailList.add(Friend(myName, myPhone))
+            friendDetailList.add(Friend(friendName, friendPhone))
+
+            expensePercent[myPhone] = 0.00
+            expensePercent[friendPhone] = 0.00
+            totalMembers = 2
+
+            for (ele in friendDetailList) {
+                Log.v("DETAILS", "name is ${ele.name} and phone is ${ele.phone}")
+            }
+
+
+        } else {//group
+            friendDetailList =
+                requireActivity().intent.getSerializableExtra(Konstants.DATA) as ArrayList<Friend>
+
+            for (ele in friendDetailList) {
+                expensePercent[ele.phone!!] = 0.00
+            }
+            totalMembers = friendDetailList.size
+
+            for (ele in friendDetailList) {
+                Log.v("DETAILS", "group name is ${ele.name} and phone is ${ele.phone}")
+            }
+        }
         addFriends(friendDetailList)
+
         percentageBinding.save.setOnClickListener {
             var percent = 0.00
             for (ele in expensePercent) {

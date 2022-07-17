@@ -3,10 +3,14 @@
   <component name="DesignSurface">
     <option name="filePathToZoomLevelMap">
       <map>
+        <entry key="app/src/main/res/drawable/arrow_settle.xml" value="0.141" />
         <entry key="app/src/main/res/drawable/back.xml" value="0.158" />
+        <entry key="app/src/main/res/drawable/back_alphabet.xml" value="0.141" />
         <entry key="app/src/main/res/drawable/edit_back1.xml" value="0.137" />
         <entry key="app/src/main/res/drawable/friend.xml" value="0.137" />
         <entry key="app/src/main/res/drawable/plus.xml" value="0.137" />
+        <entry key="app/src/main/res/drawable/settleup_button.xml" value="0.141" />
+        <entry key="app/src/main/res/drawable/vector_settle.xml" value="0.141" />
         <entry key="app/src/main/res/layout/activites_item.xml" value="0.29791666666666666" />
         <entry key="app/src/main/res/layout/activity_balance_acitvity.xml" value="0.21729125976562497" />
         <entry key="app/src/main/res/layout/activity_detail_expense.xml" value="0.21795450846354164" />
@@ -23,6 +27,7 @@
         <entry key="app/src/main/res/layout/activity_paid_by.xml" value="0.25735117594401047" />
         <entry key="app/src/main/res/layout/activity_qr.xml" value="0.25" />
         <entry key="app/src/main/res/layout/activity_scanner.xml" value="0.29791666666666666" />
+        <entry key="app/src/main/res/layout/activity_settle_up.xml" value="0.25" />
         <entry key="app/src/main/res/layout/activity_sign_in.xml" value="0.2509057971014493" />
         <entry key="app/src/main/res/layout/activity_splash.xml" value="0.182518115942029" />
         <entry key="app/src/main/res/layout/activity_split.xml" value="0.254150390625" />

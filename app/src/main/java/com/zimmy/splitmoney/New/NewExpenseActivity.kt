@@ -22,6 +22,7 @@ import java.math.RoundingMode
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.ArrayList
 import kotlin.collections.HashMap
 import kotlin.streams.asSequence
 
@@ -183,31 +184,13 @@ class NewExpenseActivity : AppCompatActivity() {
         paidBy.setOnClickListener {
             if (isFriend == Konstants.INDIVIDUALEXPENSE) {
                 if (paidBy.text == friendName) {
-//                    paidByPhone =
-//                        getSharedPreferences(Konstants.PERSONAL, Context.MODE_PRIVATE).getString(
-//                            Konstants.PHONE,
-//                            "95378300943"
-//                        ).toString()
-                    resultMap[getSharedPreferences(
-                        Konstants.PERSONAL,
-                        Context.MODE_PRIVATE
-                    ).getString(
-                        Konstants.PHONE,
-                        "95378300943"
-                    ).toString()] = true
+                    resultMap[myPhone] = true
                     resultMap[friendPhone] = false
                     paidBy.text = "You"
                 } else {
                     paidBy.text = friendName
+                    resultMap[myPhone] = false
                     resultMap[friendPhone] = true
-                    resultMap[getSharedPreferences(
-                        Konstants.PERSONAL,
-                        Context.MODE_PRIVATE
-                    ).getString(
-                        Konstants.PHONE,
-                        "95378300943"
-                    ).toString()] = true
-//                    paidByPhone = friendPhone
                 }
             } else {
                 val intent = Intent(this@NewExpenseActivity, PaidByActivity::class.java)
@@ -230,6 +213,7 @@ class NewExpenseActivity : AppCompatActivity() {
 
             val intent = Intent(this@NewExpenseActivity, SplitActivity::class.java)
             if (isFriend == Konstants.INDIVIDUALEXPENSE) {
+
                 intent.putExtra(Konstants.EXPENSE, Konstants.INDIVIDUALEXPENSE)
                 intent.putExtra(Konstants.PHONE, friendPhone)
                 intent.putExtra(Konstants.NAME, friendName)
@@ -292,10 +276,6 @@ class NewExpenseActivity : AppCompatActivity() {
         //todo some problem with the individual expense solution
         if (isFriend == Konstants.INDIVIDUALEXPENSE) {
             amount /= 2
-            val myPhone = getSharedPreferences(
-                Konstants.PERSONAL,
-                Context.MODE_PRIVATE
-            ).getString(Konstants.PHONE, "9537830943")
             val isIn = paidByMap[myPhone]
             val expense = Expense(
                 isIn!!,
@@ -395,7 +375,24 @@ class NewExpenseActivity : AppCompatActivity() {
                 }
             }
             Log.v(TAG, "reminder is ${remainder}")
-            netExpense[myPhone] = netExpense[myPhone]?.minus(remainder)!!
+
+            var remainder2 = 0.00
+            for (ele in netExpense) {
+                netExpense[ele.key] = df.format(ele.value).toDouble()
+                Log.v(TAG, "INDIVIDUAL net expense ${ele.value}")
+                remainder2 += df.format(ele.value).toDouble()
+            }
+            remainder2 = df.format(remainder2).toDouble()
+            Log.v(TAG, "remainder in netExpense $remainder2")
+
+            remainder2 = -remainder2
+            for (ele in netExpense) {
+                if (netExpense[ele.key]!! > 0) {
+                    netExpense[ele.key] = netExpense[ele.key]?.plus(remainder2)!!
+                    break
+                }
+            }
+
             for (ele in netExpense) {
                 groupReference.child(Konstants.EXPENSE_GLOBAL).child(ele.key)
                     .addListenerForSingleValueEvent(object : ValueEventListener {

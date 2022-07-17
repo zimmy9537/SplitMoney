@@ -18,6 +18,7 @@ import com.zimmy.splitmoney.New.NewExpenseActivity
 import com.zimmy.splitmoney.New.NewFriendActivity
 import com.zimmy.splitmoney.R
 import com.zimmy.splitmoney.constants.Konstants
+import com.zimmy.splitmoney.expense.SettleUpActivity
 import com.zimmy.splitmoney.models.Friend
 
 class GroupActivity : AppCompatActivity() {
@@ -71,6 +72,13 @@ class GroupActivity : AppCompatActivity() {
 
         balances.setOnClickListener {
             val intent = Intent(this@GroupActivity, BalanceAcitvity::class.java)
+            intent.putExtra(Konstants.FRIENDS, false)
+            intent.putExtra(Konstants.GROUP_CODE, groupCode)
+            startActivity(intent)
+        }
+
+        settleUp.setOnClickListener {
+            val intent = Intent(this@GroupActivity, SettleUpActivity::class.java)
             intent.putExtra(Konstants.FRIENDS, false)
             intent.putExtra(Konstants.GROUP_CODE, groupCode)
             startActivity(intent)

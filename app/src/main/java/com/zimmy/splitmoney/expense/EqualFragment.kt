@@ -21,7 +21,6 @@ import com.zimmy.splitmoney.models.Friend
 class EqualFragment : Fragment() {
     private var _equalBinding: FragmentEqualBinding? = null
     private val equalBinding get() = _equalBinding!!
-    private lateinit var myName: String
     private var isFriend: Int = 0
     private lateinit var friendName: String
     private lateinit var friendPhone: String
@@ -32,41 +31,19 @@ class EqualFragment : Fragment() {
     private var totalMembers = 0
     private lateinit var friendDetailList: ArrayList<Friend>
     private lateinit var myPhone: String
+    private lateinit var myName: String
 
     //todo mapping is done on the basis of names, hence update the mapping using the phone number
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        isFriend =
-            requireActivity().intent.getIntExtra(Konstants.EXPENSE, Konstants.INDIVIDUALEXPENSE)
-
-        expenseEqual = HashMap()
-        checkMap = HashMap()
 
         myPhone = context?.getSharedPreferences(Konstants.PERSONAL, Context.MODE_PRIVATE)
             ?.getString(Konstants.PHONE, "9537830943")
             .toString()
-        Log.v("MY PHONE NUMBER IS ", " it  is ${myPhone}")
-
-        amount = requireActivity().intent.getDoubleExtra(Konstants.AMOUNT, 0.00)
-
-        if (isFriend == Konstants.INDIVIDUALEXPENSE) {
-            friendName = requireActivity().intent.getStringExtra(Konstants.NAME).toString()
-            friendPhone = requireActivity().intent.getStringExtra(Konstants.PHONE).toString()
-            Toast.makeText(context, "name $friendName", Toast.LENGTH_SHORT).show()
-
-            expenseEqual[myPhone] = true
-            expenseEqual[friendPhone] = true
-            totalCheck = 2
-            totalMembers = 2
-
-
-        } else {//group
-            friendDetailList =
-                requireActivity().intent.getSerializableExtra(Konstants.DATA) as ArrayList<Friend>
-            totalCheck = friendDetailList.size
-            totalMembers = friendDetailList.size
-        }
+        myName = context?.getSharedPreferences(Konstants.PERSONAL, Context.MODE_PRIVATE)
+            ?.getString(Konstants.NAME, "no prefs").toString()
+        Log.v("MY PHONE NUMBER IS ", "it  is ${myPhone}")
     }
 
     private fun addFriends(linearLayout: LinearLayout, friendDetailList: ArrayList<Friend>) {
@@ -110,54 +87,42 @@ class EqualFragment : Fragment() {
         _equalBinding = FragmentEqualBinding.inflate(inflater, container, false)
         val root = equalBinding.root
 
+        isFriend =
+            requireActivity().intent.getIntExtra(Konstants.EXPENSE, Konstants.INDIVIDUALEXPENSE)
+
+        expenseEqual = HashMap()
+        checkMap = HashMap()
+        amount = requireActivity().intent.getDoubleExtra(Konstants.AMOUNT, 0.00)
+
         if (isFriend == Konstants.INDIVIDUALEXPENSE) {
-            val view = layoutInflater.inflate(R.layout.equal_expense_item, null, false)
-            val checkMe = view.findViewById<CheckBox>(R.id.checkbox)
-            checkMe.text = "Me"
-            checkMap[checkMe] = myPhone
-            equalBinding.linearCheck.addView(view)
-            val view2 = layoutInflater.inflate(R.layout.equal_expense_item, null, false)
-            val checkFriend = view.findViewById<CheckBox>(R.id.checkbox)
-            checkFriend.text = friendName
-            checkMap[checkFriend] = friendPhone
-            equalBinding.linearCheck.addView(view2)
 
-            checkMe.setOnCheckedChangeListener { _, isChecked ->
-                if (isChecked) {
-                    totalCheck++
-                    expenseEqual[checkMap[checkMe!!]!!] = true
-                } else {
-                    totalCheck--
-                    expenseEqual[checkMap[checkMe]!!] = false
-                }
-                if (totalCheck <= 0) {
-                    checkMe.isChecked = true
-                    totalCheck++
-                    expenseEqual[checkMap[checkMe]!!] = true
-                    Toast.makeText(context, "atleast someone has to contribute", Toast.LENGTH_SHORT)
-                        .show()
-                }
+            friendName = requireActivity().intent.getStringExtra(Konstants.NAME).toString()
+            friendPhone = requireActivity().intent.getStringExtra(Konstants.PHONE).toString()
+            Toast.makeText(context, "name $friendName", Toast.LENGTH_SHORT).show()
+
+            expenseEqual[myPhone] = true
+            expenseEqual[friendPhone] = true
+            totalCheck = 2
+            totalMembers = 2
+
+            friendDetailList = ArrayList()
+            friendDetailList.add(Friend(myName, myPhone))
+            friendDetailList.add(Friend(friendName, friendPhone))
+
+            for (ele in friendDetailList) {
+                Log.v("DETAILS ", "name id ${ele.name} and phone is ${ele.phone}")
             }
 
-            checkFriend.setOnCheckedChangeListener { _, isChecked ->
-                if (isChecked) {
-                    totalCheck++
-                    expenseEqual[checkMap[checkFriend]!!] = true
-                } else {
-                    totalCheck--
-                    expenseEqual[checkMap[checkFriend]!!] = false
-                }
-                if (totalCheck <= 0) {
-                    checkFriend.isChecked = true
-                    totalCheck++
-                    expenseEqual[checkMap[checkFriend]!!] = true
-                    Toast.makeText(context, "atleast someone has to contribute", Toast.LENGTH_SHORT)
-                        .show()
-                }
-            }
+
         } else {
-            addFriends(equalBinding.linearCheck, friendDetailList)
+
+            friendDetailList =
+                requireActivity().intent.getSerializableExtra(Konstants.DATA) as ArrayList<Friend>
+            totalCheck = friendDetailList.size
+            totalMembers = friendDetailList.size
         }
+
+        addFriends(equalBinding.linearCheck, friendDetailList)
         equalBinding.save.setOnClickListener {
             val intent = Intent()
             val expensePercent = HashMap<String, Double>()

@@ -19,6 +19,7 @@ import com.zimmy.splitmoney.New.NewExpenseActivity
 import com.zimmy.splitmoney.adapters.ExpenseAdapter
 import com.zimmy.splitmoney.constants.Konstants
 import com.zimmy.splitmoney.models.Expense
+import com.zimmy.splitmoney.models.Friend
 
 class IndividualExpenseActivity : AppCompatActivity() {
 
@@ -27,6 +28,7 @@ class IndividualExpenseActivity : AppCompatActivity() {
     var resultAmount: Double = 0.0
     private lateinit var personalPreferences: SharedPreferences
     private lateinit var myPhone: String
+    private lateinit var myName:String
     private lateinit var friendName: String
     private lateinit var expenseWithFriendList: ArrayList<Expense>
 
