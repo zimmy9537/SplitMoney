@@ -19,6 +19,7 @@ import com.zimmy.splitmoney.New.NewExpenseActivity
 import com.zimmy.splitmoney.adapters.ExpenseAdapter
 import com.zimmy.splitmoney.constants.Konstants
 import com.zimmy.splitmoney.models.Expense
+import com.zimmy.splitmoney.models.Friend
 
 class IndividualExpenseActivity : AppCompatActivity() {
 
@@ -27,6 +28,7 @@ class IndividualExpenseActivity : AppCompatActivity() {
     var resultAmount: Double = 0.0
     private lateinit var personalPreferences: SharedPreferences
     private lateinit var myPhone: String
+    private lateinit var myName:String
     private lateinit var friendName: String
     private lateinit var expenseWithFriendList: ArrayList<Expense>
 
@@ -106,6 +108,11 @@ class IndividualExpenseActivity : AppCompatActivity() {
             }
         }
 
+        //call adapters
+        expenseRv.adapter =
+            ExpenseAdapter(expenseWithFriendList, this@IndividualExpenseActivity)
+        expenseRv.layoutManager =
+            LinearLayoutManager(this@IndividualExpenseActivity)
 
         friendReference.child(Konstants.EXPENSE)
             .addValueEventListener(object : ValueEventListener {
@@ -117,6 +124,7 @@ class IndividualExpenseActivity : AppCompatActivity() {
                                 override fun onDataChange(snapshot: DataSnapshot) {
                                     val expense = snapshot.getValue(Expense::class.java)!!
                                     expenseWithFriendList.add(expense)
+                                    (expenseRv.adapter as ExpenseAdapter).notifyDataSetChanged()
                                 }
 
                                 override fun onCancelled(error: DatabaseError) {
@@ -125,11 +133,6 @@ class IndividualExpenseActivity : AppCompatActivity() {
 
                             })
                     }
-                    //call adapters
-                    expenseRv.adapter =
-                        ExpenseAdapter(expenseWithFriendList, this@IndividualExpenseActivity)
-                    expenseRv.layoutManager =
-                        LinearLayoutManager(this@IndividualExpenseActivity)
                 }
 
                 override fun onCancelled(error: DatabaseError) {

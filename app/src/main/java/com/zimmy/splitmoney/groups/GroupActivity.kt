@@ -13,9 +13,13 @@ import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
+import com.zimmy.splitmoney.BalanceAcitvity
+import com.zimmy.splitmoney.New.NewExpenseActivity
 import com.zimmy.splitmoney.New.NewFriendActivity
 import com.zimmy.splitmoney.R
 import com.zimmy.splitmoney.constants.Konstants
+import com.zimmy.splitmoney.expense.SettleUpActivity
+import com.zimmy.splitmoney.models.Friend
 
 class GroupActivity : AppCompatActivity() {
 
@@ -28,7 +32,7 @@ class GroupActivity : AppCompatActivity() {
     lateinit var aloneTv: TextView
     lateinit var groupQrTv: TextView
     lateinit var groupName: TextView
-    lateinit var groupNameString:String
+    lateinit var groupNameString: String
 
     lateinit var mAuth: FirebaseAuth
     lateinit var firebaseDatabase: FirebaseDatabase
@@ -36,6 +40,7 @@ class GroupActivity : AppCompatActivity() {
 
     lateinit var groupCode: String
     var totalMembers: Int = 0
+    lateinit var friendArrayList: ArrayList<Friend>
 
     val TAG = GroupActivity::class.java.simpleName
 
@@ -57,9 +62,25 @@ class GroupActivity : AppCompatActivity() {
         //complete dependency is on this gcode so intent it properly
         groupCode = intent.getStringExtra("gcode").toString()
 
+        friendArrayList = ArrayList()
+
         groupQrTv.setOnClickListener {
             val intent = Intent(this@GroupActivity, QrActivity::class.java)
             intent.putExtra("gcode", groupCode)
+            startActivity(intent)
+        }
+
+        balances.setOnClickListener {
+            val intent = Intent(this@GroupActivity, BalanceAcitvity::class.java)
+            intent.putExtra(Konstants.FRIENDS, false)
+            intent.putExtra(Konstants.GROUP_CODE, groupCode)
+            startActivity(intent)
+        }
+
+        settleUp.setOnClickListener {
+            val intent = Intent(this@GroupActivity, SettleUpActivity::class.java)
+            intent.putExtra(Konstants.FRIENDS, false)
+            intent.putExtra(Konstants.GROUP_CODE, groupCode)
             startActivity(intent)
         }
 
@@ -71,7 +92,7 @@ class GroupActivity : AppCompatActivity() {
             .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     groupName.text = snapshot.getValue(String::class.java)
-                    groupNameString=snapshot.getValue(String::class.java)!!
+                    groupNameString = snapshot.getValue(String::class.java)!!
                 }
 
                 override fun onCancelled(error: DatabaseError) {
@@ -97,11 +118,38 @@ class GroupActivity : AppCompatActivity() {
 
             })
 
+        groupReference.child(groupCode).child(Konstants.MEMBERS)
+            .addValueEventListener(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    for (snapshot1 in snapshot.children) {
+                        val phone = snapshot1.key
+                        groupReference.child(groupCode).child(Konstants.MEMBERS).child(phone!!)
+                            .addValueEventListener(object : ValueEventListener {
+                                override fun onDataChange(snapshot: DataSnapshot) {
+                                    val friend = snapshot.getValue(Friend::class.java)
+                                    Log.v(TAG, "friend ${friend!!.name}")
+                                    friend.phone = phone
+                                    friendArrayList.add(friend)
+                                }
+
+                                override fun onCancelled(error: DatabaseError) {
+                                    Log.v(TAG, "database error ${error.message}")
+                                }
+                            })
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+                    Log.v(TAG, "database error ${error.message}")
+                }
+
+            })
+
         addGroupMember.setOnClickListener {
-            val intent=Intent(this,NewFriendActivity::class.java)
-            intent.putExtra("group",true)
-            intent.putExtra("name",groupNameString)
-            intent.putExtra("code",groupCode)
+            val intent = Intent(this, NewFriendActivity::class.java)
+            intent.putExtra("group", true)
+            intent.putExtra("name", groupNameString)
+            intent.putExtra("code", groupCode)
             startActivity(intent)
         }
 
@@ -110,7 +158,11 @@ class GroupActivity : AppCompatActivity() {
         }
 
         addExpense.setOnClickListener {
-            Toast.makeText(this@GroupActivity, "coming soon", Toast.LENGTH_SHORT).show()
+            val intent = Intent(this@GroupActivity, NewExpenseActivity::class.java)
+            intent.putExtra(Konstants.EXPENSE, Konstants.GROUPEXPENSE)
+            intent.putExtra(Konstants.DATA, friendArrayList)
+            intent.putExtra(Konstants.GROUPS, groupCode)
+            startActivity(intent)
         }
 
     }

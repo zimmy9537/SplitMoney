@@ -5,12 +5,14 @@ import android.content.Context
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
+import android.util.Log
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.LinearLayout
 import com.zimmy.splitmoney.R
 import com.zimmy.splitmoney.constants.Konstants
 import com.zimmy.splitmoney.models.Friend
+import kotlin.math.log
 
 class PaidByActivity : AppCompatActivity() {
 
@@ -18,52 +20,42 @@ class PaidByActivity : AppCompatActivity() {
     private lateinit var paidByPhone: String
     private lateinit var linearLayout: LinearLayout
     private lateinit var save: Button
-    private lateinit var phoneMap: HashMap<String, String>
     private lateinit var resultMap: HashMap<String, Boolean>
+    private lateinit var checkMap: HashMap<CheckBox, String>
+    private lateinit var myPhone: String
+    private val TAG = PaidByActivity::class.java.simpleName
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_paid_by)
 
+        myPhone = getSharedPreferences(
+            Konstants.PERSONAL,
+            Context.MODE_PRIVATE
+        ).getString(Konstants.PHONE, "9537830943").toString()
+
         friendDetailList = this.intent.getSerializableExtra(Konstants.DATA) as ArrayList<Friend>
         resultMap =
             this.intent.getSerializableExtra(Konstants.RESULT_MAP) as HashMap<String, Boolean>
-        if (resultMap == null) {
-            resultMap = HashMap()
-        }
-        phoneMap = HashMap()
-        if (resultMap == null) {
-            for (ele in friendDetailList) {
-                if (ele.phone == getSharedPreferences(
-                        Konstants.PERSONAL,
-                        Context.MODE_PRIVATE
-                    ).getString(Konstants.PHONE, "9537830943").toString()
-                ) {
-                    ele.name = "You"
-                }
-                phoneMap[ele.name] = ele.phone!!
-                resultMap[ele.phone!!] = ele.phone == getSharedPreferences(
-                    Konstants.PERSONAL,
-                    Context.MODE_PRIVATE
-                ).getString(Konstants.PHONE, "9537830943").toString()
-            }
-        }
 
-        linearLayout = findViewById(R.id.linear)
+        linearLayout = findViewById(R.id.linearPercent)
         save = findViewById(R.id.save)
+        checkMap = HashMap()
 
         for (ele in friendDetailList) {
 
             val view = layoutInflater.inflate(R.layout.equal_expense_item, null, false)
             val check = view.findViewById<CheckBox>(R.id.checkbox)
-            check.text = ele.name
-            check.isChecked = ele.phone == getSharedPreferences(
-                Konstants.PERSONAL,
-                Context.MODE_PRIVATE
-            ).getString(Konstants.PHONE, "9537830943").toString()
+            if (ele.phone == myPhone) {
+                check.text = "Me"
+            } else {
+                check.text = ele.name
+            }
+            check.isChecked = resultMap[ele.phone!!]!!
+            checkMap[check] = ele.phone!!
 
-            check.setOnCheckedChangeListener { button, isChecked ->
-                resultMap[phoneMap[check.text]!!] = isChecked
+            check.setOnCheckedChangeListener { _, isChecked ->
+                resultMap[checkMap[check!!]!!] = isChecked
             }
             linearLayout.addView(view)
         }
@@ -72,6 +64,9 @@ class PaidByActivity : AppCompatActivity() {
         save.setOnClickListener {
             val intent = Intent()
             intent.putExtra(Konstants.RESULT, resultMap)
+            for (ele in resultMap) {
+                Log.v(TAG, "${ele.key} pays ${ele.value}")
+            }
             setResult(Activity.RESULT_OK, intent)
             finish()
         }

@@ -15,6 +15,7 @@ import com.zimmy.splitmoney.R
 import com.zimmy.splitmoney.constants.Konstants
 import com.zimmy.splitmoney.models.ContactModel
 import com.zimmy.splitmoney.models.Friend
+import com.zimmy.splitmoney.models.Group
 import com.zimmy.splitmoney.models.User
 
 
@@ -81,6 +82,34 @@ class MessageActivity : AppCompatActivity() {
                 val friend = Friend(contact.name, null, null, null)
                 groupReference.child(groupCode).child(Konstants.MEMBERS).child(contact.phone)
                     .setValue(friend)
+
+                groupReference.child(groupCode).child(Konstants.EXPENSE_GLOBAL).child(contact.phone)
+                    .setValue(0.00)
+
+                groupReference.child(groupCode).child(Konstants.GROUPINFO)
+                    .child(Konstants.GROUPNAME)
+                    .addListenerForSingleValueEvent(object : ValueEventListener {
+                        override fun onDataChange(snapshot: DataSnapshot) {
+                            val groupName: String? = snapshot.getValue(String::class.java)
+                            val group = groupName?.let {
+                                Group(
+                                    "null",
+                                    groupCode,
+                                    it,
+                                    "you owe no one",
+                                    0.00
+                                )
+                            }
+                            userReference.child(contact.phone).child(Konstants.GROUPS)
+                                .child(groupCode).setValue(group)
+                            finish()
+                        }
+
+                        override fun onCancelled(error: DatabaseError) {
+                            Log.v(TAG, "database error " + error.message)
+                        }
+
+                    })
             } else {
                 addFriend()
             }
