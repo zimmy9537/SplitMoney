@@ -20,7 +20,13 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SplitMoney">
         <activity
-            android:name=".SettleUpActivity"
+            android:name=".expense.SettledUpActivity"
+            android:exported="false" />
+        <activity
+            android:name=".expense.BeforeSettleUpActivity"
+            android:exported="false" />
+        <activity
+            android:name=".expense.SettleUpActivity"
             android:exported="false" />
         <activity
             android:name=".BalanceAcitvity"

@@ -78,6 +78,7 @@ class GroupActivity : AppCompatActivity() {
         }
 
         settleUp.setOnClickListener {
+            //todo change it to before settle up activity
             val intent = Intent(this@GroupActivity, SettleUpActivity::class.java)
             intent.putExtra(Konstants.FRIENDS, false)
             intent.putExtra(Konstants.GROUP_CODE, groupCode)

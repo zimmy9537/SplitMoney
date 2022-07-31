@@ -1,13 +1,8 @@
 package com.zimmy.splitmoney.utils
 
 import android.util.Log
-import com.google.firebase.database.DataSnapshot
-import com.google.firebase.database.DatabaseError
-import com.google.firebase.database.DatabaseReference
-import com.google.firebase.database.ValueEventListener
 import com.zimmy.splitmoney.fragments.FriendFragment
 import com.zimmy.splitmoney.models.Expense
-import com.zimmy.splitmoney.models.Friend
 import com.zimmy.splitmoney.models.Transaction
 import com.zimmy.splitmoney.models.Transaction_result
 import java.text.SimpleDateFormat
@@ -67,11 +62,11 @@ class ExpenseUtils {
             transactionList[mxCredit].amount -= minimumOfTwo
             transactionList[mxDebit].amount += minimumOfTwo
 
-            print("${transactionList[mxDebit].friend} pays ${minimumOfTwo} to ${transactionList[mxCredit].friend}\n")
+            Log.v("TRANSACTION RESULT","${transactionList[mxDebit].friendPhone} pays ${minimumOfTwo} to ${transactionList[mxCredit].friendPhone}\n")
             transactionResult.add(
                 Transaction_result(
-                    transactionList[mxCredit].friend,
-                    transactionList[mxDebit].friend,
+                    transactionList[mxCredit].friendPhone,
+                    transactionList[mxDebit].friendPhone,
                     minimumOfTwo
                 )
             )

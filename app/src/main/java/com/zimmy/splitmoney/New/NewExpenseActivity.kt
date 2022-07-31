@@ -258,6 +258,8 @@ class NewExpenseActivity : AppCompatActivity() {
             expenseTotal += roundOff.toDouble()
         }
         remainder = amount - expenseTotal
+        Log.v(TAG,"reminder 1. $remainder")
+        remainder=df.format(remainder).toDouble()
 
 
         val newExpenseCode = expenseCodeGenerator()
@@ -356,12 +358,10 @@ class NewExpenseActivity : AppCompatActivity() {
 
             for (ele in expenseMap) {
                 Log.v(TAG, "expense map ${ele.key} pays $${ele.value}")
+                //expense map 1234567890 pays $33.333333333333336
             }
             Log.v(TAG, "here ${newExpenseCode}, ${amount}, $desiredDateString")
-
-            groupReference =
-                FirebaseDatabase.getInstance().reference.child(Konstants.GROUPS).child(groupCode)
-            groupReference.child(Konstants.EXPENSE).child(newExpenseCode).setValue(expense)
+            //here ZPWH4, 100.0, July 31, 2022
 
             //individual person
 
@@ -375,17 +375,24 @@ class NewExpenseActivity : AppCompatActivity() {
                 }
             }
             Log.v(TAG, "reminder is ${remainder}")
+            //reminder is 0.010000000000005116
 
             var remainder2 = 0.00
             for (ele in netExpense) {
                 netExpense[ele.key] = df.format(ele.value).toDouble()
                 Log.v(TAG, "INDIVIDUAL net expense ${ele.value}")
+                //INDIVIDUAL net expense -33.33
                 remainder2 += df.format(ele.value).toDouble()
             }
             remainder2 = df.format(remainder2).toDouble()
-            Log.v(TAG, "remainder in netExpense $remainder2")
+            Log.v(TAG,"reminder is $remainder")
+            //reminder is 0.010000000000005116
+            Log.v(TAG, "remainder2 in netExpense $remainder2")
+            //remainder2 in netExpense 0.0
 
+            //add extra reminder
             remainder2 = -remainder2
+            Log.v(TAG, "remainder2 in netExpense $remainder2")
             for (ele in netExpense) {
                 if (netExpense[ele.key]!! > 0) {
                     netExpense[ele.key] = netExpense[ele.key]?.plus(remainder2)!!
@@ -393,13 +400,22 @@ class NewExpenseActivity : AppCompatActivity() {
                 }
             }
 
+            for (ele in expenseMap){
+                expenseMap[ele.key]=df.format(ele.value).toDouble()
+            }
+            expense.expenseMap=expenseMap
+
+            groupReference =
+                FirebaseDatabase.getInstance().reference.child(Konstants.GROUPS).child(groupCode)
+            groupReference.child(Konstants.EXPENSE).child(newExpenseCode).setValue(expense)
+
             for (ele in netExpense) {
                 groupReference.child(Konstants.EXPENSE_GLOBAL).child(ele.key)
                     .addListenerForSingleValueEvent(object : ValueEventListener {
                         override fun onDataChange(snapshot: DataSnapshot) {
                             if (snapshot.exists()) {
                                 var result = snapshot.getValue(Double::class.java)!!
-                                result += netExpense[ele.key]!!
+                                result += df.format(netExpense[ele.key]!!).toDouble()
                                 groupReference.child(Konstants.EXPENSE_GLOBAL).child(ele.key)
                                     .setValue(result)
                             }
