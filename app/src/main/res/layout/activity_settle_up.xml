@@ -4,6 +4,7 @@
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
+    android:background="@color/white"
     tools:context=".expense.SettleUpActivity">
 
     <TextView
@@ -12,6 +13,7 @@
         android:layout_height="wrap_content"
         android:layout_marginStart="20dp"
         android:layout_marginTop="20dp"
+        android:textColor="@color/black"
         android:text="Settle Up"
         android:textSize="22sp"
         app:layout_constraintStart_toStartOf="parent"
@@ -22,6 +24,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="40dp"
+        android:textColor="@color/black"
         android:text="You owe Jignesh Changela $500"
         android:textSize="16sp"
         app:layout_constraintEnd_toEndOf="parent"
@@ -49,6 +52,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Z"
+                android:textColor="@color/black"
                 android:textSize="30dp" />
 
         </LinearLayout>
@@ -67,10 +71,11 @@
             android:gravity="center">
 
             <TextView
-                android:id="@+id/receiver"
+                android:id="@+id/receiverTv"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="J"
+                android:textColor="@color/black"
                 android:textSize="30dp" />
 
         </LinearLayout>
@@ -79,6 +84,7 @@
     </LinearLayout>
 
     <Button
+        android:id="@+id/settleUp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginBottom="40dp"

@@ -10,6 +10,6 @@
         android:layout_marginStart="20dp"
         android:layout_marginTop="10dp"
         android:text="jjc pays fena $200"
-        android:textSize="22sp" />
+        android:textSize="16sp" />
 
 </LinearLayout>
