@@ -27,6 +27,7 @@ class SettleUpActivity : AppCompatActivity() {
     lateinit var settleUp: Button
 
     lateinit var groupReference: DatabaseReference
+    lateinit var friendReference: DatabaseReference
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,6 +50,18 @@ class SettleUpActivity : AppCompatActivity() {
 
         isFriend = intent.getBooleanExtra(Konstants.FRIENDS, true)
         if (isFriend) {
+            transaction = intent.getSerializableExtra(Konstants.DATA) as Transaction_SettleUp
+
+            if (transaction.amount > 0) {
+                oweTv.text = "${transaction.friendName} owes you $${transaction.amount}"
+                senderTv.text = transaction.friendName[0].toString()
+                receiverTv.text = myName[0].toString()
+            } else {
+                oweTv.text = "You owe ${transaction.friendName} $${transaction.amount}"
+                senderTv.text = myName[0].toString()
+                receiverTv.text = transaction.friendName[0].toString()
+            }
+
         } else {
             transaction = intent.getSerializableExtra(Konstants.DATA) as Transaction_SettleUp
             groupCode = intent.getStringExtra(Konstants.GROUP_CODE).toString()
@@ -66,9 +79,26 @@ class SettleUpActivity : AppCompatActivity() {
 
         settleUp.setOnClickListener {
             if (isFriend) {
+
+                friendReference =
+                    FirebaseDatabase.getInstance().reference.child(Konstants.USERS)//use phone number child
+
+                // simple logic:- make Result 0, so doesn't depend on transaction result.
+
+                friendReference.child(myPhone).child(Konstants.FRIENDS)
+                    .child(transaction.friendPhone).child(Konstants.RESULT).setValue(0)
+                friendReference.child(transaction.friendPhone).child(Konstants.FRIENDS)
+                    .child(myPhone).child(Konstants.RESULT).setValue(0)
+
+                //intent
+                val intent = Intent(this@SettleUpActivity, SettledUpActivity::class.java)
+                intent.putExtra(Konstants.DATA, transaction)
+                startActivity(intent)
+
+
             } else {
                 groupReference = FirebaseDatabase.getInstance().reference.child(Konstants.GROUPS)
-                    .child(groupCode);
+                    .child(groupCode)
                 if (transaction.amount > 0) {
                     //make changes in expense global
                     //i get credit, friend's account is debited

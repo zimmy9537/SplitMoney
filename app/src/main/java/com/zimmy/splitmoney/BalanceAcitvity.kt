@@ -1,14 +1,15 @@
 package com.zimmy.splitmoney
 
+import android.content.Context
 import android.content.Intent
+import android.content.SharedPreferences
+import android.opengl.Visibility
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.LayoutInflater
-import android.widget.Button
-import android.widget.LinearLayout
-import android.widget.TextView
-import android.widget.Toast
+import android.view.View
+import android.widget.*
 import com.google.firebase.database.*
 import com.zimmy.splitmoney.constants.Konstants
 import com.zimmy.splitmoney.expense.BeforeSettleUpActivity
@@ -29,8 +30,11 @@ class BalanceAcitvity : AppCompatActivity() {
     var TAG = BalanceAcitvity::class.java.simpleName
     var count: Long = 0
     lateinit var phoneMap: HashMap<String, String>
-    lateinit var settleUp: Button
+    lateinit var myPhone: String
 
+    lateinit var alreadySettleUp: TextView
+    lateinit var progress: ProgressBar
+    lateinit var settleUp: Button
     lateinit var balanceLinearLayout: LinearLayout
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -38,8 +42,15 @@ class BalanceAcitvity : AppCompatActivity() {
         setContentView(R.layout.activity_balance_acitvity)
         isFriend = intent.getBooleanExtra(Konstants.FRIENDS, true)
 
+        myPhone = getSharedPreferences(
+            Konstants.PERSONAL,
+            Context.MODE_PRIVATE
+        ).getString(Konstants.PHONE, "no phone").toString()
+
         balanceLinearLayout = findViewById(R.id.balances)
         settleUp = findViewById(R.id.settleUp)
+        alreadySettleUp = findViewById(R.id.alreadySettled)
+        progress = findViewById(R.id.progress)
 
         phoneMap = HashMap()
 
@@ -48,9 +59,11 @@ class BalanceAcitvity : AppCompatActivity() {
         settleUp.setOnClickListener {
             if (isFriend) {
                 val intent = Intent(this@BalanceAcitvity, SettleUpActivity::class.java)
+                intent.putExtra(Konstants.FRIENDS, isFriend)
                 startActivity(intent)
             } else {
                 val intent = Intent(this@BalanceAcitvity, BeforeSettleUpActivity::class.java)
+                intent.putExtra(Konstants.FRIENDS, isFriend)
                 intent.putExtra(Konstants.GROUP_CODE, groupCode)
                 startActivity(intent)
             }
@@ -116,12 +129,24 @@ class BalanceAcitvity : AppCompatActivity() {
                                                                         netBalance,
                                                                         transactionResult
                                                                     )
+                                                                    var needSettleUp = false
                                                                     for (ele in transactionResult) {
                                                                         Log.v(
                                                                             TAG,
                                                                             "${ele.sender} will send ${ele.receiver} the amount ${ele.amount} "
                                                                         )
+                                                                        if (ele.sender == myPhone || ele.receiver == myPhone) {
+                                                                            needSettleUp = true
+                                                                        }
                                                                     }
+                                                                    if (!needSettleUp) {
+                                                                        alreadySettleUp.visibility =
+                                                                            View.VISIBLE
+                                                                    } else {
+                                                                        settleUp.visibility =
+                                                                            View.VISIBLE
+                                                                    }
+                                                                    progress.visibility = View.GONE
                                                                     fillTheLinearLayout(
                                                                         transactionResult
                                                                     )

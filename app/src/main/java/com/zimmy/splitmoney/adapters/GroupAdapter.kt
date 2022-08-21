@@ -28,7 +28,7 @@ class GroupAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GroupViewHolder {
-        val view = LayoutInflater.from(context).inflate(R.layout.friends_trip_item, parent, false)
+        val view = LayoutInflater.from(context).inflate(R.layout.friends_item, parent, false)
         return GroupViewHolder(view)
     }
 
