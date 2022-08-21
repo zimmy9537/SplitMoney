@@ -18,8 +18,12 @@ import com.google.firebase.database.*
 import com.zimmy.splitmoney.New.NewExpenseActivity
 import com.zimmy.splitmoney.adapters.ExpenseAdapter
 import com.zimmy.splitmoney.constants.Konstants
+import com.zimmy.splitmoney.expense.BeforeSettleUpActivity
+import com.zimmy.splitmoney.expense.SettleUpActivity
 import com.zimmy.splitmoney.models.Expense
 import com.zimmy.splitmoney.models.Friend
+import com.zimmy.splitmoney.models.Transaction_SettleUp
+import kotlin.math.absoluteValue
 
 class IndividualExpenseActivity : AppCompatActivity() {
 
@@ -28,7 +32,6 @@ class IndividualExpenseActivity : AppCompatActivity() {
     var resultAmount: Double = 0.0
     private lateinit var personalPreferences: SharedPreferences
     private lateinit var myPhone: String
-    private lateinit var myName:String
     private lateinit var friendName: String
     private lateinit var expenseWithFriendList: ArrayList<Expense>
 
@@ -58,7 +61,6 @@ class IndividualExpenseActivity : AppCompatActivity() {
         friendAmount = findViewById(R.id.friendAmount)
 
         nameTextView.text = friendName
-
         expenseWithFriendList = ArrayList()
 
         personalPreferences = getSharedPreferences(Konstants.PERSONAL, Context.MODE_PRIVATE)
@@ -75,8 +77,13 @@ class IndividualExpenseActivity : AppCompatActivity() {
                     resultTextView.setText("$$resultAmount")
                     if (resultAmount > 0) {
                         resultTextView.setText("owes you")
-                    } else {
+                        friendAmount.text = "$${resultAmount.absoluteValue.toString()}"
+                    } else if (resultAmount < 0) {
                         resultTextView.setText("you owe")
+                        friendAmount.text = "$${resultAmount.absoluteValue.toString()}"
+                    } else {
+                        resultTextView.text = "You are balanced"
+                        friendAmount.text = "$0.0"
                     }
                 }
             }
@@ -86,6 +93,24 @@ class IndividualExpenseActivity : AppCompatActivity() {
             }
 
         })
+
+        settleUp.setOnClickListener {
+            //todo manage email
+            val transaction = Transaction_SettleUp(friendName, "email", resultAmount, friendPhone)
+            if (resultAmount == 0.0) {
+                Toast.makeText(
+                    this@IndividualExpenseActivity,
+                    "It seems that you are already settled up",
+                    Toast.LENGTH_SHORT
+                ).show()
+                return@setOnClickListener
+            }
+
+            val intent = Intent(this@IndividualExpenseActivity, SettleUpActivity::class.java)
+            intent.putExtra(Konstants.FRIENDS, true)
+            intent.putExtra(Konstants.DATA, transaction)
+            startActivity(intent)
+        }
 
         addExpense.setOnClickListener {
             val intent = Intent(this@IndividualExpenseActivity, NewExpenseActivity::class.java)
@@ -104,6 +129,12 @@ class IndividualExpenseActivity : AppCompatActivity() {
                 Toast.makeText(
                     this@IndividualExpenseActivity,
                     "It seems, you owe money to you friend", Toast.LENGTH_SHORT
+                ).show()
+            } else {
+                Toast.makeText(
+                    this@IndividualExpenseActivity,
+                    "It seems that you are already settled up",
+                    Toast.LENGTH_SHORT
                 ).show()
             }
         }

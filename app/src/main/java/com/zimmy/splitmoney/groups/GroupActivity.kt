@@ -18,6 +18,7 @@ import com.zimmy.splitmoney.New.NewExpenseActivity
 import com.zimmy.splitmoney.New.NewFriendActivity
 import com.zimmy.splitmoney.R
 import com.zimmy.splitmoney.constants.Konstants
+import com.zimmy.splitmoney.expense.BeforeSettleUpActivity
 import com.zimmy.splitmoney.expense.SettleUpActivity
 import com.zimmy.splitmoney.models.Friend
 
@@ -79,7 +80,7 @@ class GroupActivity : AppCompatActivity() {
 
         settleUp.setOnClickListener {
             //todo change it to before settle up activity
-            val intent = Intent(this@GroupActivity, SettleUpActivity::class.java)
+            val intent = Intent(this@GroupActivity, BeforeSettleUpActivity::class.java)
             intent.putExtra(Konstants.FRIENDS, false)
             intent.putExtra(Konstants.GROUP_CODE, groupCode)
             startActivity(intent)

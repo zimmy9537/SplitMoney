@@ -14,7 +14,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.zimmy.splitmoney.New.NewFriendActivity
-import com.zimmy.splitmoney.adapters.FriendOrTripAdapter
+import com.zimmy.splitmoney.adapters.FriendAdapter
 import com.zimmy.splitmoney.constants.Konstants
 import com.zimmy.splitmoney.databinding.FragmentFriendBinding
 import com.zimmy.splitmoney.models.Expense
@@ -113,7 +113,7 @@ class FriendFragment : Fragment() {
     ): View? {
         _friendBinding = FragmentFriendBinding.inflate(inflater, container, false)
         friendBinding.friendsRv.adapter =
-            context?.let { FriendOrTripAdapter(friendItemArray, it)}
+            context?.let { FriendAdapter(friendItemArray, it)}
         friendBinding.friendsRv.layoutManager = LinearLayoutManager(context)
         val root = friendBinding.root
 
