@@ -17,6 +17,7 @@ class Konstants {
         const val GROUPLEADER = "groupLeader"
         const val TOTALMEMBERS = "totalMembers"
         const val UIDS = "Uids"
+        const val ACTIVITES="activities"
         //todo remove the below lines with care
         const val EXPENSEOUT = "expenseOut"
         const val EXPENSEIN = "expenseIn"

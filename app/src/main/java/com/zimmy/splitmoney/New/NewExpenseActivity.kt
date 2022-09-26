@@ -48,6 +48,9 @@ class NewExpenseActivity : AppCompatActivity() {
     lateinit var myReference: DatabaseReference
     lateinit var friendReference: DatabaseReference
     lateinit var groupReference: DatabaseReference
+    lateinit var activityReference: DatabaseReference
+
+    lateinit var activityList: ArrayList<String>
 
     //intent
     private var isFriend: Int = Konstants.INDIVIDUALEXPENSE
@@ -233,12 +236,28 @@ class NewExpenseActivity : AppCompatActivity() {
             .joinToString("")
     }
 
-    fun savePayment(expensePercent: HashMap<String, Double>, paidByMap: HashMap<String, Boolean>) {
+    private fun savePayment(expensePercent: HashMap<String, Double>, paidByMap: HashMap<String, Boolean>) {
         expenseMap = HashMap()
         var amount = expenseAmount.text.toString().toDouble()
+        activityList= ArrayList()
         for (ele in expensePercent) {
             expenseMap[ele.key] = amount * ele.value / 100
             Log.v(TAG, "${ele.key} pays $${amount * ele.value / 100}")
+            activityReference =
+                FirebaseDatabase.getInstance().reference.child(Konstants.USERS)
+            activityReference.child(ele.key).child(Konstants.ACTIVITES)
+                .addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        for (activity in snapshot.children) {
+                            activityList.add(activity.getValue(String::class.java).toString())
+                        }
+                        activityList.add("")
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                        Log.v(TAG, "database error occurred")
+                    }
+                })
         }
         for (ele in paidByMap) {
             Log.v(TAG, "${ele.key} is paying ${ele.value}")
@@ -258,8 +277,8 @@ class NewExpenseActivity : AppCompatActivity() {
             expenseTotal += roundOff.toDouble()
         }
         remainder = amount - expenseTotal
-        Log.v(TAG,"reminder 1. $remainder")
-        remainder=df.format(remainder).toDouble()
+        Log.v(TAG, "reminder 1. $remainder")
+        remainder = df.format(remainder).toDouble()
 
 
         val newExpenseCode = expenseCodeGenerator()
@@ -385,7 +404,7 @@ class NewExpenseActivity : AppCompatActivity() {
                 remainder2 += df.format(ele.value).toDouble()
             }
             remainder2 = df.format(remainder2).toDouble()
-            Log.v(TAG,"reminder is $remainder")
+            Log.v(TAG, "reminder is $remainder")
             //reminder is 0.010000000000005116
             Log.v(TAG, "remainder2 in netExpense $remainder2")
             //remainder2 in netExpense 0.0
@@ -400,10 +419,10 @@ class NewExpenseActivity : AppCompatActivity() {
                 }
             }
 
-            for (ele in expenseMap){
-                expenseMap[ele.key]=df.format(ele.value).toDouble()
+            for (ele in expenseMap) {
+                expenseMap[ele.key] = df.format(ele.value).toDouble()
             }
-            expense.expenseMap=expenseMap
+            expense.expenseMap = expenseMap
 
             groupReference =
                 FirebaseDatabase.getInstance().reference.child(Konstants.GROUPS).child(groupCode)

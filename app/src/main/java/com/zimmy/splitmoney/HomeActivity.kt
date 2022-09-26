@@ -54,7 +54,7 @@ class HomeActivity : AppCompatActivity() {
             } else if (numTab == 1) {
                 GroupFragment.addNewGroup(baseContext)
             } else {
-                ActivityFragment.addNewActivity(baseContext)
+                ActivityFragment.refreshActivities(baseContext)
             }
         }
     }
