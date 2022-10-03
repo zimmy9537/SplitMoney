@@ -1,11 +1,13 @@
 package com.zimmy.splitmoney.groups
 
 import android.content.Intent
+import android.media.Image
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
 import android.view.View
 import android.widget.Button
+import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
@@ -37,12 +39,13 @@ class GroupActivity : AppCompatActivity() {
     lateinit var aloneTv: TextView
     lateinit var groupQrTv: TextView
     lateinit var groupName: TextView
-    lateinit var groupNameString: String
+    lateinit var addMember: ImageView
 
-    lateinit var mAuth: FirebaseAuth
+    private lateinit var mAuth: FirebaseAuth
     lateinit var firebaseDatabase: FirebaseDatabase
     lateinit var groupReference: DatabaseReference
 
+    lateinit var groupNameString: String
     lateinit var groupCode: String
     var totalMembers: Int = 0
     lateinit var friendArrayList: ArrayList<Friend>
@@ -64,6 +67,7 @@ class GroupActivity : AppCompatActivity() {
         aloneTv = findViewById(R.id.aloneTv)
         groupQrTv = findViewById(R.id.groupQrTv)
         groupName = findViewById(R.id.groupName)
+        addMember = findViewById(R.id.addMember)
 
         //complete dependency is on this gcode so intent it properly
         groupCode = intent.getStringExtra("gcode").toString()
@@ -89,6 +93,14 @@ class GroupActivity : AppCompatActivity() {
             val intent = Intent(this@GroupActivity, BeforeSettleUpActivity::class.java)
             intent.putExtra(Konstants.FRIENDS, false)
             intent.putExtra(Konstants.GROUP_CODE, groupCode)
+            startActivity(intent)
+        }
+
+        addMember.setOnClickListener {
+            val intent = Intent(this, NewFriendActivity::class.java)
+            intent.putExtra("group", true)
+            intent.putExtra("name", groupNameString)
+            intent.putExtra("code", groupCode)
             startActivity(intent)
         }
 
@@ -180,7 +192,6 @@ class GroupActivity : AppCompatActivity() {
     }
 
     fun loadExpenses() {
-        //set adapter
         expenseRecyclerView.adapter =
             GroupExpenseAdapter(expenseList, this@GroupActivity)
         expenseRecyclerView.layoutManager = LinearLayoutManager(this@GroupActivity)

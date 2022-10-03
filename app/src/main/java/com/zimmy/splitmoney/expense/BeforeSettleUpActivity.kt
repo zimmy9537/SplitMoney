@@ -16,6 +16,7 @@ import com.zimmy.splitmoney.models.Transaction
 import com.zimmy.splitmoney.models.Transaction_SettleUp
 import com.zimmy.splitmoney.models.Transaction_result
 import com.zimmy.splitmoney.utils.ExpenseUtils
+import java.math.BigDecimal
 import kotlin.math.absoluteValue
 import kotlin.math.sign
 
@@ -170,8 +171,12 @@ class BeforeSettleUpActivity : AppCompatActivity() {
 
     fun checkIfBalanced(netBalance: ArrayList<Transaction>): Boolean {
         var totalBalance = 0.0
-        for (ele in netBalance)
-            totalBalance += ele.amount
+        for (ele in netBalance) {
+//            totalBalance += ele.amount
+            totalBalance =
+                (BigDecimal(totalBalance.toString()).add(BigDecimal(ele.amount.toString())))
+                    .toDouble()
+        }
         return totalBalance == 0.0
     }
 
