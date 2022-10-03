@@ -89,8 +89,6 @@ class GroupFragment : Fragment() {
                 }
 
             })
-
-
     }
 
     override fun onCreateView(

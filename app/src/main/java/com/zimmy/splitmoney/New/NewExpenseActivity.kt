@@ -1,5 +1,6 @@
 package com.zimmy.splitmoney.New
 
+import android.app.DatePickerDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -15,23 +16,24 @@ import com.zimmy.splitmoney.constants.Konstants
 import com.zimmy.splitmoney.expense.PaidByActivity
 import com.zimmy.splitmoney.expense.SplitActivity
 import com.zimmy.splitmoney.models.Expense
-import com.zimmy.splitmoney.models.Expense_Group
+import com.zimmy.splitmoney.models.ExpenseGroup
 import com.zimmy.splitmoney.models.Friend
 import com.zimmy.splitmoney.models.Group
 import java.math.RoundingMode
+import java.text.DateFormat
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.util.*
-import kotlin.collections.ArrayList
-import kotlin.collections.HashMap
 import kotlin.streams.asSequence
 
-class NewExpenseActivity : AppCompatActivity() {
+
+class NewExpenseActivity : AppCompatActivity(), DatePickerDialog.OnDateSetListener {
 
     lateinit var cancel: Button
     lateinit var save: Button
     lateinit var expenseName: EditText
     lateinit var day: TextView
+    lateinit var desiredDateString: String
 
     //todo test the code and repeat for the percentage method
     //todo later work on the save button on click
@@ -48,6 +50,9 @@ class NewExpenseActivity : AppCompatActivity() {
     lateinit var myReference: DatabaseReference
     lateinit var friendReference: DatabaseReference
     lateinit var groupReference: DatabaseReference
+    lateinit var activityReference: DatabaseReference
+
+    lateinit var activityList: ArrayList<String>
 
     //intent
     private var isFriend: Int = Konstants.INDIVIDUALEXPENSE
@@ -62,6 +67,10 @@ class NewExpenseActivity : AppCompatActivity() {
     private lateinit var resultMap: HashMap<String, Boolean>
     private lateinit var groupCode: String
     private lateinit var myPhone: String
+
+    private var year: Int = 0
+    private var month: Int = 0
+    private var dayDate: Int = 0
 
 
     //todo change the text in the split between text string according to the result of te result launcher
@@ -171,6 +180,12 @@ class NewExpenseActivity : AppCompatActivity() {
             savePayment(expensePercent, resultMap)
         }
 
+        day.setOnClickListener {
+            val mDatePickerDialogFragment: com.zimmy.splitmoney.fragments.DatePicker =
+                com.zimmy.splitmoney.fragments.DatePicker()
+            mDatePickerDialogFragment.show(supportFragmentManager, "DATE PICK")
+        }
+
         if (isFriend == Konstants.INDIVIDUALEXPENSE)
             withTv.text = "With you and $friendName"
         else {
@@ -233,12 +248,31 @@ class NewExpenseActivity : AppCompatActivity() {
             .joinToString("")
     }
 
-    fun savePayment(expensePercent: HashMap<String, Double>, paidByMap: HashMap<String, Boolean>) {
+    private fun savePayment(
+        expensePercent: HashMap<String, Double>,
+        paidByMap: HashMap<String, Boolean>
+    ) {
         expenseMap = HashMap()
         var amount = expenseAmount.text.toString().toDouble()
+        activityList = ArrayList()
         for (ele in expensePercent) {
             expenseMap[ele.key] = amount * ele.value / 100
             Log.v(TAG, "${ele.key} pays $${amount * ele.value / 100}")
+            activityReference =
+                FirebaseDatabase.getInstance().reference.child(Konstants.USERS)
+            activityReference.child(ele.key).child(Konstants.ACTIVITES)
+                .addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        for (activity in snapshot.children) {
+                            activityList.add(activity.getValue(String::class.java).toString())
+                        }
+                        activityList.add("")
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                        Log.v(TAG, "database error occurred")
+                    }
+                })
         }
         for (ele in paidByMap) {
             Log.v(TAG, "${ele.key} is paying ${ele.value}")
@@ -258,14 +292,9 @@ class NewExpenseActivity : AppCompatActivity() {
             expenseTotal += roundOff.toDouble()
         }
         remainder = amount - expenseTotal
-        Log.v(TAG,"reminder 1. $remainder")
-        remainder=df.format(remainder).toDouble()
-
-
+        Log.v(TAG, "reminder 1. $remainder")
+        remainder = df.format(remainder).toDouble()
         val newExpenseCode = expenseCodeGenerator()
-        val date = Date()
-        val fmt = SimpleDateFormat("MMMM d, yyyy")
-        val desiredDateString = fmt.format(date)
         var thosePaid = 0
         for (ele in paidByMap) {
             if (ele.value) {
@@ -286,7 +315,8 @@ class NewExpenseActivity : AppCompatActivity() {
                 expenseName.text.toString(),
                 paidByMap,
                 expenseAmount.text.toString().toDouble(),
-                desiredDateString
+                desiredDateString,
+                Date().time
             )
 
             //mine
@@ -347,13 +377,14 @@ class NewExpenseActivity : AppCompatActivity() {
 
                 })
         } else { //group
-            val expense = Expense_Group(
+            val expense = ExpenseGroup(
                 newExpenseCode,
                 expenseMap,
                 expenseName.text.toString(),
                 paidByMap,
                 amount,
-                desiredDateString
+                desiredDateString,
+                Date().time
             )
 
             for (ele in expenseMap) {
@@ -365,8 +396,7 @@ class NewExpenseActivity : AppCompatActivity() {
 
             //individual person
 
-            var netExpense: HashMap<String, Double>
-            netExpense = HashMap()
+            val netExpense: HashMap<String, Double> = HashMap()
             for (ele in paidByMap) {
                 if (ele.value) {
                     netExpense[ele.key] = ifPaid - expenseMap[ele.key]!!
@@ -385,7 +415,7 @@ class NewExpenseActivity : AppCompatActivity() {
                 remainder2 += df.format(ele.value).toDouble()
             }
             remainder2 = df.format(remainder2).toDouble()
-            Log.v(TAG,"reminder is $remainder")
+            Log.v(TAG, "reminder is $remainder")
             //reminder is 0.010000000000005116
             Log.v(TAG, "remainder2 in netExpense $remainder2")
             //remainder2 in netExpense 0.0
@@ -400,10 +430,10 @@ class NewExpenseActivity : AppCompatActivity() {
                 }
             }
 
-            for (ele in expenseMap){
-                expenseMap[ele.key]=df.format(ele.value).toDouble()
+            for (ele in expenseMap) {
+                expenseMap[ele.key] = df.format(ele.value).toDouble()
             }
-            expense.expenseMap=expenseMap
+            expense.expenseMap = expenseMap
 
             groupReference =
                 FirebaseDatabase.getInstance().reference.child(Konstants.GROUPS).child(groupCode)
@@ -476,5 +506,15 @@ class NewExpenseActivity : AppCompatActivity() {
                     })
             }
         }
+    }
+
+    override fun onDateSet(p0: DatePicker?, year: Int, month: Int, dayOfMonth: Int) {
+        val mCalendar = Calendar.getInstance()
+        mCalendar[Calendar.YEAR] = year
+        mCalendar[Calendar.MONTH] = month
+        mCalendar[Calendar.DAY_OF_MONTH] = dayOfMonth
+        desiredDateString =
+            DateFormat.getDateInstance(DateFormat.FULL).format(mCalendar.time)
+        day.text = desiredDateString
     }
 }

@@ -9,6 +9,7 @@ import android.widget.Button
 import android.widget.LinearLayout
 import android.widget.TextView
 import android.widget.Toast
+import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
@@ -17,9 +18,12 @@ import com.zimmy.splitmoney.BalanceAcitvity
 import com.zimmy.splitmoney.New.NewExpenseActivity
 import com.zimmy.splitmoney.New.NewFriendActivity
 import com.zimmy.splitmoney.R
+import com.zimmy.splitmoney.adapters.GroupExpenseAdapter
 import com.zimmy.splitmoney.constants.Konstants
 import com.zimmy.splitmoney.expense.BeforeSettleUpActivity
 import com.zimmy.splitmoney.expense.SettleUpActivity
+import com.zimmy.splitmoney.models.Expense
+import com.zimmy.splitmoney.models.ExpenseGroup
 import com.zimmy.splitmoney.models.Friend
 
 class GroupActivity : AppCompatActivity() {
@@ -42,6 +46,7 @@ class GroupActivity : AppCompatActivity() {
     lateinit var groupCode: String
     var totalMembers: Int = 0
     lateinit var friendArrayList: ArrayList<Friend>
+    lateinit var expenseList: ArrayList<ExpenseGroup>
 
     val TAG = GroupActivity::class.java.simpleName
 
@@ -64,6 +69,7 @@ class GroupActivity : AppCompatActivity() {
         groupCode = intent.getStringExtra("gcode").toString()
 
         friendArrayList = ArrayList()
+        expenseList = ArrayList()
 
         groupQrTv.setOnClickListener {
             val intent = Intent(this@GroupActivity, QrActivity::class.java)
@@ -90,6 +96,7 @@ class GroupActivity : AppCompatActivity() {
         firebaseDatabase = FirebaseDatabase.getInstance()
         groupReference = firebaseDatabase.reference.child(Konstants.GROUPS)
 
+        //set group name
         groupReference.child(groupCode).child(Konstants.GROUPINFO).child(Konstants.GROUPNAME)
             .addValueEventListener(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
@@ -103,6 +110,7 @@ class GroupActivity : AppCompatActivity() {
 
             })
 
+        //check for group empty
         groupReference.child(groupCode).child(Konstants.GROUPINFO).child(Konstants.TOTALMEMBERS)
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
@@ -110,6 +118,7 @@ class GroupActivity : AppCompatActivity() {
                     if (totalMembers == 1) {
                         showEmptyGroup()
                     } else {
+                        loadExpenses()
                         showFilledGroup()
                     }
                 }
@@ -119,6 +128,7 @@ class GroupActivity : AppCompatActivity() {
                 }
 
             })
+
 
         groupReference.child(groupCode).child(Konstants.MEMBERS)
             .addValueEventListener(object : ValueEventListener {
@@ -167,6 +177,41 @@ class GroupActivity : AppCompatActivity() {
             startActivity(intent)
         }
 
+    }
+
+    fun loadExpenses() {
+        //set adapter
+        expenseRecyclerView.adapter =
+            GroupExpenseAdapter(expenseList, this@GroupActivity)
+        expenseRecyclerView.layoutManager = LinearLayoutManager(this@GroupActivity)
+        groupReference.child(groupCode).child(Konstants.EXPENSE)
+            .addListenerForSingleValueEvent(object : ValueEventListener {
+                override fun onDataChange(snapshot: DataSnapshot) {
+                    for (code in snapshot.children) {
+                        val expenseCode = code.key
+                        if (expenseCode != null) {
+                            groupReference.child(groupCode).child(Konstants.EXPENSE)
+                                .child(expenseCode)
+                                .addListenerForSingleValueEvent(object : ValueEventListener {
+                                    override fun onDataChange(snapshot: DataSnapshot) {
+                                        expenseList.add(snapshot.getValue(ExpenseGroup::class.java)!!)
+                                        (expenseRecyclerView.adapter as GroupExpenseAdapter).notifyDataSetChanged()
+                                    }
+
+                                    override fun onCancelled(error: DatabaseError) {
+
+                                    }
+
+                                })
+                        }
+                    }
+                }
+
+                override fun onCancelled(error: DatabaseError) {
+
+                }
+
+            })
     }
 
     fun showEmptyGroup() {

@@ -28,9 +28,10 @@ class ActivityAdapter(activityList: ArrayList<Activity>, context: Context) :
     }
 
     override fun onBindViewHolder(holder: ActivityViewHolder, position: Int) {
-        Picasso.get().load(activityList.get(position).imageUri).into(holder.activityImage)
-        holder.activityTitle.setText(activityList.get(position).title)
-        holder.activityDescription.setText(activityList.get(position).description)
+        Picasso.get().load(activityList[position].imageUri).into(holder.activityImage)
+        holder.activityTitle.text = activityList[position].title
+        holder.activityDescription.text = activityList[position].description
+        holder.activityTime.text= activityList[position].time
     }
 
     override fun getItemCount(): Int {
@@ -42,11 +43,13 @@ class ActivityAdapter(activityList: ArrayList<Activity>, context: Context) :
         var activityImage: ImageView
         var activityTitle: TextView
         var activityDescription: TextView
+        var activityTime:TextView
 
         init {
             activityImage = itemView.findViewById(R.id.activityImage)
             activityTitle = itemView.findViewById(R.id.activityTitle)
             activityDescription = itemView.findViewById(R.id.activityOwe)
+            activityTime=itemView.findViewById(R.id.activityTime)
         }
     }
 
