@@ -2,6 +2,7 @@ package com.zimmy.splitmoney.adapters
 
 import android.content.Context
 import android.content.Intent
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -33,17 +34,16 @@ class GroupAdapter(
     }
 
     override fun onBindViewHolder(holder: GroupViewHolder, position: Int) {
-        holder.groupImage.setImageResource(R.drawable.ic_launcher_background)
-        //todo change this with actual image later
         holder.groupName.setText(groupItemList[position].groupTitle)
         holder.groupAmount.setText(groupItemList[position].amount.toString())
-        Picasso.get().load(groupItemList[position].imageUri).into(holder.groupImage)
+        Picasso.get().load(groupItemList[position].imageUri).error(R.drawable.group)
+            .into(holder.groupImage)
         holder.whoOwe.setText(groupItemList[position].owe)
 
         holder.groupItemLl.setOnClickListener {
             //todo work on this intent part
             val intent = Intent(context, GroupActivity::class.java)
-            intent.putExtra("gcode",groupItemList[position].groupCode)
+            intent.putExtra("gcode", groupItemList[position].groupCode)
             context.startActivity(intent)
         }
     }

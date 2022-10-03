@@ -2,63 +2,67 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
-    android:orientation="horizontal"
-    android:layout_marginTop="10dp">
+    android:layout_marginTop="10dp"
+    android:orientation="horizontal">
 
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
-        android:gravity="start"
-        android:layout_marginTop="5dp"
         android:layout_marginStart="5dp"
-        android:orientation="vertical"
-        android:layout_weight="1">
+        android:layout_marginTop="5dp"
+        android:layout_weight="1"
+        android:gravity="start"
+        android:orientation="vertical">
 
         <ImageView
             android:id="@+id/expenseImage"
             android:layout_width="30dp"
-            android:src="@drawable/ic_launcher_background"
-            android:layout_height="30dp" />
+            android:layout_height="30dp"
+            android:src="@drawable/ic_launcher_background" />
 
         <TextView
             android:id="@+id/expenseName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="Car"
-            android:textSize="22sp"/>
+            android:textSize="22sp" />
+
         <TextView
             android:id="@+id/expenseAddedBy"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:text="Added by You"/>
+            android:text="Added by You" />
     </LinearLayout>
 
     <LinearLayout
         android:layout_width="0dp"
         android:layout_height="wrap_content"
+        android:layout_marginTop="5dp"
         android:layout_marginEnd="5dp"
+        android:layout_weight="1"
         android:gravity="end"
-        android:orientation="vertical"
-        android:layout_weight="1">
+        android:orientation="vertical">
 
         <TextView
             android:id="@+id/expenseDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="17sp"
-            android:text="November 3, 2022"/>
+            android:text="November 3, 2022"
+            android:textSize="17sp" />
+
         <TextView
             android:id="@+id/expenseResult"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:textSize="18sp"
-            android:text="Owes You"/>
+            android:text="Owes You"
+            android:textSize="18sp" />
+
         <TextView
             android:id="@+id/expenseAmount"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:text="$500"
-            android:textSize="22sp"/>
+            android:textSize="22sp" />
     </LinearLayout>
 
 </LinearLayout>

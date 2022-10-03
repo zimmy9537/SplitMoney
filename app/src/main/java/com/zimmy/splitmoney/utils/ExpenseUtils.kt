@@ -79,9 +79,8 @@ class ExpenseUtils {
                 if (p0 == null || p1 == null) {
                     return 0;
                 }
-                return p0.timestamp.compareTo(p1.timestamp)
+                return p0.payment_time.compareTo(p1.payment_time)
             }
-
         }
     }
 }

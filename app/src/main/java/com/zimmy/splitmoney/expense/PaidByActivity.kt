@@ -9,6 +9,7 @@ import android.util.Log
 import android.widget.Button
 import android.widget.CheckBox
 import android.widget.LinearLayout
+import android.widget.Toast
 import com.zimmy.splitmoney.R
 import com.zimmy.splitmoney.constants.Konstants
 import com.zimmy.splitmoney.models.Friend
@@ -24,6 +25,7 @@ class PaidByActivity : AppCompatActivity() {
     private lateinit var checkMap: HashMap<CheckBox, String>
     private lateinit var myPhone: String
     private val TAG = PaidByActivity::class.java.simpleName
+    private var counter = 0
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -53,9 +55,27 @@ class PaidByActivity : AppCompatActivity() {
             }
             check.isChecked = resultMap[ele.phone!!]!!
             checkMap[check] = ele.phone!!
+            if (check.isChecked) {
+                counter++
+            }
 
             check.setOnCheckedChangeListener { _, isChecked ->
                 resultMap[checkMap[check!!]!!] = isChecked
+                if (!isChecked) {
+                    counter--
+                    if (counter == 0) {
+                        check.isChecked = true
+                        resultMap[checkMap[check]!!] = true
+                        Toast.makeText(
+                            this,
+                            "Atleast someone must pay the bill",
+                            Toast.LENGTH_SHORT
+                        ).show()
+                        counter = 1
+                    }
+                } else {
+                    counter++
+                }
             }
             linearLayout.addView(view)
         }

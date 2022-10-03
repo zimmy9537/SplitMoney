@@ -7,7 +7,8 @@ data class Expense(
     var expenseName: String,
     var paidByMap: HashMap<String, Boolean>?,
     var amount: Double,
-    var timestamp: String
+    var payment_time: String,
+    var registered_time: Long
 ) {
-    constructor() : this(true, "", null, "", null, 0.0, "")
+    constructor() : this(true, "", null, "", null, 0.0, "",0)
 }
