@@ -11,6 +11,7 @@ import com.google.firebase.database.*
 import com.zimmy.splitmoney.R
 import com.zimmy.splitmoney.constants.Konstants
 import com.zimmy.splitmoney.models.Transaction_SettleUp
+import java.math.BigDecimal
 import kotlin.math.absoluteValue
 
 class SettleUpActivity : AppCompatActivity() {
@@ -116,7 +117,12 @@ class SettleUpActivity : AppCompatActivity() {
                                                 override fun onDataChange(snapshot: DataSnapshot) {
                                                     var currentValue =
                                                         snapshot.getValue(Double::class.java)!!
-                                                    currentValue -= transaction.amount.absoluteValue
+
+//                                                    currentValue -= transaction.amount.absoluteValue
+                                                    currentValue =
+                                                        BigDecimal(currentValue).subtract(
+                                                            BigDecimal(transaction.amount.absoluteValue)
+                                                        ).toDouble()
                                                     groupReference.child(Konstants.EXPENSE_GLOBAL)
                                                         .child(phone.key.toString())
                                                         .setValue(currentValue)
@@ -139,7 +145,10 @@ class SettleUpActivity : AppCompatActivity() {
                                                 override fun onDataChange(snapshot: DataSnapshot) {
                                                     var currentValue =
                                                         snapshot.getValue(Double::class.java)!!
-                                                    currentValue += transaction.amount.absoluteValue
+//                                                    currentValue += transaction.amount.absoluteValue
+                                                    currentValue = BigDecimal(currentValue).add(
+                                                        BigDecimal(transaction.amount.absoluteValue)
+                                                    ).toDouble()
                                                     groupReference.child(Konstants.EXPENSE_GLOBAL)
                                                         .child(phone.key.toString())
                                                         .setValue(currentValue)
@@ -179,7 +188,11 @@ class SettleUpActivity : AppCompatActivity() {
                                                 override fun onDataChange(snapshot: DataSnapshot) {
                                                     var currentValue =
                                                         snapshot.getValue(Double::class.java)!!
-                                                    currentValue += transaction.amount.absoluteValue
+//                                                    currentValue += transaction.amount.absoluteValue
+                                                    currentValue = BigDecimal(currentValue).add(
+                                                        BigDecimal(transaction.amount.absoluteValue)
+                                                    ).toDouble()
+
                                                     groupReference.child(Konstants.EXPENSE_GLOBAL)
                                                         .child(phone.key.toString())
                                                         .setValue(currentValue)
@@ -202,7 +215,11 @@ class SettleUpActivity : AppCompatActivity() {
                                                 override fun onDataChange(snapshot: DataSnapshot) {
                                                     var currentValue =
                                                         snapshot.getValue(Double::class.java)!!
-                                                    currentValue -= transaction.amount.absoluteValue
+//                                                    currentValue -= transaction.amount.absoluteValue
+                                                    currentValue =
+                                                        BigDecimal(currentValue).subtract(
+                                                            BigDecimal(transaction.amount.absoluteValue)
+                                                        ).toDouble()
                                                     groupReference.child(Konstants.EXPENSE_GLOBAL)
                                                         .child(phone.key.toString())
                                                         .setValue(currentValue)

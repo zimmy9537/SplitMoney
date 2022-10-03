@@ -17,6 +17,16 @@
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
+    <ImageView
+        android:id="@+id/addMember"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:src="@drawable/add"
+        app:layout_constraintBottom_toBottomOf="@id/groupName"
+        app:layout_constraintStart_toEndOf="@id/groupName"
+        app:layout_constraintTop_toTopOf="@id/groupName"
+        android:layout_marginStart="20dp"/>
+
     <Button
         android:id="@+id/settleUp"
         android:layout_width="wrap_content"
@@ -24,6 +34,7 @@
         android:layout_marginStart="20dp"
         android:layout_marginTop="20dp"
         android:text="Settle up"
+        android:textAllCaps="false"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toBottomOf="@id/groupName" />
 
@@ -34,8 +45,10 @@
         android:layout_marginStart="20dp"
         android:layout_marginTop="20dp"
         android:text="Balances"
+        android:textAllCaps="false"
         app:layout_constraintStart_toEndOf="@id/settleUp"
         app:layout_constraintTop_toBottomOf="@id/groupName" />
+
 
     <androidx.recyclerview.widget.RecyclerView
         android:id="@+id/groupExpenseRv"
@@ -123,13 +136,13 @@
         android:id="@+id/groupQrTv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:text="Group Qr"
-        android:layout_marginEnd="30dp"
         android:layout_marginTop="66dp"
+        android:layout_marginEnd="30dp"
+        android:text="Group Qr"
+        android:textColor="@color/teal_200"
         android:textSize="16sp"
-        android:textColor="@color/teal_200"/>
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintTop_toTopOf="parent" />
 
 
 </androidx.constraintlayout.widget.ConstraintLayout>

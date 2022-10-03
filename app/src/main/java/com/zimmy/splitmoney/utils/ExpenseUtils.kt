@@ -5,6 +5,7 @@ import com.zimmy.splitmoney.fragments.FriendFragment
 import com.zimmy.splitmoney.models.Expense
 import com.zimmy.splitmoney.models.Transaction
 import com.zimmy.splitmoney.models.Transaction_result
+import java.math.BigDecimal
 import java.text.SimpleDateFormat
 import java.util.*
 import kotlin.Comparator
@@ -13,14 +14,7 @@ import kotlin.collections.ArrayList
 class ExpenseUtils {
     companion object {
 
-        //function to return time string as June 26, 2022
-        fun getDateString(date: Date): String {
-            val fmt = SimpleDateFormat("MMMM d, yyyy")
-            return fmt.format(date)
-        }
-
         val TAG: String = FriendFragment::class.java.simpleName
-
 
         private fun getMinAdvanced(transactionList: ArrayList<Transaction>): Int {
             var minIndex: Int = 0
@@ -54,15 +48,26 @@ class ExpenseUtils {
             val mxDebit = getMinAdvanced(transactionList)
 
             if (transactionList[mxCredit].amount == 0.0 && transactionList[mxDebit].amount == 0.0) {
-                return;
+                return
             }
 
             val minimumOfTwo =
                 minOf2Advanced(-transactionList[mxDebit].amount, transactionList[mxCredit].amount)
-            transactionList[mxCredit].amount -= minimumOfTwo
-            transactionList[mxDebit].amount += minimumOfTwo
+//            transactionList[mxCredit].amount -= minimumOfTwo
+            transactionList[mxCredit].amount =
+                BigDecimal(transactionList[mxCredit].amount.toString()).subtract(
+                    BigDecimal(minimumOfTwo.toString())
+                ).toDouble()
 
-            Log.v("TRANSACTION RESULT","${transactionList[mxDebit].friendPhone} pays ${minimumOfTwo} to ${transactionList[mxCredit].friendPhone}\n")
+//            transactionList[mxDebit].amount += minimumOfTwo
+            transactionList[mxDebit].amount =
+                BigDecimal(transactionList[mxDebit].amount).add(BigDecimal(minimumOfTwo))
+                    .toDouble()
+
+            Log.v(
+                "TRANSACTION RESULT",
+                "${transactionList[mxDebit].friendPhone} pays $minimumOfTwo to ${transactionList[mxCredit].friendPhone}\n"
+            )
             transactionResult.add(
                 Transaction_result(
                     transactionList[mxCredit].friendPhone,

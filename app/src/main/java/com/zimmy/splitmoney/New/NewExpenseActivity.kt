@@ -19,11 +19,13 @@ import com.zimmy.splitmoney.models.Expense
 import com.zimmy.splitmoney.models.ExpenseGroup
 import com.zimmy.splitmoney.models.Friend
 import com.zimmy.splitmoney.models.Group
+import java.math.BigDecimal
 import java.math.RoundingMode
 import java.text.DateFormat
 import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.HashMap
 import kotlin.streams.asSequence
 
 
@@ -37,7 +39,6 @@ class NewExpenseActivity : AppCompatActivity(), DatePickerDialog.OnDateSetListen
 
     //todo test the code and repeat for the percentage method
     //todo later work on the save button on click
-    //todo this day is creating a fuck out of me
     //todo the equal fragments and percentage fragment names are not okay
 
     lateinit var withTv: TextView
@@ -136,6 +137,7 @@ class NewExpenseActivity : AppCompatActivity(), DatePickerDialog.OnDateSetListen
 
         expensePercent = HashMap()
         resultMap = HashMap()
+        setDate()
         if (isFriend == Konstants.INDIVIDUALEXPENSE) {
             friendName = intent.getStringExtra(Konstants.NAME).toString()
             friendPhone = intent.getStringExtra(Konstants.PHONE).toString()
@@ -287,14 +289,19 @@ class NewExpenseActivity : AppCompatActivity(), DatePickerDialog.OnDateSetListen
         df.roundingMode = RoundingMode.DOWN
         var expenseTotal = 0.00
         for (ele in expensePercent) {
-            val roundOff = df.format(amount * ele.value / 100)
+            val roundOff =
+                df.format((BigDecimal(amount.toString()).multiply(BigDecimal(ele.value.toString()))).toDouble() / 100)
             Log.v(TAG, "Individual pay $roundOff")
-            expenseTotal += roundOff.toDouble()
+            expenseTotal =
+                (BigDecimal(expenseTotal.toString()).add(BigDecimal(roundOff.toString()))).toDouble()
         }
-        remainder = amount - expenseTotal
-        Log.v(TAG, "reminder 1. $remainder")
+        remainder =
+            BigDecimal(amount.toString()).subtract(BigDecimal(expenseTotal.toString())).toDouble()
         remainder = df.format(remainder).toDouble()
+        Log.v(TAG, "reminder 1. $remainder")
         val newExpenseCode = expenseCodeGenerator()
+
+        // calculations of total of those who paid initially
         var thosePaid = 0
         for (ele in paidByMap) {
             if (ele.value) {
@@ -303,7 +310,6 @@ class NewExpenseActivity : AppCompatActivity(), DatePickerDialog.OnDateSetListen
         }
         val ifPaid = amount / thosePaid
 
-        //expenseMap and paidByMap if ok
         //todo some problem with the individual expense solution
         if (isFriend == Konstants.INDIVIDUALEXPENSE) {
             amount /= 2
@@ -387,54 +393,50 @@ class NewExpenseActivity : AppCompatActivity(), DatePickerDialog.OnDateSetListen
                 Date().time
             )
 
+            //just log
+            //output=> following expenseMap has decimal precision issue
             for (ele in expenseMap) {
-                Log.v(TAG, "expense map ${ele.key} pays $${ele.value}")
-                //expense map 1234567890 pays $33.333333333333336
+                Log.d(TAG, "${ele.key} pays ${ele.value}")
             }
-            Log.v(TAG, "here ${newExpenseCode}, ${amount}, $desiredDateString")
-            //here ZPWH4, 100.0, July 31, 2022
 
-            //individual person
+            //format to 2 decimal precision
+            Log.v(TAG, "output after decimal precision")
+            for (ele in expenseMap) {
+                expenseMap[ele.key] = df.format(expenseMap[ele.key]).toDouble()
+                Log.d(TAG, "${ele.key} pays ${ele.value}")
+            }
 
-            val netExpense: HashMap<String, Double> = HashMap()
+            //output=> following expenseMap after resolved expense remainder
+            for (ele in expenseMap) {
+                Log.d(TAG, "${ele.key} pays ${ele.value}")
+            }
+
+            //work begins for expense_global
+            val netExpense: HashMap<String, BigDecimal> = HashMap()
             for (ele in paidByMap) {
                 if (ele.value) {
-                    netExpense[ele.key] = ifPaid - expenseMap[ele.key]!!
+                    netExpense[ele.key] =
+                        BigDecimal(ifPaid.toString()).subtract(BigDecimal(expenseMap[ele.key].toString()))
                 } else {
-                    netExpense[ele.key] = -expenseMap[ele.key]!!
+                    netExpense[ele.key] = -BigDecimal(expenseMap[ele.key].toString())
                 }
+                Log.v(TAG, "netExpense for ${ele.key} is ${netExpense[ele.key]}")
             }
-            Log.v(TAG, "reminder is ${remainder}")
-            //reminder is 0.010000000000005116
 
-            var remainder2 = 0.00
-            for (ele in netExpense) {
-                netExpense[ele.key] = df.format(ele.value).toDouble()
-                Log.v(TAG, "INDIVIDUAL net expense ${ele.value}")
-                //INDIVIDUAL net expense -33.33
-                remainder2 += df.format(ele.value).toDouble()
-            }
-            remainder2 = df.format(remainder2).toDouble()
-            Log.v(TAG, "reminder is $remainder")
-            //reminder is 0.010000000000005116
-            Log.v(TAG, "remainder2 in netExpense $remainder2")
-            //remainder2 in netExpense 0.0
-
-            //add extra reminder
-            remainder2 = -remainder2
-            Log.v(TAG, "remainder2 in netExpense $remainder2")
-            for (ele in netExpense) {
-                if (netExpense[ele.key]!! > 0) {
-                    netExpense[ele.key] = netExpense[ele.key]?.plus(remainder2)!!
+            for (ele in paidByMap) {
+                if (ele.value) {
+                    netExpense[ele.key] =
+                        (netExpense[ele.key]!!).subtract(BigDecimal(remainder.toString()))
                     break
                 }
             }
 
-            for (ele in expenseMap) {
-                expenseMap[ele.key] = df.format(ele.value).toDouble()
+            for (ele in netExpense) {
+                Log.d(TAG, "${ele.key} pays ${ele.value}")
             }
-            expense.expenseMap = expenseMap
 
+
+            //real work on expense_global
             groupReference =
                 FirebaseDatabase.getInstance().reference.child(Konstants.GROUPS).child(groupCode)
             groupReference.child(Konstants.EXPENSE).child(newExpenseCode).setValue(expense)
@@ -444,64 +446,16 @@ class NewExpenseActivity : AppCompatActivity(), DatePickerDialog.OnDateSetListen
                     .addListenerForSingleValueEvent(object : ValueEventListener {
                         override fun onDataChange(snapshot: DataSnapshot) {
                             if (snapshot.exists()) {
-                                var result = snapshot.getValue(Double::class.java)!!
-                                result += df.format(netExpense[ele.key]!!).toDouble()
+                                var result = snapshot.getValue(Double::class.java)
+                                result =
+                                    (BigDecimal(result.toString()).add(netExpense[ele.key])).toDouble()
                                 groupReference.child(Konstants.EXPENSE_GLOBAL).child(ele.key)
                                     .setValue(result)
                             }
                         }
 
                         override fun onCancelled(error: DatabaseError) {
-                            Log.v(TAG, "database error ${error.message}")
-                        }
-
-                    })
-            }
-
-            for (ele in paidByMap) {
-                val memberPhone = ele.key
-                val isIn = paidByMap[memberPhone]
-                var result: Double
-                var owe = "i owe no one"
-                //todo handle thw event of a neutral expense where net result is zero, rest data is getting updated
-                if (isIn!!) {
-                    result = amount / thosePaid - expenseMap[memberPhone]!!
-                    for (friend in friendDetailList) {
-                        if (!paidByMap[friend.phone]!!) {
-                            owe = "${friend.name} owes you"
-                            break
-                        }
-                    }
-                } else {
-                    result = -expenseMap[memberPhone]!!
-                    for (friend in friendDetailList) {
-                        if (paidByMap[friend.phone]!!) {
-                            owe = "you owe ${friend.name}"
-                            break
-                        }
-                    }
-                }
-
-
-                //new here
-                friendReference =
-                    FirebaseDatabase.getInstance().reference.child(Konstants.USERS).child(ele.key)
-                friendReference.child(groupCode)
-                    .addListenerForSingleValueEvent(object : ValueEventListener {
-                        override fun onDataChange(snapshot: DataSnapshot) {
-                            if (snapshot.exists()) {
-                                val group = snapshot.getValue(Group::class.java)
-                                if (group != null) {
-                                    var amount = group.amount
-                                    amount += result
-                                    group.amount = amount
-                                    group.owe = owe
-                                }
-                            }
-                        }
-
-                        override fun onCancelled(error: DatabaseError) {
-                            Log.v(TAG, "database error ${error.message}")
+                            Log.v(TAG, "Database error occurred ${error.message}")
                         }
                     })
             }
@@ -516,5 +470,20 @@ class NewExpenseActivity : AppCompatActivity(), DatePickerDialog.OnDateSetListen
         desiredDateString =
             DateFormat.getDateInstance(DateFormat.FULL).format(mCalendar.time)
         day.text = desiredDateString
+    }
+
+    private fun setDate() {
+        val c: Date = Calendar.getInstance().time
+        val df = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        val formattedDate: String = df.format(c)
+        dayDate = formattedDate.slice(IntRange(0, 1)).toInt()
+        month = formattedDate.slice(IntRange(3, 4)).toInt()
+        year = formattedDate.slice(IntRange(6, 9)).toInt()
+        val mCalendar = Calendar.getInstance()
+        mCalendar[Calendar.YEAR] = year
+        mCalendar[Calendar.MONTH] = month
+        mCalendar[Calendar.DAY_OF_MONTH] = dayDate
+        desiredDateString =
+            DateFormat.getDateInstance(DateFormat.FULL).format(mCalendar.time)
     }
 }
