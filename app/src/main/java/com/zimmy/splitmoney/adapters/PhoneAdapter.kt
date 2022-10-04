@@ -8,7 +8,7 @@ import android.view.View
 import android.view.ViewGroup
 import android.widget.*
 import androidx.recyclerview.widget.RecyclerView
-import com.zimmy.splitmoney.New.MessageActivity
+import com.zimmy.splitmoney.new.MessageActivity
 import com.zimmy.splitmoney.R
 import com.zimmy.splitmoney.models.ContactModel
 import java.util.*

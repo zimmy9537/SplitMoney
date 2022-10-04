@@ -13,7 +13,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
-import com.zimmy.splitmoney.New.NewFriendActivity
+import com.zimmy.splitmoney.new.NewFriendActivity
 import com.zimmy.splitmoney.adapters.FriendAdapter
 import com.zimmy.splitmoney.constants.Konstants
 import com.zimmy.splitmoney.databinding.FragmentFriendBinding
