@@ -15,7 +15,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.database.*
-import com.zimmy.splitmoney.New.NewExpenseActivity
+import com.zimmy.splitmoney.new.NewExpenseActivity
 import com.zimmy.splitmoney.adapters.ExpenseAdapter
 import com.zimmy.splitmoney.constants.Konstants
 import com.zimmy.splitmoney.expense.BeforeSettleUpActivity

@@ -1,4 +1,4 @@
-package com.zimmy.splitmoney.New
+package com.zimmy.splitmoney.new
 
 import android.Manifest
 import android.app.Activity

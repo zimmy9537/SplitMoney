@@ -17,8 +17,8 @@ import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.zimmy.splitmoney.BalanceAcitvity
-import com.zimmy.splitmoney.New.NewExpenseActivity
-import com.zimmy.splitmoney.New.NewFriendActivity
+import com.zimmy.splitmoney.new.NewExpenseActivity
+import com.zimmy.splitmoney.new.NewFriendActivity
 import com.zimmy.splitmoney.R
 import com.zimmy.splitmoney.adapters.GroupExpenseAdapter
 import com.zimmy.splitmoney.constants.Konstants
