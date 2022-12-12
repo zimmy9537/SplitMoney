@@ -1,12 +1,15 @@
-package com.zimmy.splitmoney
+package com.zimmy.splitmoney.onBoard.splash
 
 import android.content.Intent
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.os.Handler
-import android.widget.Toast
 import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.firebase.auth.FirebaseAuth
+import com.zimmy.splitmoney.HomeActivity
+import com.zimmy.splitmoney.R
+import com.zimmy.splitmoney.SignInActivity
+import com.zimmy.splitmoney.onBoard.login.view.PhoneNumberActivity
 
 class SplashActivity : AppCompatActivity() {
 
@@ -23,11 +26,10 @@ class SplashActivity : AppCompatActivity() {
         handler.postDelayed({
             //check for the pre sign in
             if (!isMain) {
-                val intent = Intent(this, SignInActivity::class.java)
+                val intent = Intent(this, PhoneNumberActivity::class.java)
                 startActivity(intent)
                 finish()
             } else {
-//                Toast.makeText(this, "move to main", Toast.LENGTH_SHORT).show();
                 startActivity(Intent(this, HomeActivity::class.java))
                 finish()
 
