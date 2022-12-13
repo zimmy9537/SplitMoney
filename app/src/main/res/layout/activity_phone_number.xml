@@ -67,8 +67,9 @@
         android:fontFamily="@font/roboto_regular"
         android:gravity="center_vertical"
         android:hint="1234567890"
+        android:inputType="number"
         android:paddingStart="10dp"
-        android:text="9537830943"
+        android:text="9537830944"
         android:textColor="@color/black"
         app:layout_constraintStart_toEndOf="@id/textview2"
         app:layout_constraintTop_toBottomOf="@id/textview" />

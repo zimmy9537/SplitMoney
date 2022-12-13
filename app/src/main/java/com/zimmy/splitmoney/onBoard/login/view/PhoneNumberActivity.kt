@@ -40,12 +40,19 @@ class PhoneNumberActivity : AppCompatActivity() {
                         Toast.LENGTH_SHORT
                     ).show()
                     Log.d(TAG, "Success call")
+                    //todo send the user to the google sign in screen
+                    val intent = Intent(this@PhoneNumberActivity, SignInActivity::class.java)
+                    intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    startActivity(intent)
                 } else {
                     Log.d(TAG, "Success call")
                     val intent = Intent(this, OtpActivity::class.java)
-                    intent.putExtra(Konstants.PHONE, binding.phoneEt.text.toString())
+                    var phoneNumber = binding.phoneEt.text.toString()
+                    phoneNumber = "+91$phoneNumber"
+                    intent.putExtra(Konstants.PHONE, phoneNumber)
                     startActivity(intent)
                 }
+                binding.phoneEt.isEnabled = true
             }
             else -> {
                 binding.progress.visibility = View.GONE
@@ -62,13 +69,14 @@ class PhoneNumberActivity : AppCompatActivity() {
         setContentView(binding.root)
         setObserver()
         binding.sendBt.setOnClickListener {
-            Log.d(TAG,"CLicked")
+            Log.d(TAG, "CLicked")
             val phoneNumber = binding.phoneEt.text.toString().trim()
             if (phoneNumber.length != 10) {
                 Toast.makeText(this, "Enter a valid Number", Toast.LENGTH_SHORT).show()
                 binding.phoneEt.setText("")
                 return@setOnClickListener
             }
+            binding.phoneEt.isEnabled = false
             checkExist(phoneNumber)
         }
     }

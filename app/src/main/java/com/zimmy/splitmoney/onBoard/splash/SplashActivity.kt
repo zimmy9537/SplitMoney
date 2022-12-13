@@ -8,7 +8,6 @@ import com.google.android.gms.auth.api.signin.GoogleSignIn
 import com.google.firebase.auth.FirebaseAuth
 import com.zimmy.splitmoney.HomeActivity
 import com.zimmy.splitmoney.R
-import com.zimmy.splitmoney.SignInActivity
 import com.zimmy.splitmoney.onBoard.login.view.PhoneNumberActivity
 
 class SplashActivity : AppCompatActivity() {

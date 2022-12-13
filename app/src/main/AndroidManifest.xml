@@ -85,7 +85,7 @@
             android:label="@string/title_activity_home"
             android:theme="@style/Theme.SplitMoney.NoActionBar" />
         <activity
-            android:name=".SignInActivity"
+            android:name=".onBoard.login.view.SignInActivity"
             android:exported="false" />
         <activity
             android:name=".onBoard.splash.SplashActivity"

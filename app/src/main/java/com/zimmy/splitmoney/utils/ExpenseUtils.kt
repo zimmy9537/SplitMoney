@@ -14,7 +14,7 @@ import kotlin.collections.ArrayList
 class ExpenseUtils {
     companion object {
 
-        val TAG: String = FriendFragment::class.java.simpleName
+        private val TAG: String = FriendFragment::class.java.simpleName
 
         private fun getMinAdvanced(transactionList: ArrayList<Transaction>): Int {
             var minIndex: Int = 0
