@@ -9,17 +9,19 @@ import com.google.firebase.auth.FirebaseAuth
 import com.zimmy.splitmoney.HomeActivity
 import com.zimmy.splitmoney.R
 import com.zimmy.splitmoney.onBoard.login.view.PhoneNumberActivity
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
+@AndroidEntryPoint
 class SplashActivity : AppCompatActivity() {
 
-    private lateinit var mAuth: FirebaseAuth
+    @Inject
+    lateinit var mAuth: FirebaseAuth
     private var isMain: Boolean = false
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_splash)
-
-        mAuth = FirebaseAuth.getInstance()
 
         val handler = Handler()
         handler.postDelayed({

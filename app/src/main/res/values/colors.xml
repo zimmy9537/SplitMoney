@@ -8,4 +8,8 @@
     <color name="black">#FF000000</color>
     <color name="white">#FFFFFFFF</color>
     <color name="edit">#A8A6A6</color>
+
+    //app color
+    <color name = "app_base">#6b84ab</color>
+    <color name="app_base_dark">#456288</color>
 </resources>

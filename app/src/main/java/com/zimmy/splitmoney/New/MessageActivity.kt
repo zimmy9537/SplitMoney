@@ -79,7 +79,7 @@ class MessageActivity : AppCompatActivity() {
                             Log.v(TAG, "database error ${error.message}")
                         }
                     })
-                val friend = Friend(contact.name, null, null, null)
+                val friend = Friend(contact.name, null, null)
                 groupReference.child(groupCode).child(Konstants.MEMBERS).child(contact.phone)
                     .setValue(friend)
 
@@ -125,7 +125,8 @@ class MessageActivity : AppCompatActivity() {
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     if (!snapshot.exists()) {
-                        val user = User(contact.name, null, null, contact.phone, null)
+                        //TODO look into the parameter of this function
+                        val user = User(contact.name, null, null, contact.phone)
                         userReference.child(contact.phone).setValue(user)
                     }
                 }
@@ -138,7 +139,7 @@ class MessageActivity : AppCompatActivity() {
                 }
             })
 
-        val friend = Friend(contact.name, null, contact.phone, 0.0)
+        val friend = Friend(contact.name, contact.phone, 0.0)
         //this one is for me
         userReference.child(phone).child(Konstants.FRIENDS).child(contact.phone)
             .child(Konstants.DATA).setValue(friend)
@@ -146,7 +147,7 @@ class MessageActivity : AppCompatActivity() {
             .child(Konstants.RESULT).setValue(0.00)
         //this one is my friend
         userReference.child(contact.phone).child(Konstants.FRIENDS).child(phone)
-            .child(Konstants.DATA).setValue(Friend(name, null, phone, 0.0))
+            .child(Konstants.DATA).setValue(Friend(name, phone, 0.0))
         userReference.child(contact.phone).child(Konstants.FRIENDS).child(phone)
             .child(Konstants.RESULT).setValue(0.00)
     }

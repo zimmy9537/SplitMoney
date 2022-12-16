@@ -4,11 +4,10 @@ import java.io.Serializable
 
 data class Friend(
     var name: String,
-    var isFemale: Boolean?,
     var phone: String?,
     var amount: Double?
 ) : Serializable {
 
-    constructor() : this("", null, null, null)
-    constructor(name: String, phone: String) : this(name, null, phone, null)
+    constructor() : this("", null, null)
+    constructor(name: String, phone: String) : this(name, phone, null)
 }

@@ -121,7 +121,7 @@ class JoinGroupActivity : AppCompatActivity() {
     }
 
     private fun joinGroup(gcode: String) {
-        val friend = Friend(name, isFemale, null, null)
+        val friend = Friend(name, null, null)
         groupReference.child(gcode).addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.exists()) {

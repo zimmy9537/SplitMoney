@@ -94,7 +94,7 @@ class NewGroupActivity : AppCompatActivity() {
 
             groupName = nameEt.text.toString().trim()
 
-            val friend = Friend(name, isFemale, null, null)
+            val friend = Friend(name, null, null)
             groupReference.child(groupCode).child(Konstants.MEMBERS).child(phone).setValue(friend)
             groupReference.child(groupCode).child(Konstants.GROUPINFO).child(Konstants.GROUPNAME)
                 .setValue(groupName)

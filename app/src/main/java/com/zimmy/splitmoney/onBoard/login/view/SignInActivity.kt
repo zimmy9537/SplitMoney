@@ -27,27 +27,30 @@ import com.zimmy.splitmoney.HomeActivity
 import com.zimmy.splitmoney.R
 import com.zimmy.splitmoney.constants.Konstants
 import com.zimmy.splitmoney.models.User
+import dagger.hilt.android.AndroidEntryPoint
+import javax.inject.Inject
 
-
+@AndroidEntryPoint
 class SignInActivity : AppCompatActivity() {
 
     //TODO apply a check for unique phone number before the registration
 
-    val GOOGLE_SIGN_IN = 64
-    val TAG = SignInActivity::class.simpleName
+    private val GOOGLE_SIGN_IN = 64
+    private val TAG = SignInActivity::class.simpleName
+    @Inject
     lateinit var mAuth: FirebaseAuth
-    lateinit var signInButton: SignInButton
-    lateinit var gso: GoogleSignInOptions
-    lateinit var gsc: GoogleSignInClient
-    lateinit var firebaseDatabase: FirebaseDatabase
-    lateinit var accountReference: DatabaseReference
-    lateinit var generalReference: DatabaseReference
-    lateinit var phoneEt: EditText
-    lateinit var maleRadio: RadioButton
-    lateinit var femaleRadio: RadioButton
-    lateinit var personalPreference: SharedPreferences
-    lateinit var editor: SharedPreferences.Editor
-    var isFemale: Boolean = true
+    private lateinit var signInButton: SignInButton
+    private lateinit var gso: GoogleSignInOptions
+    private lateinit var gsc: GoogleSignInClient
+    private lateinit var firebaseDatabase: FirebaseDatabase
+    private lateinit var accountReference: DatabaseReference
+    private lateinit var generalReference: DatabaseReference
+    private lateinit var phoneEt: EditText
+    private lateinit var maleRadio: RadioButton
+    private lateinit var femaleRadio: RadioButton
+    private lateinit var personalPreference: SharedPreferences
+    private lateinit var editor: SharedPreferences.Editor
+    private var isFemale: Boolean = true
 
     private var WEB_CLIENT_ID="44259169007-rqadlqgrc4u4mbrtabd9b6gd4r3b56ql.apps.googleusercontent.com"
 
@@ -221,7 +224,6 @@ class SignInActivity : AppCompatActivity() {
                                     editor.putString(Konstants.PHONE, user.phoneNumber)
                                     editor.putString(Konstants.NAME, user.name)
                                     editor.putString(Konstants.PROMO, user.promocode)
-                                    user.isFemale?.let { editor.putBoolean(Konstants.FEMALE, it) }
                                     editor.apply()
                                     Toast.makeText(
                                         baseContext,
@@ -269,12 +271,10 @@ class SignInActivity : AppCompatActivity() {
                         account.email!!,
                         promocode,
                         phoneEt.text.toString(),
-                        isFemale
                     )
                     editor.putString(Konstants.NAME, user.name)
                     editor.putString(Konstants.PHONE, user.phoneNumber)
                     editor.putString(Konstants.PROMO, user.promocode)
-                    user.isFemale?.let { editor.putBoolean(Konstants.FEMALE, it) }
                     editor.apply()
                     accountReference.child(phoneEt.text.toString()).child(Konstants.DATA)
                         .setValue(user)

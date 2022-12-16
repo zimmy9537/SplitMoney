@@ -17,13 +17,17 @@ import com.google.firebase.auth.PhoneAuthProvider.OnVerificationStateChangedCall
 import com.zimmy.splitmoney.HomeActivity
 import com.zimmy.splitmoney.constants.Konstants
 import com.zimmy.splitmoney.databinding.ActivityOtpBinding
+import dagger.hilt.android.AndroidEntryPoint
 import java.util.concurrent.TimeUnit
+import javax.inject.Inject
 
 
+@AndroidEntryPoint
 class OtpActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityOtpBinding
-    private val mAuth = FirebaseAuth.getInstance()
+    @Inject
+    lateinit var mAuth: FirebaseAuth
     private lateinit var phoneNumber: String
     private val TAG = OtpActivity::class.java.simpleName
     private var verificationId: String? = null
