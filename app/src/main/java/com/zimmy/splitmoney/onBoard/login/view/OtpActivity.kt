@@ -1,12 +1,16 @@
 package com.zimmy.splitmoney.onBoard.login.view
 
+import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.os.Handler
 import android.util.Log
 import android.view.View
 import android.widget.Toast
+import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.lifecycle.Observer
+import androidx.lifecycle.ViewModel
 import com.google.firebase.FirebaseException
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.PhoneAuthCredential
@@ -17,20 +21,27 @@ import com.google.firebase.auth.PhoneAuthProvider.OnVerificationStateChangedCall
 import com.zimmy.splitmoney.HomeActivity
 import com.zimmy.splitmoney.constants.Konstants
 import com.zimmy.splitmoney.databinding.ActivityOtpBinding
+import com.zimmy.splitmoney.onBoard.login.viewmodel.LoginViewModel
+import com.zimmy.splitmoney.resultdata.ResultData
 import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.GlobalScope
+import kotlinx.coroutines.launch
 import java.util.concurrent.TimeUnit
 import javax.inject.Inject
+import kotlin.math.log
 
 
 @AndroidEntryPoint
 class OtpActivity : AppCompatActivity() {
 
     private lateinit var binding: ActivityOtpBinding
+
     @Inject
     lateinit var mAuth: FirebaseAuth
     private lateinit var phoneNumber: String
     private val TAG = OtpActivity::class.java.simpleName
     private var verificationId: String? = null
+    private val viewModel: LoginViewModel by viewModels()
 
 
     private val mCallbacks = object : OnVerificationStateChangedCallbacks() {
@@ -40,6 +51,8 @@ class OtpActivity : AppCompatActivity() {
 
         override fun onVerificationFailed(e: FirebaseException) {
             Toast.makeText(this@OtpActivity, "Something went wrong", Toast.LENGTH_SHORT).show()
+            Log.d(TAG, "e-> ${e.message}")
+            binding.progress.visibility = View.GONE
         }
 
         override fun onCodeSent(
@@ -54,6 +67,31 @@ class OtpActivity : AppCompatActivity() {
         }
     }
 
+    private val databaseOperationObserve = Observer<ResultData<Boolean?>> { resultData ->
+        when (resultData) {
+            ResultData.Loading() -> {
+                binding.progress.visibility = View.VISIBLE
+                Toast.makeText(this, "Catching you in...", Toast.LENGTH_SHORT).show()
+            }
+
+            ResultData.Success(true) -> {
+                binding.progress.visibility = View.GONE
+                val firebaseUser = FirebaseAuth.getInstance().currentUser!!
+                firebaseUser.delete().addOnCompleteListener {
+                    val intent = Intent(this@OtpActivity, HomeActivity::class.java)
+                    intent.flags =
+                        Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                    startActivity(intent)
+                }
+            }
+
+            else -> {
+                binding.progress.visibility = View.GONE
+                Log.d(TAG, "TRY AGAIN LATER")
+            }
+        }
+    }
+
     //timer
     private var timerFree = false
     private var timer = 20
@@ -65,6 +103,7 @@ class OtpActivity : AppCompatActivity() {
 
         //intent
         phoneNumber = intent.getStringExtra(Konstants.PHONE).toString()
+        phoneNumber = "+91$phoneNumber"
 
         sendOtp(mCallbacks)
         timerFunc()
@@ -108,12 +147,13 @@ class OtpActivity : AppCompatActivity() {
                         "Otp verified successfully",
                         Toast.LENGTH_SHORT
                     ).show()
-                    val firebaseUser = FirebaseAuth.getInstance().currentUser!!
-                    firebaseUser.delete().addOnCompleteListener {
-                        val intent = Intent(this@OtpActivity, SignInActivity::class.java)
-                        intent.flags =
-                            Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                        startActivity(intent)
+                    viewModel.insertLiveData.observe(this, databaseOperationObserve)
+                    GlobalScope.launch {
+                        viewModel.insertDatabaseOperation(
+                            mAuth,
+                            phoneNumber,
+                            getSharedPreferences(Konstants.PERSONAL, Context.MODE_PRIVATE)
+                        )
                     }
                 } else {
                     Toast.makeText(this@OtpActivity, "Please try again", Toast.LENGTH_SHORT).show()

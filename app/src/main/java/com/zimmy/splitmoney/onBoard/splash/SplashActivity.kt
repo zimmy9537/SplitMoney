@@ -9,6 +9,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.zimmy.splitmoney.HomeActivity
 import com.zimmy.splitmoney.R
 import com.zimmy.splitmoney.onBoard.login.view.PhoneNumberActivity
+import com.zimmy.splitmoney.onBoard.login.view.SignInActivity
 import dagger.hilt.android.AndroidEntryPoint
 import javax.inject.Inject
 
@@ -27,7 +28,7 @@ class SplashActivity : AppCompatActivity() {
         handler.postDelayed({
             //check for the pre sign in
             if (!isMain) {
-                val intent = Intent(this, PhoneNumberActivity::class.java)
+                val intent = Intent(this, SignInActivity::class.java)
                 startActivity(intent)
                 finish()
             } else {
