@@ -75,14 +75,15 @@ class OtpActivity : AppCompatActivity() {
             }
 
             ResultData.Success(true) -> {
+                Log.d(TAG, "going home")
                 binding.progress.visibility = View.GONE
                 val firebaseUser = FirebaseAuth.getInstance().currentUser!!
-                firebaseUser.delete().addOnCompleteListener {
-                    val intent = Intent(this@OtpActivity, HomeActivity::class.java)
-                    intent.flags =
-                        Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
-                    startActivity(intent)
-                }
+//                firebaseUser.delete().addOnCompleteListener {
+                val intent = Intent(this@OtpActivity, HomeActivity::class.java)
+                intent.flags =
+                    Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(intent)
+//                }
             }
 
             else -> {
@@ -124,6 +125,7 @@ class OtpActivity : AppCompatActivity() {
         }
 
 
+        //currently bypassing the otp check due to no free providers, otp check code in previous commit
         binding.verifyOtpBt.setOnClickListener {
             if (verificationId == null) {
                 Toast.makeText(
@@ -139,29 +141,15 @@ class OtpActivity : AppCompatActivity() {
                     .show()
                 return@setOnClickListener
             }
-            val phoneCredential = PhoneAuthProvider.getCredential(verificationId!!, otp)
-            mAuth.signInWithCredential(phoneCredential).addOnCompleteListener { task ->
-                if (task.isSuccessful) {
-                    Toast.makeText(
-                        this@OtpActivity,
-                        "Otp verified successfully",
-                        Toast.LENGTH_SHORT
-                    ).show()
-                    viewModel.insertLiveData.observe(this, databaseOperationObserve)
-                    GlobalScope.launch {
-                        viewModel.insertDatabaseOperation(
-                            mAuth,
-                            phoneNumber,
-                            getSharedPreferences(Konstants.PERSONAL, Context.MODE_PRIVATE)
-                        )
-                    }
-                } else {
-                    Toast.makeText(this@OtpActivity, "Please try again", Toast.LENGTH_SHORT).show()
-                    binding.resend.visibility = View.VISIBLE
-                }
+            viewModel.insertLiveData.observe(this, databaseOperationObserve)
+            GlobalScope.launch {
+                viewModel.insertDatabaseOperation(
+                    mAuth,
+                    phoneNumber,
+                    getSharedPreferences(Konstants.PERSONAL, Context.MODE_PRIVATE)
+                )
             }
         }
-
     }
 
     private fun sendOtp(mCallbacks: OnVerificationStateChangedCallbacks) {

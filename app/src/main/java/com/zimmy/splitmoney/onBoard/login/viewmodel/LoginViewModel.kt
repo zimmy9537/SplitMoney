@@ -102,6 +102,7 @@ class LoginViewModel @Inject constructor(
                     insertMutableLiveData.postValue(ResultData.Success())
                 }
                 else -> {
+                    Log.d(TAG,"Failure")
                     insertMutableLiveData.postValue(ResultData.Failed())
                 }
             }

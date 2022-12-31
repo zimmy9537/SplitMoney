@@ -180,8 +180,10 @@ class UserRepository {
                             .child(Konstants.DATA)
                             .setValue(user)
                             .addOnCompleteListener {
+                                Log.d(TAG, "Success call")
                                 trySendBlocking(ResultData.Success(true)).onFailure {
                                     Log.d(TAG, "Something went wrong")
+                                    trySendBlocking(ResultData.Failed())
                                 }
                             }
                     }
@@ -190,9 +192,11 @@ class UserRepository {
                         Log.d(TAG, "Database error occurred here")
                         trySendBlocking(ResultData.Failed(null, "database error")).onFailure {
                             Log.d(TAG, "something went wrong")
+                            Log.d(TAG, "Failure call")
                         }
                     }
                 })
+            awaitClose { Log.d(TAG, "await close") }
         }
     }
 

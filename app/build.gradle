@@ -71,4 +71,7 @@ dependencies {
     //auto create viewModels by lazy declarations
     implementation 'androidx.fragment:fragment-ktx:1.5.5'
 
+    //okhttp
+    implementation("com.squareup.okhttp3:okhttp:4.10.0")
+
 }
