@@ -1,7 +1,6 @@
 package com.zimmy.splitmoney.groups
 
 import android.content.Intent
-import android.media.Image
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.util.Log
@@ -10,21 +9,18 @@ import android.widget.Button
 import android.widget.ImageView
 import android.widget.LinearLayout
 import android.widget.TextView
-import android.widget.Toast
 import androidx.recyclerview.widget.LinearLayoutManager
 import androidx.recyclerview.widget.RecyclerView
 import com.google.android.material.floatingactionbutton.FloatingActionButton
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
-import com.zimmy.splitmoney.BalanceAcitvity
+import com.zimmy.splitmoney.settleup.balance.BalanceActivity
 import com.zimmy.splitmoney.New.NewExpenseActivity
 import com.zimmy.splitmoney.New.NewFriendActivity
 import com.zimmy.splitmoney.R
 import com.zimmy.splitmoney.adapters.GroupExpenseAdapter
 import com.zimmy.splitmoney.constants.Konstants
 import com.zimmy.splitmoney.expense.BeforeSettleUpActivity
-import com.zimmy.splitmoney.expense.SettleUpActivity
-import com.zimmy.splitmoney.models.Expense
 import com.zimmy.splitmoney.models.ExpenseGroup
 import com.zimmy.splitmoney.models.Friend
 
@@ -59,7 +55,7 @@ class GroupActivity : AppCompatActivity() {
         setContentView(R.layout.activity_group)
 
         settleUp = findViewById(R.id.settleUp)
-        balances = findViewById(R.id.balances)
+        balances = findViewById(R.id.balances_ll)
         addGroupMember = findViewById(R.id.addMemberLl)
         shareGroupQr = findViewById(R.id.groupInviteLl)
         addExpense = findViewById(R.id.addExpense)
@@ -82,7 +78,7 @@ class GroupActivity : AppCompatActivity() {
         }
 
         balances.setOnClickListener {
-            val intent = Intent(this@GroupActivity, BalanceAcitvity::class.java)
+            val intent = Intent(this@GroupActivity, BalanceActivity::class.java)
             intent.putExtra(Konstants.FRIENDS, false)
             intent.putExtra(Konstants.GROUP_CODE, groupCode)
             startActivity(intent)

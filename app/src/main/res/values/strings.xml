@@ -7,4 +7,16 @@
     <string name="title_activity_split">SplitActivity</string>
     <string name="Equally">Equally</string>
     <string name="Percentage">Percentage</string>
+    <string name="beena_changela">Beena Changela</string>
+    <string name="beena">Beena</string>
+    <string name="Changela">Changela</string>
+    <string name="beena_email">beena.changela@gmail.com</string>
+    <string name="rupee_symbol">\u20B9</string>
+
+    //balance
+    <string name="you_owe">You owe</string>
+    <string name="balance">Balance</string>
+    <string name="settle_up">Settle up</string>
+    <string name="seems_settled">You seem to be settled up here</string>
+    <string name="no_transactions">No Transactions are made by the group</string>
 </resources>

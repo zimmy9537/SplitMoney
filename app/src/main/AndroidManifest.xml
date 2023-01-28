@@ -44,7 +44,7 @@
             android:name=".expense.SettleUpActivity"
             android:exported="false" />
         <activity
-            android:name=".BalanceAcitvity"
+            android:name=".settleup.balance.BalanceActivity"
             android:exported="false" />
         <activity
             android:name=".expense.SplitActivity"

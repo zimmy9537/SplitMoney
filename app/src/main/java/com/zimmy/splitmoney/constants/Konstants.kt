@@ -43,5 +43,10 @@ class Konstants {
         const val DEFAULT = "defualt"
         const val RESULT_MAP = "result_map"
         const val GROUP_CODE = "group_code"
+
+        const val NO_TRANSACTION = "no_transaction"
+        const val ALREADY_SETTLED_UP = "already_settled_up"
+        const val BALANCE_IMBALANCE = "balance_imbalance"
+        const val SETTLE_UP_VISIBLE = "settle_up_visible"
     }
 }

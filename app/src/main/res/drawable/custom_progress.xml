@@ -1,5 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
-<!--use rotate tag to rotate the drawable-->
 <rotate
     xmlns:android="http://schemas.android.com/apk/res/android"
     android:fromDegrees="0"
@@ -24,8 +23,8 @@
             of the shape-->
         <gradient
             android:angle="0"
-            android:endColor="@color/white"
-            android:startColor="@color/black"
+            android:endColor="@color/app_base"
+            android:startColor="@color/app_base_dark"
             android:type="sweep"
             android:useLevel="false" />
     </shape>

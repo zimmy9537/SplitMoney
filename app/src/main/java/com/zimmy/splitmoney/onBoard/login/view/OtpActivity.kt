@@ -147,6 +147,8 @@ class OtpActivity : AppCompatActivity() {
                     phoneNumber,
                     getSharedPreferences(Konstants.PERSONAL, Context.MODE_PRIVATE)
                 )
+                startActivity(Intent(this@OtpActivity, HomeActivity::class.java))
+                finish()
             }
         }
     }

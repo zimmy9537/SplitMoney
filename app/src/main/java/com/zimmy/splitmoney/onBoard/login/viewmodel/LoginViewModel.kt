@@ -10,15 +10,12 @@ import com.google.firebase.auth.FirebaseAuth
 import com.zimmy.splitmoney.repositories.UserRepository
 import com.zimmy.splitmoney.resultdata.ResultData
 import dagger.hilt.android.lifecycle.HiltViewModel
-import kotlinx.coroutines.flow.collect
-import kotlinx.coroutines.flow.onEach
 import kotlinx.coroutines.flow.onStart
 import javax.inject.Inject
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val userRepository: UserRepository,
-    mAuth: FirebaseAuth
+    private val userRepository: UserRepository
 ) : ViewModel() {
 
     private val TAG = LoginViewModel::class.java.simpleName
