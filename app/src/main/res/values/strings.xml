@@ -9,9 +9,11 @@
     <string name="Percentage">Percentage</string>
     <string name="beena_changela">Beena Changela</string>
     <string name="beena">Beena</string>
+    <string name="fena">fena</string>
     <string name="Changela">Changela</string>
     <string name="beena_email">beena.changela@gmail.com</string>
     <string name="rupee_symbol">\u20B9</string>
+    <string name="five_hundred">\u20B9500</string>
 
     //balance
     <string name="you_owe">You owe</string>
@@ -19,4 +21,10 @@
     <string name="settle_up">Settle up</string>
     <string name="seems_settled">You seem to be settled up here</string>
     <string name="no_transactions">No Transactions are made by the group</string>
+    <string name="pays">pays</string>
+    <string name="fetching_members">Fetching Members</string>
+    <string name="calculating_balance">Calculating Balance</string>
+    <string name="some_failure">Some Failure occurred, Please try again</string>
+    <string name="alone_in_group">You are alone in the group</string>
+    <string name="F_ed">F_ed up here</string>
 </resources>

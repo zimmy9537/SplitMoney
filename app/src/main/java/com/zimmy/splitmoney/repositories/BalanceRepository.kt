@@ -13,134 +13,173 @@ import com.zimmy.splitmoney.resultdata.ResultData
 import com.zimmy.splitmoney.settleup.balance.BalanceActivity
 import com.zimmy.splitmoney.utils.ExpenseUtils
 import kotlinx.coroutines.channels.ProducerScope
+import kotlinx.coroutines.channels.awaitClose
 import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
+import kotlinx.coroutines.flow.flow
 import java.math.BigDecimal
 
 class BalanceRepository {
-    private val TAG = BalanceActivity::class.java.simpleName
+    private val TAG = BalanceRepository::class.java.simpleName
 
-    fun getTransactionResultList(
+    suspend fun getMemberList(
+        groupCode: String
+    ): Flow<ResultData<HashMap<String, String>>> {
+        return callbackFlow {
+            val phoneMap: HashMap<String, String> = HashMap()
+            val groupReference =
+                FirebaseDatabase.getInstance().reference.child(Konstants.GROUPS)
+            Log.d(TAG,"group code $groupCode")
+            groupReference.child(groupCode).child(Konstants.MEMBERS)
+                .addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        val memberSize = snapshot.childrenCount
+                        var count = 0L
+                        for (phone in snapshot.children) {
+                            Log.d(TAG,"referenceWillBe ${phone.ref}")
+                            phone.ref.addListenerForSingleValueEvent(object : ValueEventListener {
+                                    override fun onDataChange(snapshot: DataSnapshot) {
+                                        val friend = snapshot.getValue(Friend::class.java)
+                                        if(friend == null){
+                                            Log.d(TAG,"null here")
+                                            return
+                                        }
+                                        Log.d(TAG,"phone ${phone.key.toString()}, name ${friend!!.name}")
+                                        phoneMap[phone.key.toString()] = friend.name
+//                                        count++
+                                    }
+
+                                    override fun onCancelled(error: DatabaseError) {
+                                        Log.v(TAG, "database error ${error.message}")
+                                        trySendBlocking(ResultData.Failed())
+                                    }
+
+                                })
+                        }
+//                        while (count != memberSize) {
+//                            //wait
+//                        }
+                        trySendBlocking(ResultData.Success(phoneMap))
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                        Log.d(TAG, "database error ${error.message}")
+                        trySendBlocking(ResultData.Failed())
+                    }
+                })
+            awaitClose {
+                Log.d(TAG, "await close")
+            }
+        }
+    }
+
+
+    fun getTransactionResultList2(
         isFriend: Boolean,
         groupCode: String,
         myPhone: String
     ): Flow<ResultData<Transaction_result>> {
         return callbackFlow {
             if (isFriend) {
-                //todo check for true condition
+                //does code even reach here??
             } else {
-                val phoneMap = HashMap<String, String>()
+                var count: Long
                 val netBalance = ArrayList<Transaction>()
                 val transactionResult = ArrayList<Transaction_result>()
-                var count: Long
-
                 val groupReference =
                     FirebaseDatabase.getInstance().reference.child(Konstants.GROUPS)
-                groupReference.child(groupCode).child(Konstants.MEMBERS)
+                groupReference.child(groupCode).child(Konstants.EXPENSE_GLOBAL)
                     .addListenerForSingleValueEvent(object : ValueEventListener {
                         override fun onDataChange(snapshot: DataSnapshot) {
-                            for (phone in snapshot.children) {
-                                groupReference.child(groupCode).child(Konstants.MEMBERS)
-                                    .child(phone.key.toString())
-                                    .addListenerForSingleValueEvent(object : ValueEventListener {
-                                        override fun onDataChange(snapshot: DataSnapshot) {
-                                            val friend = snapshot.getValue(Friend::class.java)
-                                            phoneMap[phone.key.toString()] = friend!!.name
-                                        }
+                            if (snapshot.exists()) {
+                                count = snapshot.childrenCount
+                                for (phone in snapshot.children) {
+                                    groupReference.child(groupCode)
+                                        .child(Konstants.EXPENSE_GLOBAL)
+                                        .child(phone.key.toString())
+                                        .addListenerForSingleValueEvent(object :
+                                            ValueEventListener {
+                                            override fun onDataChange(snapshot: DataSnapshot) {
+                                                Log.d(
+                                                    TAG,
+                                                    "snapshot:- ${
+                                                        Transaction(
+                                                            phone.key.toString(),
+                                                            snapshot.getValue(Double::class.java)!!
+                                                        )
+                                                    }"
+                                                )
+                                                netBalance.add(
+                                                    Transaction(
+                                                        phone.key.toString(),
+                                                        snapshot.getValue(Double::class.java)!!
+                                                    )
+                                                )
+                                                if (netBalance.size == count.toInt()) {
 
-                                        override fun onCancelled(error: DatabaseError) {
-                                            Log.v(TAG, "database error ${error.message}")
-                                        }
-
-                                    })
-                            }
-
-                            groupReference.child(groupCode).child(Konstants.EXPENSE_GLOBAL)
-                                .addListenerForSingleValueEvent(object : ValueEventListener {
-                                    override fun onDataChange(snapshot: DataSnapshot) {
-                                        if (snapshot.exists()) {
-                                            count = snapshot.childrenCount
-                                            for (phone in snapshot.children) {
-                                                groupReference.child(groupCode)
-                                                    .child(Konstants.EXPENSE_GLOBAL)
-                                                    .child(phone.key.toString())
-                                                    .addListenerForSingleValueEvent(object :
-                                                        ValueEventListener {
-                                                        override fun onDataChange(snapshot: DataSnapshot) {
-                                                            netBalance.add(
-                                                                Transaction(
-                                                                    phone.key.toString(),
-                                                                    snapshot.getValue(Double::class.java)!!
+                                                    if (checkIfBalanced(netBalance)) {
+                                                        if (netBalance.isEmpty()) {
+                                                            Log.d(TAG,"failure try")
+                                                            trySendBlocking(
+                                                                ResultData.Failed(
+                                                                    Konstants.NO_TRANSACTION
                                                                 )
                                                             )
-                                                            if (netBalance.size == count.toInt()) {
-
-                                                                if (checkIfBalanced(netBalance)) {
-                                                                    if (netBalance.isEmpty()) {
-                                                                        trySendBlocking(
-                                                                            ResultData.Failed(
-                                                                                Konstants.NO_TRANSACTION
-                                                                            )
-                                                                        )
-                                                                    } else {
-                                                                        minCashFlowRec(
-                                                                            netBalance,
-                                                                            transactionResult,
-                                                                            this@callbackFlow
-                                                                        )
-                                                                        var needSettleUp = false
-                                                                        for (ele in transactionResult) {
-                                                                            Log.v(
-                                                                                TAG,
-                                                                                "${ele.sender} will send ${ele.receiver} the amount ${ele.amount} "
-                                                                            )
-                                                                            if (ele.sender == myPhone || ele.receiver == myPhone) {
-                                                                                needSettleUp = true
-                                                                            }
-                                                                        }
-                                                                        if (!needSettleUp) {
-                                                                            trySendBlocking(
-                                                                                ResultData.Anonymous(
-                                                                                    Konstants.ALREADY_SETTLED_UP
-                                                                                )
-                                                                            )
-                                                                        } else {
-                                                                            trySendBlocking(
-                                                                                ResultData.Anonymous(
-                                                                                    Konstants.SETTLE_UP_VISIBLE
-                                                                                )
-                                                                            )
-                                                                        }
-                                                                    }
-                                                                } else {
-                                                                    trySendBlocking(
-                                                                        ResultData.Anonymous(
-                                                                            Konstants.BALANCE_IMBALANCE
-                                                                        )
-                                                                    )
+                                                        } else {
+                                                            printNetBalance(netBalance)
+                                                            minCashFlowRec(
+                                                                netBalance,
+                                                                transactionResult,
+                                                                this@callbackFlow
+                                                            )
+                                                            var needSettleUp = false
+                                                            for (ele in transactionResult) {
+                                                                Log.v(
+                                                                    TAG,
+                                                                    "${ele.sender} will send ${ele.receiver} the amount ${ele.amount} "
+                                                                )
+                                                                if (ele.sender == myPhone || ele.receiver == myPhone) {
+                                                                    needSettleUp = true
                                                                 }
                                                             }
+                                                            if (!needSettleUp) {
+                                                                Log.d(TAG,"anonymous 1")
+                                                                trySendBlocking(
+                                                                    ResultData.Anonymous(
+                                                                        Konstants.ALREADY_SETTLED_UP
+                                                                    )
+                                                                )
+                                                            } else {
+                                                                Log.d(TAG,"anonymous 2")
+                                                                trySendBlocking(
+                                                                    ResultData.Anonymous(
+                                                                        Konstants.SETTLE_UP_VISIBLE
+                                                                    )
+                                                                )
+                                                            }
                                                         }
-
-                                                        override fun onCancelled(error: DatabaseError) {
-                                                            Log.v(
-                                                                TAG,
-                                                                "database error ${error.message}"
+                                                    } else {
+                                                        Log.d(TAG,"anonymous 3")
+                                                        trySendBlocking(
+                                                            ResultData.Anonymous(
+                                                                Konstants.BALANCE_IMBALANCE
                                                             )
-                                                        }
-                                                    })
+                                                        )
+                                                    }
+                                                }
                                             }
 
-                                        }
-                                    }
+                                            override fun onCancelled(error: DatabaseError) {
+                                                Log.v(
+                                                    TAG,
+                                                    "database error ${error.message}"
+                                                )
+                                            }
+                                        })
+                                }
 
-                                    override fun onCancelled(error: DatabaseError) {
-                                        Log.v(TAG, "database error ${error.message}")
-                                    }
-
-                                })
-
+                            }
                         }
 
                         override fun onCancelled(error: DatabaseError) {
@@ -148,9 +187,14 @@ class BalanceRepository {
                         }
 
                     })
-
-
             }
+            awaitClose { Log.d(TAG, "await close") }
+        }
+    }
+
+    private fun printNetBalance(netBalance: ArrayList<Transaction>) {
+        for(transaction in netBalance){
+            Log.d(TAG,"balance:- ${transaction.friendPhone}, ${transaction.amount}")
         }
     }
 
@@ -162,6 +206,10 @@ class BalanceRepository {
         val mxCredit = ExpenseUtils.getMaxAdvanced(transactionList)
         val mxDebit = ExpenseUtils.getMinAdvanced(transactionList)
 
+        Log.v(
+            "TRANSACTION RESULT",
+            "${transactionList[mxDebit].amount} , ${transactionList[mxCredit].amount}\n"
+        )
         if (transactionList[mxCredit].amount == 0.0 && transactionList[mxDebit].amount == 0.0) {
             return
         }
@@ -173,12 +221,19 @@ class BalanceRepository {
             )
         transactionList[mxCredit].amount =
             BigDecimal(transactionList[mxCredit].amount.toString()).subtract(
-                BigDecimal(minimumOfTwo.toString())
+                BigDecimal(minimumOfTwo)
             ).toDouble()
 
         transactionList[mxDebit].amount =
             BigDecimal(transactionList[mxDebit].amount).add(BigDecimal(minimumOfTwo))
                 .toDouble()
+
+        if(transactionList[mxCredit].amount == 0.0){
+            transactionList.remove(transactionList[mxCredit])
+        }
+        if(transactionList[mxDebit].amount == 0.0){
+            transactionList.remove(transactionList[mxDebit])
+        }
 
         Log.v(
             "TRANSACTION RESULT",

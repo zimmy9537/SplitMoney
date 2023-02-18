@@ -1,13 +1,13 @@
 package com.zimmy.splitmoney.adapters
 
 import android.content.Context
-import android.content.SharedPreferences
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.TextView
 import androidx.recyclerview.widget.RecyclerView
 import com.zimmy.splitmoney.R
+import com.zimmy.splitmoney.appreference.AppPreference
 import com.zimmy.splitmoney.constants.Konstants
 import com.zimmy.splitmoney.models.ExpenseGroup
 import kotlin.math.abs
@@ -18,10 +18,9 @@ class GroupExpenseAdapter(
 ) :
     RecyclerView.Adapter<GroupExpenseAdapter.GroupExpenseViewHolder>() {
 
-    private val personalPreference: SharedPreferences =
-        context.getSharedPreferences(Konstants.PERSONAL, Context.MODE_PRIVATE)
+    private val appPreference = AppPreference(context)
     private val myPhone: String =
-        personalPreference.getString(Konstants.PHONE, "not saved").toString()
+        appPreference.getString(Konstants.PHONE, "not saved").toString()
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): GroupExpenseViewHolder {
         val view = LayoutInflater.from(context).inflate(

@@ -1,11 +1,8 @@
 package com.zimmy.splitmoney.onBoard.login.view
 
 import android.app.Activity
-import android.content.Context
 import android.content.Intent
-import android.content.SharedPreferences
 import android.os.Bundle
-import android.provider.ContactsContract.CommonDataKinds.Phone
 import android.util.Log
 import android.view.View
 import android.view.inputmethod.InputMethodManager
@@ -14,20 +11,14 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.lifecycle.Observer
 import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount
 import com.google.android.gms.auth.api.signin.GoogleSignInClient
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions
-import com.google.android.gms.common.SignInButton
 import com.google.android.gms.common.api.ApiException
 import com.google.firebase.auth.FirebaseAuth
-import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.database.*
 import com.zimmy.splitmoney.HomeActivity
-import com.zimmy.splitmoney.R
-import com.zimmy.splitmoney.constants.Konstants
-import com.zimmy.splitmoney.databinding.ActivityOtpBinding
+import com.zimmy.splitmoney.appreference.AppPreference
 import com.zimmy.splitmoney.databinding.ActivitySignInBinding
-import com.zimmy.splitmoney.models.User
 import com.zimmy.splitmoney.onBoard.login.viewmodel.LoginViewModel
 import com.zimmy.splitmoney.resultdata.ResultData
 import dagger.hilt.android.AndroidEntryPoint
@@ -52,8 +43,6 @@ class SignInActivity : AppCompatActivity() {
     private lateinit var firebaseDatabase: FirebaseDatabase
     private lateinit var accountReference: DatabaseReference
     private lateinit var generalReference: DatabaseReference
-    private lateinit var personalPreference: SharedPreferences
-    private lateinit var editor: SharedPreferences.Editor
 
     private var WEB_CLIENT_ID =
         "44259169007-rqadlqgrc4u4mbrtabd9b6gd4r3b56ql.apps.googleusercontent.com"
@@ -98,9 +87,6 @@ class SignInActivity : AppCompatActivity() {
         binding = ActivitySignInBinding.inflate(layoutInflater)
         setContentView(binding.root)
 
-        personalPreference = getSharedPreferences(Konstants.PERSONAL, Context.MODE_PRIVATE)
-        editor = personalPreference.edit()
-
         mAuth = FirebaseAuth.getInstance()
         gso = GoogleSignInOptions.Builder(GoogleSignInOptions.DEFAULT_SIGN_IN)
             .requestIdToken(WEB_CLIENT_ID)
@@ -138,12 +124,13 @@ class SignInActivity : AppCompatActivity() {
             val task = GoogleSignIn.getSignedInAccountFromIntent(data)
             try {
                 val account = task.getResult(ApiException::class.java)
+                val appPreference = AppPreference(this)
                 GlobalScope.launch {
                     loginViewModel.authenticateUserWithGoogle(
                         account.idToken!!,
                         mAuth,
                         this@SignInActivity,
-                        editor
+                        appPreference
                     )
                 }
             } catch (e: ApiException) {

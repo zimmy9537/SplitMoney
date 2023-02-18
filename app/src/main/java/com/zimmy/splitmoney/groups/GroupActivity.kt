@@ -55,7 +55,7 @@ class GroupActivity : AppCompatActivity() {
         setContentView(R.layout.activity_group)
 
         settleUp = findViewById(R.id.settleUp)
-        balances = findViewById(R.id.balances_ll)
+        balances = findViewById(R.id.balances_rv)
         addGroupMember = findViewById(R.id.addMemberLl)
         shareGroupQr = findViewById(R.id.groupInviteLl)
         addExpense = findViewById(R.id.addExpense)

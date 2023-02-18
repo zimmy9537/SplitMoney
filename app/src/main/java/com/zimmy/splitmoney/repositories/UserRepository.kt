@@ -2,14 +2,12 @@ package com.zimmy.splitmoney.repositories
 
 import android.app.Activity
 import android.content.SharedPreferences
-import android.content.SharedPreferences.Editor
 import android.util.Log
 import com.google.android.gms.auth.api.signin.GoogleSignIn
-import com.google.android.gms.tasks.OnCompleteListener
-import com.google.android.gms.tasks.Task
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.auth.GoogleAuthProvider
 import com.google.firebase.database.*
+import com.zimmy.splitmoney.appreference.AppPreference
 import com.zimmy.splitmoney.constants.Konstants
 import com.zimmy.splitmoney.models.User
 import com.zimmy.splitmoney.resultdata.ResultData
@@ -61,7 +59,7 @@ class UserRepository {
         idToken: String,
         mAuth: FirebaseAuth,
         context: Activity,
-        editor: Editor
+        appPreference: AppPreference
     ): Flow<ResultData<Boolean>?> {
         return callbackFlow {
             val credential = GoogleAuthProvider.getCredential(idToken, null)
@@ -93,7 +91,7 @@ class UserRepository {
                                                 ValueEventListener {
                                                 override fun onDataChange(snapshot: DataSnapshot) {
                                                     user = snapshot.getValue(User::class.java)!!
-                                                    setPreferenceOnVerification(user, editor)
+                                                    setPreferenceOnVerification(user, appPreference)
                                                     trySendBlocking(ResultData.Success(false)).onFailure {
                                                         Log.d(TAG, "Failure in 2nd try ")
                                                     }
@@ -123,22 +121,15 @@ class UserRepository {
         }
     }
 
-    fun setPreferenceOnVerification(user: User, editor: Editor) {
+    fun setPreferenceOnVerification(user: User, appPreference: AppPreference) {
         Log.d(
             TAG,
             "name-> ${user.name}, phone->${user.phoneNumber}, promo->${user.promocode}, email->${user.email}"
         )
-        editor.putString(
-            Konstants.PHONE,
-            user.phoneNumber
-        )
-        editor.putString(Konstants.NAME, user.name)
-        editor.putString(
-            Konstants.PROMO,
-            user.promocode
-        )
-        editor.putString(Konstants.EMAIL, user.email)
-        editor.apply()
+        appPreference.saveString(Konstants.PHONE, user.phoneNumber)
+        appPreference.saveString(Konstants.NAME, user.name)
+        appPreference.saveString(Konstants.PROMO, user.promocode)
+        appPreference.saveString(Konstants.EMAIL, user.email)
     }
 
     fun insertDatabaseOperation(

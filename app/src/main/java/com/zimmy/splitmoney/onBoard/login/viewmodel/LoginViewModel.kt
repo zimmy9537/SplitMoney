@@ -7,6 +7,7 @@ import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.google.firebase.auth.FirebaseAuth
+import com.zimmy.splitmoney.appreference.AppPreference
 import com.zimmy.splitmoney.repositories.UserRepository
 import com.zimmy.splitmoney.resultdata.ResultData
 import dagger.hilt.android.lifecycle.HiltViewModel
@@ -58,9 +59,9 @@ class LoginViewModel @Inject constructor(
         idToken: String,
         mAuth: FirebaseAuth,
         context: Activity,
-        editor: SharedPreferences.Editor
+        appPreference: AppPreference
     ) {
-        userRepository.authenticateWithGoogle(idToken, mAuth, context, editor).onStart {
+        userRepository.authenticateWithGoogle(idToken, mAuth, context, appPreference).onStart {
             emit(ResultData.Loading())
         }.collect {
             when (it) {

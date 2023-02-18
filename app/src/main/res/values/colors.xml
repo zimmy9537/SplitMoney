@@ -9,6 +9,7 @@
     <color name="white">#FFFFFFFF</color>
     <color name="edit">#A8A6A6</color>
     <color name="red">#FF0000</color>
+    <color name="green">#023020</color>
 
     //app color
     <color name = "app_base">#6b84ab</color>

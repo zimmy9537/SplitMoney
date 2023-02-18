@@ -23,8 +23,8 @@
             of the shape-->
         <gradient
             android:angle="0"
-            android:endColor="@color/app_base"
-            android:startColor="@color/app_base_dark"
+            android:endColor="@color/app_base_dark"
+            android:startColor="@color/black"
             android:type="sweep"
             android:useLevel="false" />
     </shape>

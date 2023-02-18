@@ -14,6 +14,7 @@ import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
 import com.zimmy.splitmoney.New.NewGroupActivity
 import com.zimmy.splitmoney.adapters.GroupAdapter
+import com.zimmy.splitmoney.appreference.AppPreference
 import com.zimmy.splitmoney.constants.Konstants
 import com.zimmy.splitmoney.databinding.FragmentGroupBinding
 import com.zimmy.splitmoney.models.Group
@@ -27,8 +28,6 @@ class GroupFragment : Fragment() {
     private lateinit var groupReference: DatabaseReference
     private lateinit var userReference: DatabaseReference
 
-    private lateinit var personalPreferences: SharedPreferences
-
     private lateinit var myPhoneNumber: String
     private lateinit var myGroups: ArrayList<Group>
 
@@ -39,9 +38,8 @@ class GroupFragment : Fragment() {
         groupReference = FirebaseDatabase.getInstance().reference.child(Konstants.GROUPS)
         userReference = FirebaseDatabase.getInstance().reference.child(Konstants.USERS)
 
-        personalPreferences =
-            requireContext().getSharedPreferences(Konstants.PERSONAL, Context.MODE_PRIVATE)
-        myPhoneNumber = personalPreferences.getString(Konstants.PHONE, "6352938170").toString()
+        val appPreference = context?.let { AppPreference(it) }
+        myPhoneNumber = appPreference?.getString(Konstants.PHONE, "6352938170").toString()
 
         myGroups = ArrayList()
 

@@ -2,75 +2,54 @@
 <androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
-    android:layout_height="@dimen/dimen_70"
-    android:layout_margin="@dimen/dimen_15"
-    android:background="@drawable/rectangle_balance"
-    android:elevation="@dimen/dimen_2"
-    android:padding="@dimen/dimen_12">
+    android:layout_height="wrap_content"
+    android:layout_margin="@dimen/dimen_10">
 
     <TextView
-        android:id="@+id/letter_tv"
+        android:id="@+id/senderTv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/circle_gray"
-        android:gravity="center"
-        android:text="B"
+        android:fontFamily="@font/roboto_medium"
+        android:text="@string/beena"
         android:textColor="@color/red"
-        android:fontFamily="@font/roboto_bold"
-        android:textSize="@dimen/dimen_32sp"
+        android:textSize="@dimen/dimen_18sp"
         app:layout_constraintStart_toStartOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/name_tv"
+        android:id="@+id/pays"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/dimen_18sp"
+        android:layout_marginStart="@dimen/dimen_10"
         android:fontFamily="@font/roboto_medium"
-        android:textColor="@color/black"
-        android:text="@string/beena_changela"
-        app:layout_constraintStart_toEndOf="@id/letter_tv"
+        android:text="@string/pays"
+        android:textColor="@color/white"
+        android:textSize="@dimen/dimen_18sp"
+        app:layout_constraintStart_toEndOf="@id/senderTv"
         app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/email_tv"
+        android:id="@+id/receiverTv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginStart="@dimen/dimen_18sp"
+        android:layout_marginStart="@dimen/dimen_10"
         android:fontFamily="@font/roboto_medium"
-        android:text="@string/beena_email"
-        app:layout_constraintStart_toEndOf="@id/letter_tv"
-        app:layout_constraintTop_toBottomOf="@id/name_tv" />
+        android:text="@string/fena"
+        android:textColor="@color/green"
+        android:textSize="@dimen/dimen_18sp"
+        app:layout_constraintStart_toEndOf="@id/pays"
+        app:layout_constraintTop_toTopOf="parent" />
 
     <TextView
-        android:id="@+id/owe_tv"
+        android:id="@+id/amountTv"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textSize="@dimen/dimen_10sp"
-        android:textColor="@color/red"
-        app:layout_constraintEnd_toEndOf="parent"
-        app:layout_constraintTop_toTopOf="parent"
-        android:text="@string/you_owe"/>
-
-    <TextView
-        android:id="@+id/owe_amount_tv"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        app:layout_constraintTop_toBottomOf="@id/owe_tv"
-        app:layout_constraintEnd_toEndOf="parent"
-        android:text="500"
-        android:textSize="@dimen/dimen_24sp"
-        android:textColor="@color/red" />
-
-    <TextView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:text="@string/rupee_symbol"
-        android:textSize="@dimen/dimen_12sp"
-        android:textColor="@color/red"
-        android:layout_marginBottom="@dimen/dimen_2"
-        android:layout_marginEnd="@dimen/dimen_4"
-        app:layout_constraintBottom_toBottomOf="@id/owe_amount_tv"
-        app:layout_constraintEnd_toStartOf="@id/owe_amount_tv"/>
+        android:layout_marginStart="@dimen/dimen_10"
+        android:fontFamily="@font/roboto_medium"
+        android:text="@string/five_hundred"
+        android:textColor="@color/white"
+        android:textSize="@dimen/dimen_18sp"
+        app:layout_constraintStart_toEndOf="@id/receiverTv"
+        app:layout_constraintTop_toTopOf="parent" />
 
 </androidx.constraintlayout.widget.ConstraintLayout>
