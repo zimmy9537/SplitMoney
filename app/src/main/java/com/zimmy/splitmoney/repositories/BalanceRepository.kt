@@ -30,32 +30,29 @@ class BalanceRepository {
             val phoneMap: HashMap<String, String> = HashMap()
             val groupReference =
                 FirebaseDatabase.getInstance().reference.child(Konstants.GROUPS)
-            Log.d(TAG,"group code $groupCode")
             groupReference.child(groupCode).child(Konstants.MEMBERS)
                 .addListenerForSingleValueEvent(object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
                         val memberSize = snapshot.childrenCount
                         var count = 0L
                         for (phone in snapshot.children) {
-                            Log.d(TAG,"referenceWillBe ${phone.ref}")
                             phone.ref.addListenerForSingleValueEvent(object : ValueEventListener {
-                                    override fun onDataChange(snapshot: DataSnapshot) {
-                                        val friend = snapshot.getValue(Friend::class.java)
-                                        if(friend == null){
-                                            Log.d(TAG,"null here")
-                                            return
-                                        }
-                                        Log.d(TAG,"phone ${phone.key.toString()}, name ${friend!!.name}")
-                                        phoneMap[phone.key.toString()] = friend.name
+                                override fun onDataChange(snapshot: DataSnapshot) {
+                                    val friend = snapshot.getValue(Friend::class.java)
+                                    if (friend == null) {
+                                        Log.d(TAG, "null here")
+                                        return
+                                    }
+                                    phoneMap[phone.key.toString()] = friend.name
 //                                        count++
-                                    }
+                                }
 
-                                    override fun onCancelled(error: DatabaseError) {
-                                        Log.v(TAG, "database error ${error.message}")
-                                        trySendBlocking(ResultData.Failed())
-                                    }
+                                override fun onCancelled(error: DatabaseError) {
+                                    Log.v(TAG, "database error ${error.message}")
+                                    trySendBlocking(ResultData.Failed())
+                                }
 
-                                })
+                            })
                         }
 //                        while (count != memberSize) {
 //                            //wait
@@ -101,15 +98,6 @@ class BalanceRepository {
                                         .addListenerForSingleValueEvent(object :
                                             ValueEventListener {
                                             override fun onDataChange(snapshot: DataSnapshot) {
-                                                Log.d(
-                                                    TAG,
-                                                    "snapshot:- ${
-                                                        Transaction(
-                                                            phone.key.toString(),
-                                                            snapshot.getValue(Double::class.java)!!
-                                                        )
-                                                    }"
-                                                )
                                                 netBalance.add(
                                                     Transaction(
                                                         phone.key.toString(),
@@ -120,7 +108,6 @@ class BalanceRepository {
 
                                                     if (checkIfBalanced(netBalance)) {
                                                         if (netBalance.isEmpty()) {
-                                                            Log.d(TAG,"failure try")
                                                             trySendBlocking(
                                                                 ResultData.Failed(
                                                                     Konstants.NO_TRANSACTION
@@ -144,14 +131,12 @@ class BalanceRepository {
                                                                 }
                                                             }
                                                             if (!needSettleUp) {
-                                                                Log.d(TAG,"anonymous 1")
                                                                 trySendBlocking(
                                                                     ResultData.Anonymous(
                                                                         Konstants.ALREADY_SETTLED_UP
                                                                     )
                                                                 )
                                                             } else {
-                                                                Log.d(TAG,"anonymous 2")
                                                                 trySendBlocking(
                                                                     ResultData.Anonymous(
                                                                         Konstants.SETTLE_UP_VISIBLE
@@ -160,7 +145,6 @@ class BalanceRepository {
                                                             }
                                                         }
                                                     } else {
-                                                        Log.d(TAG,"anonymous 3")
                                                         trySendBlocking(
                                                             ResultData.Anonymous(
                                                                 Konstants.BALANCE_IMBALANCE
@@ -193,8 +177,8 @@ class BalanceRepository {
     }
 
     private fun printNetBalance(netBalance: ArrayList<Transaction>) {
-        for(transaction in netBalance){
-            Log.d(TAG,"balance:- ${transaction.friendPhone}, ${transaction.amount}")
+        for (transaction in netBalance) {
+            Log.d(TAG, "balance:- ${transaction.friendPhone}, ${transaction.amount}")
         }
     }
 
@@ -205,11 +189,6 @@ class BalanceRepository {
     ) {
         val mxCredit = ExpenseUtils.getMaxAdvanced(transactionList)
         val mxDebit = ExpenseUtils.getMinAdvanced(transactionList)
-
-        Log.v(
-            "TRANSACTION RESULT",
-            "${transactionList[mxDebit].amount} , ${transactionList[mxCredit].amount}\n"
-        )
         if (transactionList[mxCredit].amount == 0.0 && transactionList[mxDebit].amount == 0.0) {
             return
         }
@@ -219,26 +198,16 @@ class BalanceRepository {
                 -transactionList[mxDebit].amount,
                 transactionList[mxCredit].amount
             )
+
+        val creditBigDecimal = BigDecimal.valueOf(transactionList[mxCredit].amount)
+        val debitBigDecimal = BigDecimal.valueOf(transactionList[mxDebit].amount)
+        val minBigDecimal = BigDecimal.valueOf(minimumOfTwo)
+
         transactionList[mxCredit].amount =
-            BigDecimal(transactionList[mxCredit].amount.toString()).subtract(
-                BigDecimal(minimumOfTwo)
-            ).toDouble()
+            (creditBigDecimal.subtract(minBigDecimal)).toDouble()
 
         transactionList[mxDebit].amount =
-            BigDecimal(transactionList[mxDebit].amount).add(BigDecimal(minimumOfTwo))
-                .toDouble()
-
-        if(transactionList[mxCredit].amount == 0.0){
-            transactionList.remove(transactionList[mxCredit])
-        }
-        if(transactionList[mxDebit].amount == 0.0){
-            transactionList.remove(transactionList[mxDebit])
-        }
-
-        Log.v(
-            "TRANSACTION RESULT",
-            "${transactionList[mxDebit].friendPhone} pays $minimumOfTwo to ${transactionList[mxCredit].friendPhone}\n"
-        )
+            debitBigDecimal.add(minBigDecimal).toDouble()
 
         producerScope.trySendBlocking(
             ResultData.Success(
