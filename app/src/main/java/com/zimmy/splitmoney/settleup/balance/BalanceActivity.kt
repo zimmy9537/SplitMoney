@@ -58,7 +58,7 @@ class BalanceActivity : AppCompatActivity() {
                 }
             }
             is ResultData.Anonymous -> {
-                Log.d(TAG,"ANONYMOUS2 ${resultData.message}")
+                Log.d(TAG,"ANONYMOUS2 ${resultData.status}")
                 if (resultData.message != null) {
                     if (resultData.message == Konstants.ALREADY_SETTLED_UP) {
                         binding.balancesRv.visibility = View.GONE
@@ -104,10 +104,11 @@ class BalanceActivity : AppCompatActivity() {
                 Log.d(TAG,"LOADING1")
             }
             is ResultData.Success -> {
-                Log.d(TAG,"SUCCESS1")
+                Log.d(TAG,"SUCCESS1 ${resultData.data}")
                 if (resultData.data != null)
                     phoneMap = resultData.data
                 if (phoneMap.size > 1) {
+                    Log.d("Anonymous","call view activity")
                     GlobalScope.launch {
                         viewModel.getTransactionResult(
                             isFriend,

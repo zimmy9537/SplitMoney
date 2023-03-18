@@ -81,6 +81,7 @@ class BalanceRepository {
             if (isFriend) {
                 //does code even reach here??
             } else {
+                Log.d("Anonymous", "call view repository")
                 var count: Long
                 val netBalance = ArrayList<Transaction>()
                 val transactionResult = ArrayList<Transaction_result>()
@@ -90,6 +91,7 @@ class BalanceRepository {
                     .addListenerForSingleValueEvent(object : ValueEventListener {
                         override fun onDataChange(snapshot: DataSnapshot) {
                             if (snapshot.exists()) {
+                                Log.d("Anonymous", "call view snapshot")
                                 count = snapshot.childrenCount
                                 for (phone in snapshot.children) {
                                     groupReference.child(groupCode)
@@ -105,10 +107,13 @@ class BalanceRepository {
                                                     )
                                                 )
                                                 if (netBalance.size == count.toInt()) {
-
+                                                    Log.d(
+                                                        "Anonymous",
+                                                        "call view net balance equal"
+                                                    )
                                                     if (checkIfBalanced(netBalance)) {
                                                         if (netBalance.isEmpty()) {
-                                                            trySendBlocking(
+                                                            trySend(
                                                                 ResultData.Failed(
                                                                     Konstants.NO_TRANSACTION
                                                                 )
@@ -117,10 +122,23 @@ class BalanceRepository {
                                                             printNetBalance(netBalance)
                                                             minCashFlowRec(
                                                                 netBalance,
-                                                                transactionResult,
-                                                                this@callbackFlow
+                                                                transactionResult
                                                             )
                                                             var needSettleUp = false
+                                                            for (ele in transactionResult) {
+                                                                Log.d(
+                                                                    "Anonymous",
+                                                                    "call view success call"
+                                                                )
+                                                                val result = Transaction_result(
+                                                                    ele.receiver,
+                                                                    ele.sender,
+                                                                    ele.amount
+                                                                )
+                                                                trySend(
+                                                                    ResultData.Success(result)
+                                                                )
+                                                            }
                                                             for (ele in transactionResult) {
                                                                 Log.v(
                                                                     TAG,
@@ -129,15 +147,19 @@ class BalanceRepository {
                                                                 if (ele.sender == myPhone || ele.receiver == myPhone) {
                                                                     needSettleUp = true
                                                                 }
+                                                                Log.d(
+                                                                    "Anonymous",
+                                                                    "call view need settle up $needSettleUp"
+                                                                )
                                                             }
                                                             if (!needSettleUp) {
-                                                                trySendBlocking(
+                                                                trySend(
                                                                     ResultData.Anonymous(
                                                                         Konstants.ALREADY_SETTLED_UP
                                                                     )
                                                                 )
                                                             } else {
-                                                                trySendBlocking(
+                                                                trySend(
                                                                     ResultData.Anonymous(
                                                                         Konstants.SETTLE_UP_VISIBLE
                                                                     )
@@ -145,7 +167,7 @@ class BalanceRepository {
                                                             }
                                                         }
                                                     } else {
-                                                        trySendBlocking(
+                                                        trySend(
                                                             ResultData.Anonymous(
                                                                 Konstants.BALANCE_IMBALANCE
                                                             )
@@ -184,8 +206,7 @@ class BalanceRepository {
 
     private fun minCashFlowRec(
         transactionList: ArrayList<Transaction>,
-        transactionResult: ArrayList<Transaction_result>,
-        producerScope: ProducerScope<ResultData<Transaction_result>>
+        transactionResult: ArrayList<Transaction_result>
     ) {
         val mxCredit = ExpenseUtils.getMaxAdvanced(transactionList)
         val mxDebit = ExpenseUtils.getMinAdvanced(transactionList)
@@ -209,16 +230,6 @@ class BalanceRepository {
         transactionList[mxDebit].amount =
             debitBigDecimal.add(minBigDecimal).toDouble()
 
-        producerScope.trySendBlocking(
-            ResultData.Success(
-                Transaction_result(
-                    transactionList[mxCredit].friendPhone,
-                    transactionList[mxDebit].friendPhone,
-                    minimumOfTwo
-                )
-            )
-        )
-
         transactionResult.add(
             Transaction_result(
                 transactionList[mxCredit].friendPhone,
@@ -226,7 +237,7 @@ class BalanceRepository {
                 minimumOfTwo
             )
         )
-        minCashFlowRec(transactionList, transactionResult, producerScope)
+        minCashFlowRec(transactionList, transactionResult)
     }
 
     private fun checkIfBalanced(netBalance: ArrayList<Transaction>): Boolean {

@@ -1,5 +1,6 @@
 package com.zimmy.splitmoney.settleup.balance.viewmodel
 
+import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -31,6 +32,7 @@ class BalanceViewModel @Inject constructor(private val balanceRepo: BalanceRepos
         groupCode: String,
         myPhone: String
     ) {
+        Log.d("Anonymous","call view model")
         balanceRepo.getTransactionResultList2(isFriend, groupCode, myPhone).onStart {
             emit(ResultData.Loading())
         }.collect {
