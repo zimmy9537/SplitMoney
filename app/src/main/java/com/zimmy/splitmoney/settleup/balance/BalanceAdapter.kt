@@ -5,12 +5,10 @@ import android.view.LayoutInflater
 import android.view.ViewGroup
 import androidx.recyclerview.widget.RecyclerView
 import androidx.recyclerview.widget.RecyclerView.ViewHolder
-import com.zimmy.splitmoney.R
-import com.zimmy.splitmoney.adapters.ActivityAdapter
 import com.zimmy.splitmoney.databinding.BalanceItemBinding
-import com.zimmy.splitmoney.models.Transaction_result
+import com.zimmy.splitmoney.models.TransactionResult
 
-class BalanceAdapter(private val balanceList: ArrayList<Transaction_result>, val context: Context) :
+class BalanceAdapter(private val balanceList: ArrayList<TransactionResult>, val context: Context) :
     RecyclerView.Adapter<BalanceAdapter.BalanceViewHolder>() {
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): BalanceViewHolder {

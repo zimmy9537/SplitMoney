@@ -14,11 +14,10 @@ import com.zimmy.splitmoney.constants.Konstants
 import com.zimmy.splitmoney.models.Friend
 import com.zimmy.splitmoney.models.Transaction
 import com.zimmy.splitmoney.models.Transaction_SettleUp
-import com.zimmy.splitmoney.models.Transaction_result
+import com.zimmy.splitmoney.models.TransactionResult
 import com.zimmy.splitmoney.utils.ExpenseUtils
 import java.math.BigDecimal
 import kotlin.math.absoluteValue
-import kotlin.math.sign
 
 class BeforeSettleUpActivity : AppCompatActivity() {
 
@@ -30,7 +29,7 @@ class BeforeSettleUpActivity : AppCompatActivity() {
     lateinit var groupCode: String
     lateinit var groupReference: DatabaseReference
     lateinit var netBalance: ArrayList<Transaction>
-    lateinit var transactionResult: ArrayList<Transaction_result>
+    lateinit var transactionResult: ArrayList<TransactionResult>
     var TAG = BeforeSettleUpActivity::class.java.simpleName
     var count: Long = 0
     lateinit var phoneMap: HashMap<String, String>
@@ -180,7 +179,7 @@ class BeforeSettleUpActivity : AppCompatActivity() {
         return totalBalance == 0.0
     }
 
-    fun processTransactionResult(transactionResult: ArrayList<Transaction_result>) {
+    fun processTransactionResult(transactionResult: ArrayList<TransactionResult>) {
         //transaction_result=>  var receiver: String?, var sender: String?, var amount: Double
         transactionSettleUp = ArrayList()
         for (ele in transactionResult) {

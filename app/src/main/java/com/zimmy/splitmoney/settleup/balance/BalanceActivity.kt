@@ -17,12 +17,10 @@ import com.zimmy.splitmoney.constants.Konstants
 import com.zimmy.splitmoney.databinding.ActivityBalanceBinding
 import com.zimmy.splitmoney.expense.BeforeSettleUpActivity
 import com.zimmy.splitmoney.expense.SettleUpActivity
-import com.zimmy.splitmoney.models.Transaction_result
+import com.zimmy.splitmoney.models.TransactionResult
 import com.zimmy.splitmoney.resultdata.ResultData
 import com.zimmy.splitmoney.settleup.balance.viewmodel.BalanceViewModel
 import dagger.hilt.android.AndroidEntryPoint
-import kotlinx.coroutines.GlobalScope
-import kotlinx.coroutines.launch
 
 @AndroidEntryPoint
 class BalanceActivity : AppCompatActivity() {
@@ -31,20 +29,21 @@ class BalanceActivity : AppCompatActivity() {
     private val viewModel: BalanceViewModel by viewModels()
     lateinit var groupCode: String
     var isFriend: Boolean = true
-    lateinit var transactionResult: ArrayList<Transaction_result>
+    lateinit var transactionResult: ArrayList<TransactionResult>
     lateinit var groupReference: DatabaseReference
     var TAG = "LOG" + BalanceActivity::class.java.simpleName
     lateinit var phoneMap: HashMap<String, String>
     lateinit var myPhone: String
 
-    private var observer = Observer<ResultData<Transaction_result?>> { resultData ->
+    private var observer = Observer<ResultData<TransactionResult>> { resultData ->
+        Log.d(TAG, "final $resultData")
         when (resultData) {
             is ResultData.Loading -> {
-                Log.d(TAG,"LOADING2")
+                Log.d(TAG, "LOADING2")
                 binding.progressPb.visibility = View.VISIBLE
             }
             is ResultData.Success -> {
-                Log.d(TAG,"SUCCESS2")
+                Log.d(TAG, "SUCCESS2")
                 if (resultData.data != null) {
                     transactionResult.add(resultData.data)
                     Log.d(
@@ -53,18 +52,18 @@ class BalanceActivity : AppCompatActivity() {
                     )
                     binding.balancesRv.adapter?.notifyDataSetChanged()
                     binding.progressPb.visibility = View.GONE
-                    binding.balancesRv.visibility =View.VISIBLE
+                    binding.balancesRv.visibility = View.VISIBLE
                     binding.settleUpBt.visibility = View.VISIBLE
                 }
             }
             is ResultData.Anonymous -> {
-                Log.d(TAG,"ANONYMOUS2 ${resultData.status}")
-                if (resultData.message != null) {
-                    if (resultData.message == Konstants.ALREADY_SETTLED_UP) {
+                Log.d(TAG, "ANONYMOUS2 ${resultData}")
+                if (resultData.status != null) {
+                    if (resultData.status == Konstants.ALREADY_SETTLED_UP) {
                         binding.balancesRv.visibility = View.GONE
                         binding.alreadySettledTv.visibility = View.VISIBLE
                         binding.progressPb.visibility = View.GONE
-                    } else if (resultData.message == Konstants.SETTLE_UP_VISIBLE) {
+                    } else if (resultData.status == Konstants.SETTLE_UP_VISIBLE) {
                         binding.settleUpBt.visibility = View.VISIBLE
                         binding.balancesRv.visibility = View.VISIBLE
                         binding.progressPb.visibility = View.GONE
@@ -82,7 +81,7 @@ class BalanceActivity : AppCompatActivity() {
                 }
             }
             else -> {
-                Log.d(TAG,"FAILURE2")
+                Log.d(TAG, "FAILURE2")
                 Log.d(TAG, resources.getString(R.string.no_transactions))
                 //no transactions
                 binding.balancesRv.visibility = View.GONE
@@ -101,21 +100,19 @@ class BalanceActivity : AppCompatActivity() {
                     Toast.LENGTH_SHORT
                 ).show()
                 binding.progressPb.visibility = View.VISIBLE
-                Log.d(TAG,"LOADING1")
+                Log.d(TAG, "LOADING1")
             }
             is ResultData.Success -> {
-                Log.d(TAG,"SUCCESS1 ${resultData.data}")
+                Log.d(TAG, "SUCCESS1 ${resultData.data}")
                 if (resultData.data != null)
                     phoneMap = resultData.data
                 if (phoneMap.size > 1) {
-                    Log.d("Anonymous","call view activity")
-                    GlobalScope.launch {
-                        viewModel.getTransactionResult(
-                            isFriend,
-                            groupCode,
-                            myPhone
-                        )
-                    }
+                    Log.d("Anonymous", "call view activity")
+                    viewModel.getTransactionResult(
+                        isFriend,
+                        groupCode,
+                        myPhone
+                    )
                 } else {
                     Toast.makeText(
                         this,
@@ -125,7 +122,7 @@ class BalanceActivity : AppCompatActivity() {
                 }
             }
             else -> {
-                Log.d(TAG,"FAILURE1")
+                Log.d(TAG, "FAILURE1")
                 Toast.makeText(
                     this,
                     resources.getString(R.string.some_failure),
@@ -171,8 +168,6 @@ class BalanceActivity : AppCompatActivity() {
             BalanceAdapter(transactionResult, this@BalanceActivity)
         viewModel.transactionResultLiveData.observe(this, observer)
         viewModel.memberLiveData.observe(this, observerPhoneMap)
-        GlobalScope.launch {
-            viewModel.getMemberList(groupCode)
-        }
+        viewModel.getMemberList(groupCode)
     }
 }

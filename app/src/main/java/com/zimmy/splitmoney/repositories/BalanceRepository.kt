@@ -8,22 +8,18 @@ import com.google.firebase.database.ValueEventListener
 import com.zimmy.splitmoney.constants.Konstants
 import com.zimmy.splitmoney.models.Friend
 import com.zimmy.splitmoney.models.Transaction
-import com.zimmy.splitmoney.models.Transaction_result
+import com.zimmy.splitmoney.models.TransactionResult
 import com.zimmy.splitmoney.resultdata.ResultData
-import com.zimmy.splitmoney.settleup.balance.BalanceActivity
 import com.zimmy.splitmoney.utils.ExpenseUtils
-import kotlinx.coroutines.channels.ProducerScope
 import kotlinx.coroutines.channels.awaitClose
-import kotlinx.coroutines.channels.trySendBlocking
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.callbackFlow
-import kotlinx.coroutines.flow.flow
 import java.math.BigDecimal
 
 class BalanceRepository {
     private val TAG = BalanceRepository::class.java.simpleName
 
-    suspend fun getMemberList(
+    fun getMemberList(
         groupCode: String
     ): Flow<ResultData<HashMap<String, String>>> {
         return callbackFlow {
@@ -44,25 +40,23 @@ class BalanceRepository {
                                         return
                                     }
                                     phoneMap[phone.key.toString()] = friend.name
-//                                        count++
+                                    count++
+                                    if (count == memberSize)
+                                        trySend(ResultData.Success(phoneMap))
                                 }
 
                                 override fun onCancelled(error: DatabaseError) {
                                     Log.v(TAG, "database error ${error.message}")
-                                    trySendBlocking(ResultData.Failed())
+                                    trySend(ResultData.Failed())
                                 }
 
                             })
                         }
-//                        while (count != memberSize) {
-//                            //wait
-//                        }
-                        trySendBlocking(ResultData.Success(phoneMap))
                     }
 
                     override fun onCancelled(error: DatabaseError) {
                         Log.d(TAG, "database error ${error.message}")
-                        trySendBlocking(ResultData.Failed())
+                        trySend(ResultData.Failed())
                     }
                 })
             awaitClose {
@@ -76,7 +70,7 @@ class BalanceRepository {
         isFriend: Boolean,
         groupCode: String,
         myPhone: String
-    ): Flow<ResultData<Transaction_result>> {
+    ): Flow<ResultData<TransactionResult>> {
         return callbackFlow {
             if (isFriend) {
                 //does code even reach here??
@@ -84,7 +78,7 @@ class BalanceRepository {
                 Log.d("Anonymous", "call view repository")
                 var count: Long
                 val netBalance = ArrayList<Transaction>()
-                val transactionResult = ArrayList<Transaction_result>()
+                val transactionResult = ArrayList<TransactionResult>()
                 val groupReference =
                     FirebaseDatabase.getInstance().reference.child(Konstants.GROUPS)
                 groupReference.child(groupCode).child(Konstants.EXPENSE_GLOBAL)
@@ -130,7 +124,7 @@ class BalanceRepository {
                                                                     "Anonymous",
                                                                     "call view success call"
                                                                 )
-                                                                val result = Transaction_result(
+                                                                val result = TransactionResult(
                                                                     ele.receiver,
                                                                     ele.sender,
                                                                     ele.amount
@@ -206,7 +200,7 @@ class BalanceRepository {
 
     private fun minCashFlowRec(
         transactionList: ArrayList<Transaction>,
-        transactionResult: ArrayList<Transaction_result>
+        transactionResult: ArrayList<TransactionResult>
     ) {
         val mxCredit = ExpenseUtils.getMaxAdvanced(transactionList)
         val mxDebit = ExpenseUtils.getMinAdvanced(transactionList)
@@ -231,7 +225,7 @@ class BalanceRepository {
             debitBigDecimal.add(minBigDecimal).toDouble()
 
         transactionResult.add(
-            Transaction_result(
+            TransactionResult(
                 transactionList[mxCredit].friendPhone,
                 transactionList[mxDebit].friendPhone,
                 minimumOfTwo

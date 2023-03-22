@@ -3,7 +3,7 @@ package com.zimmy.splitmoney.utils
 import android.util.Log
 import com.zimmy.splitmoney.models.Expense
 import com.zimmy.splitmoney.models.Transaction
-import com.zimmy.splitmoney.models.Transaction_result
+import com.zimmy.splitmoney.models.TransactionResult
 import java.math.BigDecimal
 
 class ExpenseUtils {
@@ -35,7 +35,7 @@ class ExpenseUtils {
 
         fun minCashFlowRec(
             transactionList: ArrayList<Transaction>,
-            transactionResult: ArrayList<Transaction_result>
+            transactionResult: ArrayList<TransactionResult>
         ) {
             val mxCredit = getMaxAdvanced(transactionList)
             val mxDebit = getMinAdvanced(transactionList)
@@ -60,7 +60,7 @@ class ExpenseUtils {
                 "${transactionList[mxDebit].friendPhone} pays $minimumOfTwo to ${transactionList[mxCredit].friendPhone}\n"
             )
             transactionResult.add(
-                Transaction_result(
+                TransactionResult(
                     transactionList[mxCredit].friendPhone,
                     transactionList[mxDebit].friendPhone,
                     minimumOfTwo
