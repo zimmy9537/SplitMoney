@@ -1,6 +1,5 @@
 package com.zimmy.splitmoney.settleup.balance.viewmodel
 
-import android.util.Log
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
@@ -17,8 +16,6 @@ import javax.inject.Inject
 class BalanceViewModel @Inject constructor(private val balanceRepo: BalanceRepository) :
     ViewModel() {
 
-    private val TAG = BalanceViewModel::class.java.simpleName
-
     private val transactionResultMutableLiveData: MutableLiveData<ResultData<TransactionResult>> =
         MutableLiveData()
     val transactionResultLiveData: LiveData<ResultData<TransactionResult>>
@@ -34,15 +31,11 @@ class BalanceViewModel @Inject constructor(private val balanceRepo: BalanceRepos
         groupCode: String,
         myPhone: String
     ) {
-        Log.d("Anonymous", "call view model")
         viewModelScope.launch {
             balanceRepo.getTransactionResultList2(isFriend, groupCode, myPhone).onStart {
                 emit(ResultData.Loading())
             }.collect {
-                if (it is ResultData.Success) {
-                    Log.d("Anonymous", "call view model Success call $it")
-                }
-                transactionResultMutableLiveData.postValue(it)
+                transactionResultMutableLiveData.value = it
             }
         }
     }
@@ -53,7 +46,7 @@ class BalanceViewModel @Inject constructor(private val balanceRepo: BalanceRepos
             balanceRepo.getMemberList(groupCode).onStart {
                 emit(ResultData.Loading())
             }.collect {
-                memberListMutableLiveData.postValue(it)
+                memberListMutableLiveData.value = it
             }
         }
     }

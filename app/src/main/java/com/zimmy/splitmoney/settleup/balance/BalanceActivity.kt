@@ -2,7 +2,6 @@ package com.zimmy.splitmoney.settleup.balance
 
 import android.content.Intent
 import android.os.Bundle
-import android.util.Log
 import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
@@ -36,20 +35,13 @@ class BalanceActivity : AppCompatActivity() {
     lateinit var myPhone: String
 
     private var observer = Observer<ResultData<TransactionResult>> { resultData ->
-        Log.d(TAG, "final $resultData")
         when (resultData) {
             is ResultData.Loading -> {
-                Log.d(TAG, "LOADING2")
                 binding.progressPb.visibility = View.VISIBLE
             }
             is ResultData.Success -> {
-                Log.d(TAG, "SUCCESS2")
                 if (resultData.data != null) {
                     transactionResult.add(resultData.data)
-                    Log.d(
-                        TAG,
-                        "${resultData.data.sender} sends ${resultData.data.receiver} an amount ${resultData.data.amount}"
-                    )
                     binding.balancesRv.adapter?.notifyDataSetChanged()
                     binding.progressPb.visibility = View.GONE
                     binding.balancesRv.visibility = View.VISIBLE
@@ -57,7 +49,6 @@ class BalanceActivity : AppCompatActivity() {
                 }
             }
             is ResultData.Anonymous -> {
-                Log.d(TAG, "ANONYMOUS2 ${resultData}")
                 if (resultData.status != null) {
                     if (resultData.status == Konstants.ALREADY_SETTLED_UP) {
                         binding.balancesRv.visibility = View.GONE
@@ -81,8 +72,6 @@ class BalanceActivity : AppCompatActivity() {
                 }
             }
             else -> {
-                Log.d(TAG, "FAILURE2")
-                Log.d(TAG, resources.getString(R.string.no_transactions))
                 //no transactions
                 binding.balancesRv.visibility = View.GONE
                 binding.progressPb.visibility = View.GONE
@@ -100,14 +89,11 @@ class BalanceActivity : AppCompatActivity() {
                     Toast.LENGTH_SHORT
                 ).show()
                 binding.progressPb.visibility = View.VISIBLE
-                Log.d(TAG, "LOADING1")
             }
             is ResultData.Success -> {
-                Log.d(TAG, "SUCCESS1 ${resultData.data}")
                 if (resultData.data != null)
                     phoneMap = resultData.data
                 if (phoneMap.size > 1) {
-                    Log.d("Anonymous", "call view activity")
                     viewModel.getTransactionResult(
                         isFriend,
                         groupCode,
@@ -122,7 +108,6 @@ class BalanceActivity : AppCompatActivity() {
                 }
             }
             else -> {
-                Log.d(TAG, "FAILURE1")
                 Toast.makeText(
                     this,
                     resources.getString(R.string.some_failure),
@@ -159,7 +144,6 @@ class BalanceActivity : AppCompatActivity() {
         groupCode = intent.getStringExtra(Konstants.GROUP_CODE).toString()
         val appPreference = AppPreference(this)
         myPhone = appPreference.getString(AppPreference.PHONE, AppPreference.PREF_NO_NAME)!!
-        Log.d(TAG, "phone $myPhone")
         phoneMap = HashMap()
         groupReference = FirebaseDatabase.getInstance().reference.child(Konstants.GROUPS)
         transactionResult = ArrayList()

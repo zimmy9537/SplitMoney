@@ -75,7 +75,6 @@ class BalanceRepository {
             if (isFriend) {
                 //does code even reach here??
             } else {
-                Log.d("Anonymous", "call view repository")
                 var count: Long
                 val netBalance = ArrayList<Transaction>()
                 val transactionResult = ArrayList<TransactionResult>()
@@ -85,7 +84,6 @@ class BalanceRepository {
                     .addListenerForSingleValueEvent(object : ValueEventListener {
                         override fun onDataChange(snapshot: DataSnapshot) {
                             if (snapshot.exists()) {
-                                Log.d("Anonymous", "call view snapshot")
                                 count = snapshot.childrenCount
                                 for (phone in snapshot.children) {
                                     groupReference.child(groupCode)
@@ -101,10 +99,6 @@ class BalanceRepository {
                                                     )
                                                 )
                                                 if (netBalance.size == count.toInt()) {
-                                                    Log.d(
-                                                        "Anonymous",
-                                                        "call view net balance equal"
-                                                    )
                                                     if (checkIfBalanced(netBalance)) {
                                                         if (netBalance.isEmpty()) {
                                                             trySend(
@@ -120,10 +114,6 @@ class BalanceRepository {
                                                             )
                                                             var needSettleUp = false
                                                             for (ele in transactionResult) {
-                                                                Log.d(
-                                                                    "Anonymous",
-                                                                    "call view success call"
-                                                                )
                                                                 val result = TransactionResult(
                                                                     ele.receiver,
                                                                     ele.sender,
@@ -141,10 +131,6 @@ class BalanceRepository {
                                                                 if (ele.sender == myPhone || ele.receiver == myPhone) {
                                                                     needSettleUp = true
                                                                 }
-                                                                Log.d(
-                                                                    "Anonymous",
-                                                                    "call view need settle up $needSettleUp"
-                                                                )
                                                             }
                                                             if (!needSettleUp) {
                                                                 trySend(
