@@ -20,7 +20,7 @@ import com.zimmy.splitmoney.New.NewFriendActivity
 import com.zimmy.splitmoney.R
 import com.zimmy.splitmoney.adapters.GroupExpenseAdapter
 import com.zimmy.splitmoney.constants.Konstants
-import com.zimmy.splitmoney.expense.BeforeSettleUpActivity
+import com.zimmy.splitmoney.settleup.beforesettleup.BeforeSettleUpActivity
 import com.zimmy.splitmoney.models.ExpenseGroup
 import com.zimmy.splitmoney.models.Friend
 

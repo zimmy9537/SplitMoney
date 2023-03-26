@@ -48,5 +48,8 @@ class Konstants {
         const val ALREADY_SETTLED_UP = "already_settled_up"
         const val BALANCE_IMBALANCE = "balance_imbalance"
         const val SETTLE_UP_VISIBLE = "settle_up_visible"
+
+        const val OWES_YOU = "Owes You"
+        const val YOU_OWE = "You Owe"
     }
 }

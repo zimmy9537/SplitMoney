@@ -18,10 +18,8 @@ import com.google.firebase.database.*
 import com.zimmy.splitmoney.New.NewExpenseActivity
 import com.zimmy.splitmoney.adapters.ExpenseAdapter
 import com.zimmy.splitmoney.constants.Konstants
-import com.zimmy.splitmoney.expense.BeforeSettleUpActivity
 import com.zimmy.splitmoney.expense.SettleUpActivity
 import com.zimmy.splitmoney.models.Expense
-import com.zimmy.splitmoney.models.Friend
 import com.zimmy.splitmoney.models.Transaction_SettleUp
 import kotlin.math.absoluteValue
 

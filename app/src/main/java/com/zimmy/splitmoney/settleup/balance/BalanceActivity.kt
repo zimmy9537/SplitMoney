@@ -14,7 +14,7 @@ import com.zimmy.splitmoney.R
 import com.zimmy.splitmoney.appreference.AppPreference
 import com.zimmy.splitmoney.constants.Konstants
 import com.zimmy.splitmoney.databinding.ActivityBalanceBinding
-import com.zimmy.splitmoney.expense.BeforeSettleUpActivity
+import com.zimmy.splitmoney.settleup.beforesettleup.BeforeSettleUpActivity
 import com.zimmy.splitmoney.expense.SettleUpActivity
 import com.zimmy.splitmoney.models.TransactionResult
 import com.zimmy.splitmoney.resultdata.ResultData

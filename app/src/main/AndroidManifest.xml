@@ -38,7 +38,7 @@
             android:name=".expense.SettledUpActivity"
             android:exported="false" />
         <activity
-            android:name=".expense.BeforeSettleUpActivity"
+            android:name=".settleup.beforesettleup.BeforeSettleUpActivity"
             android:exported="false" />
         <activity
             android:name=".expense.SettleUpActivity"
