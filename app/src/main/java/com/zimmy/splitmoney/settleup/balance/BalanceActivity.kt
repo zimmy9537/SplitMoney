@@ -97,7 +97,8 @@ class BalanceActivity : AppCompatActivity() {
                     viewModel.getTransactionResult(
                         isFriend,
                         groupCode,
-                        myPhone
+                        myPhone,
+                        phoneMap
                     )
                 } else {
                     Toast.makeText(

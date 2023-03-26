@@ -25,7 +25,7 @@ class BalanceAdapter(private val balanceList: ArrayList<TransactionResult>, val 
             with(balanceList[position]) {
                 binding.senderTv.text = this.sender
                 binding.receiverTv.text = this.receiver
-                binding.amountTv.text = "\\u20B9${this.amount}"
+                binding.amountTv.text = "\u20B9${this.amount}"
             }
         }
     }

@@ -29,10 +29,11 @@ class BalanceViewModel @Inject constructor(private val balanceRepo: BalanceRepos
     fun getTransactionResult(
         isFriend: Boolean,
         groupCode: String,
-        myPhone: String
+        myPhone: String,
+        phoneMap: HashMap<String, String>
     ) {
         viewModelScope.launch {
-            balanceRepo.getTransactionResultList2(isFriend, groupCode, myPhone).onStart {
+            balanceRepo.getTransactionResultList2(isFriend, groupCode, myPhone,phoneMap).onStart {
                 emit(ResultData.Loading())
             }.collect {
                 transactionResultMutableLiveData.value = it

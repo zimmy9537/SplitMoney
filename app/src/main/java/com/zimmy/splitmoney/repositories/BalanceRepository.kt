@@ -69,7 +69,8 @@ class BalanceRepository {
     fun getTransactionResultList2(
         isFriend: Boolean,
         groupCode: String,
-        myPhone: String
+        myPhone: String,
+        phoneMap: HashMap<String, String>
     ): Flow<ResultData<TransactionResult>> {
         return callbackFlow {
             if (isFriend) {
@@ -115,8 +116,8 @@ class BalanceRepository {
                                                             var needSettleUp = false
                                                             for (ele in transactionResult) {
                                                                 val result = TransactionResult(
-                                                                    ele.receiver,
-                                                                    ele.sender,
+                                                                    phoneMap[ele.receiver],
+                                                                    phoneMap[ele.sender],
                                                                     ele.amount
                                                                 )
                                                                 trySend(
