@@ -157,7 +157,7 @@ class SignInActivity : AppCompatActivity() {
                 // Google Sign In failed, update UI appropriately
                 Toast.makeText(
                     this@SignInActivity,
-                    "some fucking error, ${e.message}",
+                    "something went wrong, ${e.message}",
                     Toast.LENGTH_LONG
                 ).show()
                 Log.v(TAG, "error stack ${e.stackTrace}")
