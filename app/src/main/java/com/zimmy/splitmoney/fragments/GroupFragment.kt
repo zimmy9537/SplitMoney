@@ -12,8 +12,7 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
-import com.zimmy.splitmoney.New.NewGroupActivity
-import com.zimmy.splitmoney.adapters.FriendOrTripAdapter
+import com.zimmy.splitmoney.new.NewGroupActivity
 import com.zimmy.splitmoney.adapters.GroupAdapter
 import com.zimmy.splitmoney.constants.Konstants
 import com.zimmy.splitmoney.databinding.FragmentGroupBinding
@@ -90,8 +89,6 @@ class GroupFragment : Fragment() {
                 }
 
             })
-
-
     }
 
     override fun onCreateView(

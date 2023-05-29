@@ -13,8 +13,8 @@ import androidx.fragment.app.Fragment
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.google.firebase.auth.FirebaseAuth
 import com.google.firebase.database.*
-import com.zimmy.splitmoney.New.NewFriendActivity
-import com.zimmy.splitmoney.adapters.FriendOrTripAdapter
+import com.zimmy.splitmoney.new.NewFriendActivity
+import com.zimmy.splitmoney.adapters.FriendAdapter
 import com.zimmy.splitmoney.constants.Konstants
 import com.zimmy.splitmoney.databinding.FragmentFriendBinding
 import com.zimmy.splitmoney.models.Expense
@@ -36,7 +36,7 @@ class FriendFragment : Fragment() {
     private lateinit var userReference: DatabaseReference
     private lateinit var expenseOutReference: DatabaseReference
     private lateinit var expenseInReference: DatabaseReference
-    private lateinit var myPhoneNumber: String
+    private lateinit var myPhone: String
 
     private lateinit var personalPreferences: SharedPreferences
 
@@ -47,27 +47,27 @@ class FriendFragment : Fragment() {
         personalPreferences =
             requireContext().getSharedPreferences(Konstants.PERSONAL, Context.MODE_PRIVATE)
 
-        myPhoneNumber = personalPreferences.getString(Konstants.PHONE, "6352938170").toString()
+        myPhone = personalPreferences.getString(Konstants.PHONE, "6352938170").toString()
 
         mAuth = FirebaseAuth.getInstance()
         firebaseDatabase = FirebaseDatabase.getInstance()
         userReference = firebaseDatabase.reference.child(Konstants.USERS)
-        expenseOutReference = firebaseDatabase.reference.child(Konstants.USERS).child(myPhoneNumber)
+        expenseOutReference = firebaseDatabase.reference.child(Konstants.USERS).child(myPhone)
             .child(Konstants.EXPENSEOUT)
-        expenseInReference = firebaseDatabase.reference.child(Konstants.USERS).child(myPhoneNumber)
+        expenseInReference = firebaseDatabase.reference.child(Konstants.USERS).child(myPhone)
             .child(Konstants.EXPENSEIN)
 
         friendArray = ArrayList()
         friendItemArray = ArrayList()
         expenseArrayList = ArrayList()//todo this is useless here it seems
 
-        userReference.child(myPhoneNumber)
+        userReference.child(myPhone)
             .child(Konstants.FRIENDS).addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     for (snapshot1 in snapshot.children) {
                         val phoneNumber = snapshot1.key.toString()
                         Log.v(TAG, "friend here too $phoneNumber")
-                        userReference.child(myPhoneNumber).child(Konstants.FRIENDS)
+                        userReference.child(myPhone).child(Konstants.FRIENDS)
                             .child(phoneNumber)
                             .child(Konstants.DATA)
                             .addListenerForSingleValueEvent(object : ValueEventListener {
@@ -113,7 +113,7 @@ class FriendFragment : Fragment() {
     ): View? {
         _friendBinding = FragmentFriendBinding.inflate(inflater, container, false)
         friendBinding.friendsRv.adapter =
-            context?.let { FriendOrTripAdapter(friendItemArray, it)}
+            context?.let { FriendAdapter(friendItemArray, it)}
         friendBinding.friendsRv.layoutManager = LinearLayoutManager(context)
         val root = friendBinding.root
 

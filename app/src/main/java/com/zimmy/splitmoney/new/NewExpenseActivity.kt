@@ -1,5 +1,6 @@
-package com.zimmy.splitmoney.New
+package com.zimmy.splitmoney.new
 
+import android.app.DatePickerDialog
 import android.content.Context
 import android.content.Intent
 import android.os.Bundle
@@ -15,22 +16,31 @@ import com.zimmy.splitmoney.constants.Konstants
 import com.zimmy.splitmoney.expense.PaidByActivity
 import com.zimmy.splitmoney.expense.SplitActivity
 import com.zimmy.splitmoney.models.Expense
+import com.zimmy.splitmoney.models.ExpenseGroup
 import com.zimmy.splitmoney.models.Friend
+import com.zimmy.splitmoney.models.Group
+import java.math.BigDecimal
+import java.math.RoundingMode
+import java.text.DateFormat
+import java.text.DecimalFormat
 import java.text.SimpleDateFormat
 import java.util.*
+import kotlin.collections.HashMap
 import kotlin.streams.asSequence
 
-class NewExpenseActivity : AppCompatActivity() {
+
+class NewExpenseActivity : AppCompatActivity(), DatePickerDialog.OnDateSetListener {
 
     lateinit var cancel: Button
     lateinit var save: Button
     lateinit var expenseName: EditText
     lateinit var day: TextView
+    lateinit var desiredDateString: String
 
     //todo test the code and repeat for the percentage method
     //todo later work on the save button on click
+    //todo the equal fragments and percentage fragment names are not okay
 
-    //todo this day is creating a fuck out of me
     lateinit var withTv: TextView
     lateinit var expenseImageView: ImageView
     lateinit var expenseAmount: EditText
@@ -41,6 +51,9 @@ class NewExpenseActivity : AppCompatActivity() {
     lateinit var myReference: DatabaseReference
     lateinit var friendReference: DatabaseReference
     lateinit var groupReference: DatabaseReference
+    lateinit var activityReference: DatabaseReference
+
+    lateinit var activityList: ArrayList<String>
 
     //intent
     private var isFriend: Int = Konstants.INDIVIDUALEXPENSE
@@ -48,40 +61,49 @@ class NewExpenseActivity : AppCompatActivity() {
     //ifFriend
     lateinit var friendName: String
     lateinit var friendPhone: String
-    var TAG = NewExpenseActivity::class.java.simpleName
+    var TAG: String = NewExpenseActivity::class.java.simpleName
     lateinit var expenseMap: HashMap<String, Double>
     lateinit var friendDetailList: ArrayList<Friend>
     private lateinit var expensePercent: HashMap<String, Double>
     private lateinit var resultMap: HashMap<String, Boolean>
     private lateinit var groupCode: String
+    private lateinit var myPhone: String
 
-    var splitActivityResultLauncher: ActivityResultLauncher<Intent> = registerForActivityResult(
-        ActivityResultContracts.StartActivityForResult(),
-        ActivityResultCallback { result ->
-            if (result.resultCode == RESULT_OK) {
-                Toast.makeText(this@NewExpenseActivity, "result is ok", Toast.LENGTH_SHORT)
-                    .show()
-                val intent = result.data
-                expensePercent = HashMap()
-                if (intent != null) {
-                    expensePercent =
-                        intent.getSerializableExtra(Konstants.EQUAL_PERCENT_MAP) as HashMap<String, Double>
+    private var year: Int = 0
+    private var month: Int = 0
+    private var dayDate: Int = 0
 
-                    for (ele in expensePercent) {
-                        Log.v(TAG, "${ele.key} pays ${ele.value}%")
+
+    //todo change the text in the split between text string according to the result of te result launcher
+    private var splitActivityResultLauncher: ActivityResultLauncher<Intent> =
+        registerForActivityResult(
+            ActivityResultContracts.StartActivityForResult(),
+            ActivityResultCallback { result ->
+                if (result.resultCode == RESULT_OK) {
+                    Toast.makeText(this@NewExpenseActivity, "result is ok", Toast.LENGTH_SHORT)
+                        .show()
+                    val intent = result.data
+                    expensePercent = HashMap()
+                    if (intent != null) {
+                        expensePercent =
+                            intent.getSerializableExtra(Konstants.EQUAL_PERCENT_MAP) as HashMap<String, Double>
+
+                        for (ele in expensePercent) {
+                            Log.v(TAG, "${ele.key} pays ${ele.value}%")
+                        }
+                    } else {
+                        Toast.makeText(this@NewExpenseActivity, "data null ", Toast.LENGTH_SHORT)
+                            .show()
                     }
                 } else {
-                    Toast.makeText(this@NewExpenseActivity, "data null ", Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this@NewExpenseActivity,
+                        "result is not ok",
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
-            } else {
-                Toast.makeText(
-                    this@NewExpenseActivity,
-                    "result is not ok",
-                    Toast.LENGTH_SHORT
-                ).show()
             }
-        }
-    )
+        )
 
     var paidActivityResultLauncher: ActivityResultLauncher<Intent> = registerForActivityResult(
         ActivityResultContracts.StartActivityForResult(),
@@ -92,7 +114,7 @@ class NewExpenseActivity : AppCompatActivity() {
                 if (intent != null) {
                     resultMap = HashMap()
                     resultMap =
-                        intent.getSerializableExtra(Konstants.DATA) as HashMap<String, Boolean>
+                        intent.getSerializableExtra(Konstants.RESULT) as HashMap<String, Boolean>
                 }
             } else {
                 Toast.makeText(this, "result not ok", Toast.LENGTH_SHORT).show()
@@ -105,17 +127,23 @@ class NewExpenseActivity : AppCompatActivity() {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_new_expense)
         resultMap = HashMap()
+        myPhone = getSharedPreferences(Konstants.PERSONAL, Context.MODE_PRIVATE).getString(
+            Konstants.PHONE,
+            "9537830943"
+        ).toString()
 
         //todo write code for group expense here
         isFriend = intent.getIntExtra(Konstants.EXPENSE, Konstants.INDIVIDUALEXPENSE)
 
+        expensePercent = HashMap()
+        resultMap = HashMap()
+        setDate()
         if (isFriend == Konstants.INDIVIDUALEXPENSE) {
             friendName = intent.getStringExtra(Konstants.NAME).toString()
             friendPhone = intent.getStringExtra(Konstants.PHONE).toString()
-            resultMap[getSharedPreferences(Konstants.PERSONAL, Context.MODE_PRIVATE).getString(
-                Konstants.PHONE,
-                "9537830943"
-            ).toString()] = true
+            expensePercent[myPhone] = 50.0
+            expensePercent[friendPhone] = 50.0
+            resultMap[myPhone] = true
             resultMap[friendPhone] = false
         } else {
             //case of group here
@@ -123,6 +151,11 @@ class NewExpenseActivity : AppCompatActivity() {
             //ALSO send the group code
             friendDetailList = intent.getSerializableExtra(Konstants.DATA) as ArrayList<Friend>
             groupCode = intent.getStringExtra(Konstants.GROUPS).toString()
+            val totalMembers = friendDetailList.size
+            for (friend in friendDetailList) {
+                expensePercent[friend.phone!!] = 100.00 / totalMembers
+                resultMap[friend.phone!!] = friend.phone == myPhone
+            }
         }
 
         cancel = findViewById(R.id.cancel)
@@ -149,6 +182,12 @@ class NewExpenseActivity : AppCompatActivity() {
             savePayment(expensePercent, resultMap)
         }
 
+        day.setOnClickListener {
+            val mDatePickerDialogFragment: com.zimmy.splitmoney.fragments.DatePicker =
+                com.zimmy.splitmoney.fragments.DatePicker()
+            mDatePickerDialogFragment.show(supportFragmentManager, "DATE PICK")
+        }
+
         if (isFriend == Konstants.INDIVIDUALEXPENSE)
             withTv.text = "With you and $friendName"
         else {
@@ -162,31 +201,13 @@ class NewExpenseActivity : AppCompatActivity() {
         paidBy.setOnClickListener {
             if (isFriend == Konstants.INDIVIDUALEXPENSE) {
                 if (paidBy.text == friendName) {
-//                    paidByPhone =
-//                        getSharedPreferences(Konstants.PERSONAL, Context.MODE_PRIVATE).getString(
-//                            Konstants.PHONE,
-//                            "95378300943"
-//                        ).toString()
-                    resultMap[getSharedPreferences(
-                        Konstants.PERSONAL,
-                        Context.MODE_PRIVATE
-                    ).getString(
-                        Konstants.PHONE,
-                        "95378300943"
-                    ).toString()] = true
+                    resultMap[myPhone] = true
                     resultMap[friendPhone] = false
                     paidBy.text = "You"
                 } else {
                     paidBy.text = friendName
+                    resultMap[myPhone] = false
                     resultMap[friendPhone] = true
-                    resultMap[getSharedPreferences(
-                        Konstants.PERSONAL,
-                        Context.MODE_PRIVATE
-                    ).getString(
-                        Konstants.PHONE,
-                        "95378300943"
-                    ).toString()] = true
-//                    paidByPhone = friendPhone
                 }
             } else {
                 val intent = Intent(this@NewExpenseActivity, PaidByActivity::class.java)
@@ -209,6 +230,7 @@ class NewExpenseActivity : AppCompatActivity() {
 
             val intent = Intent(this@NewExpenseActivity, SplitActivity::class.java)
             if (isFriend == Konstants.INDIVIDUALEXPENSE) {
+
                 intent.putExtra(Konstants.EXPENSE, Konstants.INDIVIDUALEXPENSE)
                 intent.putExtra(Konstants.PHONE, friendPhone)
                 intent.putExtra(Konstants.NAME, friendName)
@@ -228,12 +250,31 @@ class NewExpenseActivity : AppCompatActivity() {
             .joinToString("")
     }
 
-    fun savePayment(expensePercent: HashMap<String, Double>, paidByMap: HashMap<String, Boolean>) {
+    private fun savePayment(
+        expensePercent: HashMap<String, Double>,
+        paidByMap: HashMap<String, Boolean>
+    ) {
         expenseMap = HashMap()
         var amount = expenseAmount.text.toString().toDouble()
+        activityList = ArrayList()
         for (ele in expensePercent) {
             expenseMap[ele.key] = amount * ele.value / 100
             Log.v(TAG, "${ele.key} pays $${amount * ele.value / 100}")
+            activityReference =
+                FirebaseDatabase.getInstance().reference.child(Konstants.USERS)
+            activityReference.child(ele.key).child(Konstants.ACTIVITES)
+                .addListenerForSingleValueEvent(object : ValueEventListener {
+                    override fun onDataChange(snapshot: DataSnapshot) {
+                        for (activity in snapshot.children) {
+                            activityList.add(activity.getValue(String::class.java).toString())
+                        }
+                        activityList.add("")
+                    }
+
+                    override fun onCancelled(error: DatabaseError) {
+                        Log.v(TAG, "database error occurred")
+                    }
+                })
         }
         for (ele in paidByMap) {
             Log.v(TAG, "${ele.key} is paying ${ele.value}")
@@ -241,24 +282,37 @@ class NewExpenseActivity : AppCompatActivity() {
         //todo input this time according to the calender view
         //todo somehow try to get time as Date object for that particular day later use the function in expense Utils class
         //currently it is saving string of current day with desired format
+
+        //todo here is the solution for the minute part left of the expense
+        var remainder: Double
+        val df = DecimalFormat("#.##")
+        df.roundingMode = RoundingMode.DOWN
+        var expenseTotal = 0.00
+        for (ele in expensePercent) {
+            val roundOff =
+                df.format((BigDecimal(amount.toString()).multiply(BigDecimal(ele.value.toString()))).toDouble() / 100)
+            Log.v(TAG, "Individual pay $roundOff")
+            expenseTotal =
+                (BigDecimal(expenseTotal.toString()).add(BigDecimal(roundOff.toString()))).toDouble()
+        }
+        remainder =
+            BigDecimal(amount.toString()).subtract(BigDecimal(expenseTotal.toString())).toDouble()
+        remainder = df.format(remainder).toDouble()
+        Log.v(TAG, "reminder 1. $remainder")
         val newExpenseCode = expenseCodeGenerator()
-        val date = Date()
-        val fmt = SimpleDateFormat("MMMM d, yyyy")
-        val desiredDateString = fmt.format(date)
+
+        // calculations of total of those who paid initially
         var thosePaid = 0
         for (ele in paidByMap) {
             if (ele.value) {
                 thosePaid++
             }
         }
+        val ifPaid = amount / thosePaid
 
-        //expenseMap and paidByMap if ok
+        //todo some problem with the individual expense solution
         if (isFriend == Konstants.INDIVIDUALEXPENSE) {
             amount /= 2
-            val myPhone = getSharedPreferences(
-                Konstants.PERSONAL,
-                Context.MODE_PRIVATE
-            ).getString(Konstants.PHONE, "9537830943")
             val isIn = paidByMap[myPhone]
             val expense = Expense(
                 isIn!!,
@@ -267,9 +321,9 @@ class NewExpenseActivity : AppCompatActivity() {
                 expenseName.text.toString(),
                 paidByMap,
                 expenseAmount.text.toString().toDouble(),
-                desiredDateString
+                desiredDateString,
+                Date().time
             )
-            val ifPaid = amount / thosePaid
 
             //mine
             var myResult = 0.00
@@ -277,12 +331,16 @@ class NewExpenseActivity : AppCompatActivity() {
                 myResult = ifPaid
             }
             myResult -= expenseMap[myPhone]!!
+            //this is that minute reminder
+            myResult -= remainder
+            Log.v(TAG, "reminder is ${remainder}")
+            expenseMap[myPhone!!] = expenseMap[myPhone]?.plus(remainder)!!
             myReference =
                 FirebaseDatabase.getInstance().reference.child(Konstants.USERS).child(myPhone!!)
                     .child(Konstants.FRIENDS)
             myReference.child(friendPhone).child(Konstants.EXPENSE).child(newExpenseCode)
                 .setValue(expense)
-            var result: Double
+            var result: Double = 0.00
             myReference.child(friendPhone).child(Konstants.RESULT)
                 .addListenerForSingleValueEvent(object : ValueEventListener {
                     override fun onDataChange(snapshot: DataSnapshot) {
@@ -325,43 +383,107 @@ class NewExpenseActivity : AppCompatActivity() {
 
                 })
         } else { //group
-            var expense = Expense(
+            val expense = ExpenseGroup(
                 newExpenseCode,
                 expenseMap,
                 expenseName.text.toString(),
                 paidByMap,
                 amount,
-                desiredDateString
+                desiredDateString,
+                Date().time
             )
+
+            //just log
+            //output=> following expenseMap has decimal precision issue
+            for (ele in expenseMap) {
+                Log.d(TAG, "${ele.key} pays ${ele.value}")
+            }
+
+            //format to 2 decimal precision
+            Log.v(TAG, "output after decimal precision")
+            for (ele in expenseMap) {
+                expenseMap[ele.key] = df.format(expenseMap[ele.key]).toDouble()
+                Log.d(TAG, "${ele.key} pays ${ele.value}")
+            }
+
+            //output=> following expenseMap after resolved expense remainder
+            for (ele in expenseMap) {
+                Log.d(TAG, "${ele.key} pays ${ele.value}")
+            }
+
+            //work begins for expense_global
+            val netExpense: HashMap<String, BigDecimal> = HashMap()
+            for (ele in paidByMap) {
+                if (ele.value) {
+                    netExpense[ele.key] =
+                        BigDecimal(ifPaid.toString()).subtract(BigDecimal(expenseMap[ele.key].toString()))
+                } else {
+                    netExpense[ele.key] = -BigDecimal(expenseMap[ele.key].toString())
+                }
+                Log.v(TAG, "netExpense for ${ele.key} is ${netExpense[ele.key]}")
+            }
+
+            for (ele in paidByMap) {
+                if (ele.value) {
+                    netExpense[ele.key] =
+                        (netExpense[ele.key]!!).subtract(BigDecimal(remainder.toString()))
+                    break
+                }
+            }
+
+            for (ele in netExpense) {
+                Log.d(TAG, "${ele.key} pays ${ele.value}")
+            }
+
+
+            //real work on expense_global
             groupReference =
                 FirebaseDatabase.getInstance().reference.child(Konstants.GROUPS).child(groupCode)
             groupReference.child(Konstants.EXPENSE).child(newExpenseCode).setValue(expense)
 
-            //individual person
-            for (ele in paidByMap) {
-                val memberPhone = ele.key
-                val isIn = paidByMap[memberPhone]
-                val expense = Expense(
-                    isIn!!,
-                    newExpenseCode,
-                    expenseMap,
-                    expenseName.text.toString(),
-                    paidByMap,
-                    expenseAmount.text.toString().toDouble(),
-                    desiredDateString
-                )
-                var result: Double
-                result = if (isIn) {
-                    amount / thosePaid - expenseMap[memberPhone]!!
-                } else {
-                    -expenseMap[memberPhone]!!
-                }
-                friendReference = FirebaseDatabase.getInstance().reference.child(Konstants.USERS)
-                    .child(memberPhone).child(Konstants.GROUPS)
-                friendReference.child(groupCode).child(Konstants.EXPENSE).child(newExpenseCode)
-                    .setValue(expense)
-                friendReference.child(groupCode).child(Konstants.RESULT).setValue(result)
+            for (ele in netExpense) {
+                groupReference.child(Konstants.EXPENSE_GLOBAL).child(ele.key)
+                    .addListenerForSingleValueEvent(object : ValueEventListener {
+                        override fun onDataChange(snapshot: DataSnapshot) {
+                            if (snapshot.exists()) {
+                                var result = snapshot.getValue(Double::class.java)
+                                result =
+                                    (BigDecimal(result.toString()).add(netExpense[ele.key])).toDouble()
+                                groupReference.child(Konstants.EXPENSE_GLOBAL).child(ele.key)
+                                    .setValue(result)
+                            }
+                        }
+
+                        override fun onCancelled(error: DatabaseError) {
+                            Log.v(TAG, "Database error occurred ${error.message}")
+                        }
+                    })
             }
         }
+    }
+
+    override fun onDateSet(p0: DatePicker?, year: Int, month: Int, dayOfMonth: Int) {
+        val mCalendar = Calendar.getInstance()
+        mCalendar[Calendar.YEAR] = year
+        mCalendar[Calendar.MONTH] = month
+        mCalendar[Calendar.DAY_OF_MONTH] = dayOfMonth
+        desiredDateString =
+            DateFormat.getDateInstance(DateFormat.FULL).format(mCalendar.time)
+        day.text = desiredDateString
+    }
+
+    private fun setDate() {
+        val c: Date = Calendar.getInstance().time
+        val df = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault())
+        val formattedDate: String = df.format(c)
+        dayDate = formattedDate.slice(IntRange(0, 1)).toInt()
+        month = formattedDate.slice(IntRange(3, 4)).toInt()
+        year = formattedDate.slice(IntRange(6, 9)).toInt()
+        val mCalendar = Calendar.getInstance()
+        mCalendar[Calendar.YEAR] = year
+        mCalendar[Calendar.MONTH] = month
+        mCalendar[Calendar.DAY_OF_MONTH] = dayDate
+        desiredDateString =
+            DateFormat.getDateInstance(DateFormat.FULL).format(mCalendar.time)
     }
 }

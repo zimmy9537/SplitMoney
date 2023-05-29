@@ -1,7 +1,6 @@
 package com.zimmy.splitmoney.models
 
-data class Expense(
-    var expenseIn: Boolean,
+data class ExpenseGroup(
     var expenseCode: String,
     var expenseMap: HashMap<String, Double>?,
     var expenseName: String,
@@ -10,5 +9,5 @@ data class Expense(
     var payment_time: String,
     var registered_time: Long
 ) {
-    constructor() : this(true, "", null, "", null, 0.0, "",0)
+    constructor() : this("", null, "", null, 0.00, "",0)
 }

@@ -13,14 +13,13 @@ import com.squareup.picasso.Picasso
 import com.zimmy.splitmoney.IndividualExpenseActivity
 import com.zimmy.splitmoney.R
 import com.zimmy.splitmoney.constants.Konstants
-import com.zimmy.splitmoney.groups.GroupActivity
 import com.zimmy.splitmoney.models.FriendItem
 
-class FriendOrTripAdapter(
+class FriendAdapter(
     friendItemList: ArrayList<FriendItem>,
     context: Context,
 ) :
-    RecyclerView.Adapter<FriendOrTripAdapter.FriendViewHolder>() {
+    RecyclerView.Adapter<FriendAdapter.FriendViewHolder>() {
 
     var friendItemList: ArrayList<FriendItem>
     var context: Context
@@ -31,7 +30,7 @@ class FriendOrTripAdapter(
     }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): FriendViewHolder {
-        val view = LayoutInflater.from(context).inflate(R.layout.friends_trip_item, parent, false)
+        val view = LayoutInflater.from(context).inflate(R.layout.friends_item, parent, false)
         return FriendViewHolder(view)
     }
 

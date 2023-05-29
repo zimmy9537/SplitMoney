@@ -1,4 +1,4 @@
-package com.zimmy.splitmoney.New
+package com.zimmy.splitmoney.new
 
 import android.content.Context
 import android.content.Intent
@@ -81,7 +81,7 @@ class NewGroupActivity : AppCompatActivity() {
         cancel = findViewById(R.id.cancelGroup)
         nameEt = findViewById(R.id.nameEt)
         simplifyDebts = findViewById(R.id.simplifyCheck)
-        joinGroup=findViewById(R.id.joinGroup)
+        joinGroup = findViewById(R.id.joinGroup)
 
         create.setOnClickListener {
             if (nameEt.text.isEmpty()) {
@@ -94,7 +94,7 @@ class NewGroupActivity : AppCompatActivity() {
 
             groupName = nameEt.text.toString().trim()
 
-            val friend = Friend(name, isFemale,null,null)
+            val friend = Friend(name, isFemale, null, null)
             groupReference.child(groupCode).child(Konstants.MEMBERS).child(phone).setValue(friend)
             groupReference.child(groupCode).child(Konstants.GROUPINFO).child(Konstants.GROUPNAME)
                 .setValue(groupName)
@@ -102,8 +102,10 @@ class NewGroupActivity : AppCompatActivity() {
                 .setValue(1)
             groupReference.child(groupCode).child(Konstants.GROUPINFO).child(Konstants.GROUPLEADER)
                 .setValue(phone)
+            groupReference.child(groupCode).child(Konstants.EXPENSE_GLOBAL).child(phone)
+                .setValue(0.00)
 
-            val group = Group("null",groupCode,groupName,"you owe no one",0.00)
+            val group = Group("null", groupCode, groupName, "you owe no one", 0.00)
             userReference.child(phone).child(Konstants.GROUPS).child(groupCode).setValue(group)
 
             val intent = Intent(this@NewGroupActivity, GroupActivity::class.java)
@@ -112,8 +114,8 @@ class NewGroupActivity : AppCompatActivity() {
             finish()
         }
 
-        joinGroup.setOnClickListener{
-            val intent=Intent(this@NewGroupActivity,JoinGroupActivity::class.java)
+        joinGroup.setOnClickListener {
+            val intent = Intent(this@NewGroupActivity, JoinGroupActivity::class.java)
             startActivity(intent)
             finish()
         }

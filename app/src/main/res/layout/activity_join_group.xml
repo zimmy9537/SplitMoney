@@ -15,7 +15,7 @@
         android:text="Enter the group code"
         android:textSize="22sp"
         app:layout_constraintStart_toStartOf="parent"
-        app:layout_constraintTop_toBottomOf="@id/textview2" />
+        app:layout_constraintTop_toBottomOf="@id/settleQuest" />
 
     <EditText
         android:id="@+id/gCodeEt"
@@ -52,7 +52,7 @@
     </FrameLayout>
 
     <TextView
-        android:id="@+id/textview2"
+        android:id="@+id/settleQuest"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"

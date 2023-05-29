@@ -20,6 +20,18 @@
         android:supportsRtl="true"
         android:theme="@style/Theme.SplitMoney">
         <activity
+            android:name=".expense.SettledUpActivity"
+            android:exported="false" />
+        <activity
+            android:name=".expense.BeforeSettleUpActivity"
+            android:exported="false" />
+        <activity
+            android:name=".expense.SettleUpActivity"
+            android:exported="false" />
+        <activity
+            android:name=".BalanceAcitvity"
+            android:exported="false" />
+        <activity
             android:name=".expense.SplitActivity"
             android:exported="false"
             android:label="@string/title_activity_split"
@@ -28,7 +40,7 @@
             android:name=".expense.PaidByActivity"
             android:exported="false" />
         <activity
-            android:name=".New.NewExpenseActivity"
+            android:name=".new.NewExpenseActivity"
             android:exported="false" />
         <activity
             android:name=".IndividualExpenseActivity"
@@ -43,14 +55,14 @@
             android:name=".groups.GroupActivity"
             android:exported="false" />
         <activity
-            android:name=".New.NewGroupActivity"
+            android:name=".new.NewGroupActivity"
             android:exported="false"
             android:theme="@style/Theme.SplitMoney.NoActionBar" />
         <activity
-            android:name=".New.MessageActivity"
+            android:name=".new.MessageActivity"
             android:exported="false" />
         <activity
-            android:name=".New.NewFriendActivity"
+            android:name=".new.NewFriendActivity"
             android:exported="false" />
         <activity
             android:name=".HomeActivity"

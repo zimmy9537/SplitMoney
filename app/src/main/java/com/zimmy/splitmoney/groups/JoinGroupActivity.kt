@@ -121,13 +121,11 @@ class JoinGroupActivity : AppCompatActivity() {
     }
 
     private fun joinGroup(gcode: String) {
-        val friend = Friend(name, isFemale,null,null)
-
-
-
+        val friend = Friend(name, isFemale, null, null)
         groupReference.child(gcode).addListenerForSingleValueEvent(object : ValueEventListener {
             override fun onDataChange(snapshot: DataSnapshot) {
                 if (snapshot.exists()) {
+                    Log.v("here", "here")
                     ifGCodeExists(gcode, friend)
                 } else {
                     Toast.makeText(
@@ -144,6 +142,7 @@ class JoinGroupActivity : AppCompatActivity() {
         })
     }
 
+    //some error in this code
     private fun ifGCodeExists(gcode: String, friend: Friend) {
         Toast.makeText(this, "Welcome to the group", Toast.LENGTH_SHORT).show()
         groupReference.child(gcode).child(Konstants.MEMBERS).child(phone).setValue(friend)
@@ -161,11 +160,15 @@ class JoinGroupActivity : AppCompatActivity() {
                 }
             })
 
+        groupReference.child(gcode).child(Konstants.EXPENSE_GLOBAL).child(phone)
+            .setValue(0.00)
+
         groupReference.child(gcode).child(Konstants.GROUPINFO).child(Konstants.GROUPNAME)
             .addListenerForSingleValueEvent(object : ValueEventListener {
                 override fun onDataChange(snapshot: DataSnapshot) {
                     val groupName: String? = snapshot.getValue(String::class.java)
-                    val group= groupName?.let { Group("null",gcode, it,"you owe no one",0.00) }
+                    Log.v("group name", "$groupName")
+                    val group = groupName?.let { Group("null", gcode, it, "you owe no one", 0.00) }
                     userReference.child(phone).child(Konstants.GROUPS).child(gcode).setValue(group)
                     finish()
                 }
