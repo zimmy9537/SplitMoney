@@ -52,15 +52,6 @@ class GroupFragment : Fragment() {
                             userReference.child(myPhoneNumber).child(Konstants.GROUPS).child(gcode)
                                 .addValueEventListener(object : ValueEventListener {
                                     override fun onDataChange(snapshot: DataSnapshot) {
-                                        val group = snapshot.getValue(Group::class.java)
-                                        if (group != null) {
-                                            Toast.makeText(
-                                                context,
-                                                group.groupTitle,
-                                                Toast.LENGTH_SHORT
-                                            )
-                                                .show()
-                                        }
                                         snapshot.getValue(Group::class.java)
                                             ?.let { myGroups.add(it) }
                                         groupBinding.groupRv.adapter?.notifyDataSetChanged()

@@ -80,7 +80,6 @@ class FriendFragment : Fragment() {
                                     } else {
                                         "you owe"
                                     }
-                                    Toast.makeText(context,"friend "+friend.name,Toast.LENGTH_SHORT).show()
                                     friendItemArray.add(
                                         FriendItem(
                                             "noImage",
