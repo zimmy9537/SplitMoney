@@ -24,9 +24,11 @@ import com.zimmy.splitmoney.models.TransactionResult
 import com.zimmy.splitmoney.resultdata.ResultData
 import com.zimmy.splitmoney.settleup.balance.viewmodel.BalanceViewModel
 import com.zimmy.splitmoney.utils.ExpenseUtils
+import dagger.hilt.android.AndroidEntryPoint
 import java.math.BigDecimal
 import kotlin.math.absoluteValue
 
+@AndroidEntryPoint
 class BeforeSettleUpActivity : AppCompatActivity(), BeforeSettleUpAdapter.SettleUpCallBack {
 
 
@@ -87,6 +89,7 @@ class BeforeSettleUpActivity : AppCompatActivity(), BeforeSettleUpAdapter.Settle
             }
             is ResultData.Success -> {
                 if (resultData.data != null) {
+                    //SETUP ADAPTER CLASS HERE
                     transactionResult.add(resultData.data)
                     binding.progressPb.visibility = View.GONE
                     binding.balancesRv.visibility = View.VISIBLE
@@ -139,6 +142,9 @@ class BeforeSettleUpActivity : AppCompatActivity(), BeforeSettleUpAdapter.Settle
         phoneMap = HashMap()
         netBalance = ArrayList()
         transactionResult = ArrayList()
+        viewModel.memberLiveData.observe(this@BeforeSettleUpActivity,observerPhoneMap)
+        viewModel.transactionResultLiveData.observe(this@BeforeSettleUpActivity,observer)
+        viewModel.getMemberList(groupCode)
     }
 
     private fun processTransaction(transaction: TransactionResult){
