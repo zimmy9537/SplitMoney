@@ -26,7 +26,7 @@
     <string name="calculating_balance">Calculating Balance</string>
     <string name="some_failure">Some Failure occurred, Please try again</string>
     <string name="alone_in_group">You are alone in the group</string>
-    <string name="F_ed">F_ed up here</string>
+    <string name="F_ed">Some thing went wrong, try again later</string>
 
     //settle up
     <string name="whom_settle_up_with">Whom Do You Want TO Settle Up With?</string>
